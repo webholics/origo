@@ -1,0 +1,3 @@
+# send all URIs to index.php
+RewriteEngine on
+RewriteRule .* index.php
