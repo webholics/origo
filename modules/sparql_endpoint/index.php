@@ -16,8 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-error_reporting(E_ALL|E_STRICT);
+
+// unfortunately ARC2 does not yet support E_STRICT
+//error_reporting(E_ALL|E_STRICT);
+error_reporting(E_ALL);
 
 require_once 'libs/arc/ARC2.php';
 
@@ -57,8 +59,8 @@ $endpoint_config = array(
 
 	'endpoint_timeout' => 60, /* this feature is not yet implemented in ARC2 */
 	'endpoint_max_limit' => 5000,
-	'endpoint_read_key' => $config['endpoint']['api_key'],
-	'endpoint_write_key' => $config['endpoint']['api_key']
+	'endpoint_read_key' => $config['endpoint']['key'],
+	'endpoint_write_key' => $config['endpoint']['key']
 );
 
 $ep = ARC2::getStoreEndpoint($endpoint_config);

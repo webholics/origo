@@ -4,7 +4,7 @@
 
 ; The full resource identifier URI.
 ; The Resource Identifier folder has to be at this location 
-; or at a higher location within this URI.
+; or at a higher directory within this URI.
 identifier = "http://id.example.com/person/1"
 
 [mime_types]
