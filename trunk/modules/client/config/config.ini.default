@@ -1,0 +1,22 @@
+; Origo Client configuration
+
+[client]
+
+; The resource identifier.
+resource = "http://id.example.com/people/1"
+
+[endpoint]
+
+; The location of the SPARQL endpoint.
+; Use the SPARQL endpoint proxy here to query external endpoints.
+location = "http://www.example.com/sparql_endpoint"
+
+; The API key to access the SPARQL endpoint.
+key = "[api_key]"
+
+[misc]
+
+; Set to 1 or 0
+; Should be disabled on production servers
+display_errors = 0
+
