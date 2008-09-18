@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="send_data()">
+	<mx:Script>
+	<![CDATA[
+		import mx.rpc.events.FaultEvent;
+		import mx.controls.Alert;
+		import mx.rpc.events.ResultEvent;
+		import com.origo.client.SPARQLEndpointService;
+		
+		var service:SPARQLEndpointService;
 	
+		private function send_data():void 
+		{
+			service = new SPARQLEndpointService(Application.application.parameters["endpoint"]);
+			service.apiKey = Application.application.parameters["key"];
+			service.addEventListener("result", httpResult);
+			service.addEventListener("fault", httpFault);
+			service.query("bla");
+		}
+		
+		public function httpResult(event:ResultEvent):void
+		{
+			Alert.show("ok");
+		}
+		
+		public function httpFault(event:FaultEvent):void
+		{
+			Alert.show(event.fault.faultString);
+		}
+	]]>
+	</mx:Script>
 </mx:Application>
