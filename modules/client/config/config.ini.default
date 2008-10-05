@@ -5,6 +5,20 @@
 ; The resource identifier.
 resource = "http://id.example.com/people/1"
 
+; Authentication
+; There are 3 options:
+; - none -- no authentication
+; - basic -- HTTP Basic autentication 
+;   (you have to set auth_basic_username and auth_basic_password)
+; - openid -- OpenID authentication
+;   (you have to set auth_openid)
+auth = "none"
+
+auth_basic_username = 
+auth_basic_password =
+
+auth_openid =
+
 [endpoint]
 
 ; The location of the SPARQL endpoint.
