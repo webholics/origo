@@ -1,0 +1,23 @@
+<chapter>
+	<title>Erstes Kapitel</title>
+	<mediaobject id="logo">
+		<imageobject role="fo">
+			<imagedata format="SVG" fileref="../images/logo.svg"/>
+		</imageobject>
+		<imageobject role="html">
+			<imagedata format="PNG" fileref="../images/logo.png"/>
+		</imageobject>
+		<textobject>
+			<phrase>Origo Logo</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		Viel bla etwas blub.
+	</para>
+	<sect1>
+		<title>Hi &amp; mehr!</title>
+		<para>
+			Noch etwas mehr bla und ein bisschen von dem Blüb.
+		</para>
+	</sect1>
+</chapter>
