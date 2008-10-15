@@ -1,11 +1,10 @@
-<?xml version="1.0"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
-"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
-<!ENTITY chapter1 SYSTEM "chapter1.xml">
-]>	
-
-<book xml:lang="de">
-	<bookinfo>
+<?xml version="1.0" encoding="utf-8"?>
+<book 
+	xmlns="http://docbook.org/ns/docbook" 
+	xmlns:xi="http://www.w3.org/2001/XInclude"
+	xml:lang="de"
+	version="5.0">
+	<info>
 		<title>Origo - social client</title>
 		<subtitle>Entwicklungsdokumentation</subtitle>
 		<author>
@@ -16,6 +15,6 @@
 			<year>2008</year>
 			<holder>Mario Volke, Alle Rechte vorbehalten.</holder>
 		</copyright>
-	</bookinfo>
-	&chapter1;
+	</info>
+	<xi:include href="chapter1.xml"/>
 </book>
