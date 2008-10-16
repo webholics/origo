@@ -16,5 +16,6 @@
 			<holder>Mario Volke, Alle Rechte vorbehalten.</holder>
 		</copyright>
 	</info>
+	<xi:include href="preface.xml"/>
 	<xi:include href="chapter1.xml"/>
 </book>

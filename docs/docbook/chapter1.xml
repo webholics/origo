@@ -2,31 +2,41 @@
 <chapter 
 	xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
-	<title>Erstes Kapitel</title>
-	<mediaobject id="logo">
-		<imageobject role="fo">
-			<imagedata format="SVG" fileref="../images/logo.svg"/>
-		</imageobject>
-		<imageobject role="html">
-			<imagedata format="PNG" fileref="../images/logo.png"/>
-		</imageobject>
-		<textobject>
-			<phrase>Origo Logo</phrase>
-		</textobject>
-	</mediaobject>
-	<para>
-		Viel bla etwas blub.
-	</para>
+	<title>Motivation &amp; Vision</title>
 	<sect1>
-		<title>Hi &amp; mehr!</title>
+		<title>Motivation</title>
 		<para>
-			Noch etwas mehr bla und ein bisschen von dem Blüb.
+			Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
+			bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
+			entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
+			untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
+			zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
+			zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
+			Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
 		</para>
-		<sect2>
-			<title>Lorem ipsum</title>
-			<para>
-				Huiiiiiii <link xlink:href="http://www.webholics.de">hier</link>.
-			</para>
-		</sect2>
+	</sect1>
+	<sect1>
+		<title>Vision</title>
+		<para>
+			Das sog. <emphasis>Semantic Web</emphasis>, welches durch mehrere Sprachen und 
+			Standards vom <acronym><link xlink:href="http://www.w3c.org">W3C</link></acronym>
+			definiert wird, stellt den nötigen Rahmen bereit, um offene Schnittstellen über 
+			Ontologien zu erstellen und damit die Datensilos heutiger sozialer Netzwerke 
+			aufzubrechen. Durch die <emphasis>Friend of a Friend</emphasis> (<acronym>FOAF</acronym>) 
+			Ontologie ist eine solche Schnittstelle um Personen im Semantic Web zu beschreiben bereits 
+			vorhanden. Mit dieser Ontologie ist es nicht nur möglich sich selbst über verschiedenste
+			Metadaten zu beschreiben, zusätzlich lassen sich Verbindungen und Beziehungen zwischen 
+			Personen darstellen.
+		</para>
+		<para>
+			Die Daten werden in der Regel in <acronym>RDF/XML</acronym> serialisiert. Solche RDF-Dokumente,
+			die FOAF-Daten enthalten, können von den verschiedenen sozialen Netzwerken veröffentlich werden.
+			Personen werden über <acronym>URIs</acronym> identifizierbar. Damit wird es möglich
+			Personen über die bisherigen Grenzen sozialer Netzwerke hinweg miteinander zu verbinden.
+			Es entsteht ein großes <emphasis role="strong">verteiltes soziales Netzwerk</emphasis>.
+		</para>
+		<para>
+			Hier kommt ein Block über: Eigene Foaf-DATEN hosten, selber schreiben und verwalten is aufwendig, also CLIENT!
+		</para>
 	</sect1>
 </chapter>

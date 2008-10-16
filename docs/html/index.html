@@ -1,7 +1,34 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Origo - social client</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="de"><div class="titlepage"><div><div><h1 class="title"><a name="id870508"></a>Origo - social client</h1></div><div><h2 class="subtitle">Entwicklungsdokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright © 2008 Mario Volke, Alle Rechte vorbehalten.</p></div></div><hr></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="chapter"><a href="#id298142">1. Erstes Kapitel</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id870661">Hi &amp; mehr!</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id870672">Lorem ipsum</a></span></dt></dl></dd></dl></dd></dl></div><div class="chapter" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id298142"></a>Kapitel 1. Erstes Kapitel</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id870661">Hi &amp; mehr!</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id870672">Lorem ipsum</a></span></dt></dl></dd></dl></div><div class="mediaobject"><a name="logo"></a><img src="../images/logo.png" alt="Origo Logo"></div><p>
-		Viel bla etwas blub.
-	</p><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870661"></a>Hi &amp; mehr!</h2></div></div></div><p>
-			Noch etwas mehr bla und ein bisschen von dem Blüb.
-		</p><div class="sect2" lang="de"><div class="titlepage"><div><div><h3 class="title"><a name="id870672"></a>Lorem ipsum</h3></div></div></div><p>
-				Huiiiiiii <a class="link" href="http://www.webholics.de" target="_top">hier</a>.
-			</p></div></div></div></div></body></html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Origo - social client</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="de"><div class="titlepage"><div><div><h1 class="title"><a name="id870508"></a>Origo - social client</h1></div><div><h2 class="subtitle">Entwicklungsdokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright © 2008 Mario Volke, Alle Rechte vorbehalten.</p></div></div><hr></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="preface"><a href="#id298344">Vorwort</a></span></dt><dt><span class="chapter"><a href="#id870557">1. Motivation &amp; Vision</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id870572">Motivation</a></span></dt><dt><span class="sect1"><a href="#id870565">Vision</a></span></dt></dl></dd></dl></div><div class="preface" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id298344"></a>Vorwort</h2></div></div></div><div class="mediaobject"><a name="logo"></a><img src="../images/logo.png" alt="Origo Logo"></div><p>
+		Diese Dokumentation entstand parallel zur Konzeptions- und 
+		Entwicklungsphase. Ziel dieses Dokuments ist es, dem Leser 
+		zum einen aufzuzeigen, welche Problemstellungen mit <span class="emphasis"><em>Origo</em></span> 
+		gelöst werden könnten und zum anderen werden die Konzepte und 
+		Module von <span class="emphasis"><em>Origo</em></span> vorgestellt, um die angesprochenen Probleme 
+		zu lösen.
+	</p></div><div class="chapter" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id870557"></a>Kapitel 1. Motivation &amp; Vision</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id870572">Motivation</a></span></dt><dt><span class="sect1"><a href="#id870565">Vision</a></span></dt></dl></div><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870572"></a>Motivation</h2></div></div></div><p>
+			Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
+			bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
+			entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
+			untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
+			zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
+			zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
+			Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
+		</p></div><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870565"></a>Vision</h2></div></div></div><p>
+			Das sog. <span class="emphasis"><em>Semantic Web</em></span>, welches durch mehrere Sprachen und 
+			Standards vom <acronym class="acronym"><a class="link" href="http://www.w3c.org" target="_top">W3C</a></acronym>
+			definiert wird, stellt den nötigen Rahmen bereit, um offene Schnittstellen über 
+			Ontologien zu erstellen und damit die Datensilos heutiger sozialer Netzwerke 
+			aufzubrechen. Durch die <span class="emphasis"><em>Friend of a Friend</em></span> (<acronym class="acronym">FOAF</acronym>) 
+			Ontologie ist eine solche Schnittstelle um Personen im Semantic Web zu beschreiben bereits 
+			vorhanden. Mit dieser Ontologie ist es nicht nur möglich sich selbst über verschiedenste
+			Metadaten zu beschreiben, zusätzlich lassen sich Verbindungen und Beziehungen zwischen 
+			Personen darstellen.
+		</p><p>
+			Die Daten werden in der Regel in <acronym class="acronym">RDF/XML</acronym> serialisiert. Solche RDF-Dokumente,
+			die FOAF-Daten enthalten, können von den verschiedenen sozialen Netzwerken veröffentlich werden.
+			Personen werden über <acronym class="acronym">URIs</acronym> identifizierbar. Damit wird es möglich
+			Personen über die bisherigen Grenzen sozialer Netzwerke hinweg miteinander zu verbinden.
+			Es entsteht ein großes <span class="strong"><strong>verteiltes soziales Netzwerk</strong></span>.
+		</p><p>
+			Hier kommt ein Block über: Eigene Foaf-DATEN hosten, selber schreiben und verwalten is aufwendig, also CLIENT!
+		</p></div></div></div></body></html>
