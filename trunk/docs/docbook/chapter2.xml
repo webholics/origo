@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter 
+	xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink"> 
+	<title>Konzept</title>
+	<para>
+		<emphasis>Origo</emphasis> soll dem Nutzer auf komfortable und 
+		flexible Weise erlauben seine Identität und sein soziales Netzwerk 
+		im semantischen Web zu überschauen und zu verwalten. Das Wort Origo 
+		kommt aus dem Lateinischen und Bedeuted „<emphasis>Ursprung</emphasis>“. 
+		Der URI des Nutzers wird damit quasi zum Ursprung seines persönlichen 
+		Graphen im <emphasis>Semantic Web</emphasis>.
+	</para>
+	<para>
+		Origo ist vollständig modular aufgebaut, um möglichst flexibel auf 
+		individuelle Bedürfnisse eingehen zu können.
+		Das Origo Packet enthält vier serverseitige Module:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<title>Resource Negotiator</title>
+			<para>
+				Der Resource Negotiator leitet eine HTTP-Anfrage abhängig 
+				vom HTTP-Header entweder auf die RDF-Daten oder auf ein 
+				festgelegtes HTML-Dokument weiter.
+			</para>
+		</listitem>
+		<listitem>
+			<title>RDF Distributor</title>
+			<para>
+				Der RDF Distributor generiert die RDF-Daten aus dem sog.
+				Triple Store und liefert diese über einen Caching-Mechanismus aus.
+			</para>
+		</listitem>
+		<listitem>
+			<title>SPARQL Endpoint</title>
+			<para>
+				Der SPARQL Endpoint ist die zentrale Schnittstelle aller Daten 
+				zum Triple Store.
+			</para>
+		</listitem>
+		<listitem>
+			<title>SPARQL Endpoint Proxy</title>
+			<para>
+				Liegt der SPARQL Endpoint auf einer anderen Domain als der Client, 
+				so muss der SPARQL Endpoint Proxy die Anfragen des Clients 
+				serverseitig weiterleiten. Es gilt die <emphasis>Same Domain Policy</emphasis>. 
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		Das Hauptmodul von Origo ist der Client. Er besteht wiederum aus zwei Modulen,
+		die allerdings nur logisch voneinander getrennt sind:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<title>Origo Editor</title>
+			<para>
+				Mit dem Origo Editor kann der Nutzer seine persönlichen Daten verwalten 
+				und seinen persönliche URI mit weiteren Profilen verknüpfen.
+			</para>
+		</listitem>
+		<listitem>
+			<title>Origo Browser</title>
+			<para>
+				Der Origo Browser erlaubt es dem Nutzer sein soziales Netzwerk 
+				zu durchstöbern und neue Freunde hinzuzufügen. 	
+			</para>
+		</listitem>
+	</itemizedlist>
+</chapter>

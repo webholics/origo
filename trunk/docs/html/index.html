@@ -1,11 +1,11 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Origo - social client</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="de"><div class="titlepage"><div><div><h1 class="title"><a name="id870508"></a>Origo - social client</h1></div><div><h2 class="subtitle">Entwicklungsdokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright © 2008 Mario Volke, Alle Rechte vorbehalten.</p></div></div><hr></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="preface"><a href="#id298344">Vorwort</a></span></dt><dt><span class="chapter"><a href="#id870557">1. Motivation &amp; Vision</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id870572">Motivation</a></span></dt><dt><span class="sect1"><a href="#id870565">Vision</a></span></dt></dl></dd></dl></div><div class="preface" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id298344"></a>Vorwort</h2></div></div></div><div class="mediaobject"><a name="logo"></a><img src="../images/logo.png" alt="Origo Logo"></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Origo - social client</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="de"><div class="titlepage"><div><div><h1 class="title"><a name="id870508"></a>Origo - social client</h1></div><div><h2 class="subtitle">Entwicklungsdokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright © 2008 Mario Volke, Alle Rechte vorbehalten.</p></div></div><hr></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="preface"><a href="#id870574">Vorwort</a></span></dt><dt><span class="chapter"><a href="#id870719">1. Motivation &amp; Vision</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id870620">Motivation</a></span></dt><dt><span class="sect1"><a href="#id870569">Vision</a></span></dt></dl></dd><dt><span class="chapter"><a href="#id870505">2. Konzept</a></span></dt></dl></div><div class="preface" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id870574"></a>Vorwort</h2></div></div></div><div class="mediaobject"><a name="logo"></a><img src="../images/logo.png" alt="Origo Logo"></div><p>
 		Diese Dokumentation entstand parallel zur Konzeptions- und 
 		Entwicklungsphase. Ziel dieses Dokuments ist es, dem Leser 
 		zum einen aufzuzeigen, welche Problemstellungen mit <span class="emphasis"><em>Origo</em></span> 
 		gelöst werden könnten und zum anderen werden die Konzepte und 
 		Module von <span class="emphasis"><em>Origo</em></span> vorgestellt, um die angesprochenen Probleme 
 		zu lösen.
-	</p></div><div class="chapter" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id870557"></a>Kapitel 1. Motivation &amp; Vision</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id870572">Motivation</a></span></dt><dt><span class="sect1"><a href="#id870565">Vision</a></span></dt></dl></div><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870572"></a>Motivation</h2></div></div></div><p>
+	</p></div><div class="chapter" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id870719"></a>Kapitel 1. Motivation &amp; Vision</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id870620">Motivation</a></span></dt><dt><span class="sect1"><a href="#id870569">Vision</a></span></dt></dl></div><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870620"></a>Motivation</h2></div></div></div><p>
 			Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
 			bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
 			entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
@@ -13,7 +13,7 @@
 			zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
 			zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
 			Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
-		</p></div><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870565"></a>Vision</h2></div></div></div><p>
+		</p></div><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870569"></a>Vision</h2></div></div></div><p>
 			Das sog. <span class="emphasis"><em>Semantic Web</em></span>, welches durch mehrere Sprachen und 
 			Standards vom <acronym class="acronym"><a class="link" href="http://www.w3c.org" target="_top">W3C</a></acronym>
 			definiert wird, stellt den nötigen Rahmen bereit, um offene Schnittstellen über 
@@ -30,5 +30,46 @@
 			Personen über die bisherigen Grenzen sozialer Netzwerke hinweg miteinander zu verbinden.
 			Es entsteht ein großes <span class="strong"><strong>verteiltes soziales Netzwerk</strong></span>.
 		</p><p>
-			Hier kommt ein Block über: Eigene Foaf-DATEN hosten, selber schreiben und verwalten is aufwendig, also CLIENT!
-		</p></div></div></div></body></html>
+			Damit ein User die vollständige Kontrolle über seinen persönliche URI und seine veröffentlichten Daten behält,
+			sollte er die RDF-Daten auf seinen eigenen Webspace oder Webserver laden.
+			Die Verwaltung dieser Daten wird aber schnell unübersichtlich und die XML-Dokumente selbst zu schreiben 
+			kostet Zeit. Der <span class="emphasis"><em>Orgio</em></span> Client schafft eine einfache Schnittstelle zum User.
+			Dieser kann dadurch auch ohne direkte Kenntnisse über die Semantic Web Technologien seine
+			Daten vollständig selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
+			Auf bereits bestehende Profile in anderen sozialen Netzwerken kann mit Hilfe von Origo verlinkt werden,
+			sofern die Nutzerdaten auch semantisch verfügbar sind.
+		</p></div></div><div class="chapter" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id870505"></a>Kapitel 2. Konzept</h2></div></div></div><p>
+		<span class="emphasis"><em>Origo</em></span> soll dem Nutzer auf komfortable und 
+		flexible Weise erlauben seine Identität und sein soziales Netzwerk 
+		im semantischen Web zu überschauen und zu verwalten. Das Wort Origo 
+		kommt aus dem Lateinischen und Bedeuted &#8222;<span class="emphasis"><em>Ursprung</em></span>&#8220;. 
+		Der URI des Nutzers wird damit quasi zum Ursprung seines persönlichen 
+		Graphen im <span class="emphasis"><em>Semantic Web</em></span>.
+	</p><p>
+		Origo ist vollständig modular aufgebaut, um möglichst flexibel auf 
+		individuelle Bedürfnisse eingehen zu können.
+		Das Origo Packet enthält vier serverseitige Module:
+	</p><div class="itemizedlist"><ul type="disc"><li><span style="color: red">&lt;title&gt;Resource Negotiator&lt;/title&gt;</span><p>
+				Der Resource Negotiator leitet eine HTTP-Anfrage abhängig 
+				vom HTTP-Header entweder auf die RDF-Daten oder auf ein 
+				festgelegtes HTML-Dokument weiter.
+			</p></li><li><span style="color: red">&lt;title&gt;RDF Distributor&lt;/title&gt;</span><p>
+				Der RDF Distributor generiert die RDF-Daten aus dem sog.
+				Triple Store und liefert diese über einen Caching-Mechanismus aus.
+			</p></li><li><span style="color: red">&lt;title&gt;SPARQL Endpoint&lt;/title&gt;</span><p>
+				Der SPARQL Endpoint ist die zentrale Schnittstelle aller Daten 
+				zum Triple Store.
+			</p></li><li><span style="color: red">&lt;title&gt;SPARQL Endpoint Proxy&lt;/title&gt;</span><p>
+				Liegt der SPARQL Endpoint auf einer anderen Domain als der Client, 
+				so muss der SPARQL Endpoint Proxy die Anfragen des Clients 
+				serverseitig weiterleiten. Es gilt die <span class="emphasis"><em>Same Domain Policy</em></span>. 
+			</p></li></ul></div><p>
+		Das Hauptmodul von Origo ist der Client. Er besteht wiederum aus zwei Modulen,
+		die allerdings nur logisch voneinander getrennt sind:
+	</p><div class="itemizedlist"><ul type="disc"><li><span style="color: red">&lt;title&gt;Origo Editor&lt;/title&gt;</span><p>
+				Mit dem Origo Editor kann der Nutzer seine persönlichen Daten verwalten 
+				und seinen persönliche URI mit weiteren Profilen verknüpfen.
+			</p></li><li><span style="color: red">&lt;title&gt;Origo Browser&lt;/title&gt;</span><p>
+				Der Origo Browser erlaubt es dem Nutzer sein soziales Netzwerk 
+				zu durchstöbern und neue Freunde hinzuzufügen. 	
+			</p></li></ul></div></div></div></body></html>
