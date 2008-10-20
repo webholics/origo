@@ -1,0 +1,51 @@
+html {
+	background:#fff;
+	color:#333;
+	font-family:'Lucida Sans Unicode','Lucida Grande','Lucida Sans','Lucida',Arial,sans-serif;
+	font-size:0.875em;
+	height:100%;
+	line-height:1.71429em;
+	text-align:left;
+}
+body {
+	padding:1.71429em 1em;
+	margin:0;
+}
+div.book {
+	margin:0 auto;
+	min-width:600px;
+	max-width:900px;
+}
+hr {
+	height:1px;
+	border:0;
+	background-color:#aaa;
+}
+:link:hover, 
+:visited:hover {
+	background-color:#eee;
+	color:#555;
+}
+:link, 
+:visited {
+	border-bottom:1px dotted #bbb;
+	color:#b00;
+	text-decoration:none;
+}
+h1, h2, h3 {
+	clear:both;
+	color:#000;
+}
+div.mediaobject[align=right] {
+	float:right;
+}
+img[align=right] {
+	float:none;
+	margin:0 0 1em 1em;
+}
+div.caption {
+	font-style:italic;
+}
+div.chapter div.toc {
+	display:none;
+}
