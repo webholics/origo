@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Origo - social client</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0" /></head><body><div class="book" lang="de" xml:lang="de"><div class="titlepage"><div><div><h1 class="title"><a id="id871988"></a>Origo - social client</h1></div><div><h2 class="subtitle">Entwicklungsdokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright © 2008 Mario Volke, Alle Rechte vorbehalten.</p></div></div><hr /></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="preface"><a href="#id871967">Vorwort</a></span></dt><dt><span class="chapter"><a href="#id872242">1. Motivation &amp; Vision</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id872100">Motivation</a></span></dt><dt><span class="sect1"><a href="#id872050">Vision</a></span></dt></dl></dd><dt><span class="chapter"><a href="#id872106">2. Konzept</a></span></dt></dl></div><div class="preface" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id871967"></a>Vorwort</h2></div></div></div><div class="mediaobject"><a id="logo"></a><img src="../images/logo.png" alt="Origo Logo" /></div><p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Origo - social client</title><link rel="stylesheet" href="style.css" type="text/css" /><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0" /></head><body><div class="book" lang="de" xml:lang="de"><div class="titlepage"><div><div><h1 class="title"><a id="id789543"></a>Origo - social client</h1></div><div><h2 class="subtitle">Entwicklungsdokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright © 2008 Mario Volke, Alle Rechte vorbehalten.</p></div></div><hr /></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="preface"><a href="#id872128">Vorwort</a></span></dt><dt><span class="chapter"><a href="#id872141">1. Motivation &amp; Vision</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id872173">Motivation</a></span></dt><dt><span class="sect1"><a href="#id872135">Vision</a></span></dt></dl></dd><dt><span class="chapter"><a href="#id872231">2. Konzept</a></span></dt></dl></div><div class="preface" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872128"></a>Vorwort</h2></div></div></div><div class="mediaobject"><a id="logo"></a><img src="../images/logo.png" alt="Origo Logo" /></div><p>
 		Diese Dokumentation entstand parallel zur Konzeptions- und 
 		Entwicklungsphase. Ziel dieses Dokuments ist es, dem Leser 
 		zum einen aufzuzeigen, welche Problemstellungen mit <span class="emphasis"><em>Origo</em></span> 
 		gelöst werden könnten und zum anderen werden die Konzepte und 
 		Module von <span class="emphasis"><em>Origo</em></span> vorgestellt, um die angesprochenen Probleme 
 		zu lösen.
-	</p></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872242"></a>Kapitel 1. Motivation &amp; Vision</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id872100">Motivation</a></span></dt><dt><span class="sect1"><a href="#id872050">Vision</a></span></dt></dl></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872100"></a>Motivation</h2></div></div></div><p>
+	</p></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872141"></a>Kapitel 1. Motivation &amp; Vision</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id872173">Motivation</a></span></dt><dt><span class="sect1"><a href="#id872135">Vision</a></span></dt></dl></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872173"></a>Motivation</h2></div></div></div><p>
 			Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
 			bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
 			entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
@@ -15,7 +15,7 @@
 			zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
 			zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
 			Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
-		</p></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872050"></a>Vision</h2></div></div></div><p>
+		</p></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872135"></a>Vision</h2></div></div></div><p>
 			Das sog. <span class="emphasis"><em>Semantic Web</em></span>, welches durch mehrere Sprachen und 
 			Standards vom <acronym class="acronym"><a class="link" href="http://www.w3c.org" target="_top">W3C</a></acronym>
 			definiert wird, stellt den nötigen Rahmen bereit, um offene Schnittstellen über 
@@ -40,13 +40,14 @@
 			Daten vollständig selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
 			Auf bereits bestehende Profile in anderen sozialen Netzwerken kann mit Hilfe von Origo verlinkt werden,
 			sofern die Nutzerdaten auch semantisch verfügbar sind.
-		</p></div></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872106"></a>Kapitel 2. Konzept</h2></div></div></div><p>
+		</p></div></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872231"></a>Kapitel 2. Konzept</h2></div></div></div><p>
 		<span class="emphasis"><em>Origo</em></span> soll dem Nutzer auf komfortable und 
 		flexible Weise erlauben seine Identität und sein soziales Netzwerk 
 		im semantischen Web zu überschauen und zu verwalten. Das Wort Origo 
 		kommt aus dem Lateinischen und Bedeuted „<span class="emphasis"><em>Ursprung</em></span>“. 
 		Der URI des Nutzers wird damit quasi zum Ursprung seines persönlichen 
 		Graphen im <span class="emphasis"><em>Semantic Web</em></span>.
+	</p><p>
 		Das Origo Paket besteht aus mehreren Teilen, die teilweise optional zu verwenden sind:
 	</p><div class="itemizedlist"><ul type="disc"><li><p><span class="strong"><strong>RDF Distributor</strong></span></p><p>
 				Der RDF Distributor generiert die RDF-Daten aus dem sog.
