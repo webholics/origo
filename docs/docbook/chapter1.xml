@@ -54,8 +54,8 @@
 			sollte er die RDF-Daten auf seinen eigenen Webspace oder Webserver laden.
 			Die Verwaltung dieser Daten wird aber schnell unübersichtlich und die XML-Dokumente selbst zu schreiben 
 			kostet Zeit. Der <emphasis>Orgio</emphasis> Client schafft eine einfache Schnittstelle zum User.
-			Dieser kann dadurch auch ohne direkte Kenntnisse über die Semantic Web Technologien seine
-			Daten vollständig selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
+			Dieser kann seine Daten dadurch auch ohne direkte Kenntnisse über die Semantic Web Technologien vollständig 
+			selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
 			Auf bereits bestehende Profile in anderen sozialen Netzwerken kann mit Hilfe von Origo verlinkt werden,
 			sofern die Nutzerdaten auch semantisch verfügbar sind.
 		</para>

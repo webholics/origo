@@ -81,11 +81,11 @@
 			<para><emphasis role="strong">Negotiator</emphasis> (optional)</para>
 			<para>
 				Der Negotiator lässt sich an einem beliebigen Ort quasi vorschalten
-				und leitet eine HTTP-Anfrage dadurch abhängig 
+				und leitet eine HTTP-Anfrage abhängig 
 				vom HTTP-Header entweder auf das RDF-Dokument oder auf ein 
 				festgelegtes HTML-Dokument weiter.
 				Ein weiterer Vorteil dieser Methode ist, dass der persönliche URI beliebig gewählt 
-				werden kann und kein Hash-URI mehr sein muss.
+				werden kann und dieser dadruch kein Hash-URI mehr sein muss.
 			</para>
 			<para>
 				Pfad: <emphasis>origo/optional/negotiator/</emphasis>
