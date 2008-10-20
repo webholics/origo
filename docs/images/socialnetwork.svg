@@ -8,14 +8,18 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
+   width="390.38"
+   height="258.67001"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
    sodipodi:docbase="C:\Dokumente und Einstellungen\mvolke\Desktop"
    sodipodi:docname="socialnetwork.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0"
+   inkscape:export-filename="C:\Dokumente und Einstellungen\mvolke\Desktop\socialnetwork.png"
+   inkscape:export-xdpi="92.69368"
+   inkscape:export-ydpi="92.69368">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,15 +29,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.8473111"
-     inkscape:cx="344.58673"
-     inkscape:cy="598.56604"
+     inkscape:zoom="3.0009657"
+     inkscape:cx="215.38876"
+     inkscape:cy="132.77856"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:window-width="1920"
      inkscape:window-height="1144"
      inkscape:window-x="-4"
-     inkscape:window-y="-4" />
+     inkscape:window-y="-4"
+     width="390.38px"
+     height="258.67px" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -48,7 +54,8 @@
   <g
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-193.34321,-370.01906)">
     <path
        sodipodi:type="arc"
        style="opacity:1;color:#000000;fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.76289243px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
@@ -58,10 +65,10 @@
        sodipodi:rx="92.837639"
        sodipodi:ry="60.628662"
        d="M 461.75222 491.00574 A 92.837639 60.628662 0 1 1  276.07694,491.00574 A 92.837639 60.628662 0 1 1  461.75222 491.00574 z"
-       transform="matrix(1,0,0,0.84375,-0.5413273,79.15562)" />
+       transform="matrix(1,0,0,0.84375,0.458351,79.822072)" />
     <g
        id="g5149"
-       transform="matrix(0.4149483,0,0,0.4149483,215.92579,180.18838)">
+       transform="matrix(0.4149483,0,0,0.4149483,216.92548,180.85484)">
       <path
          transform="translate(-126.12927,65.584051)"
          d="M 391.92099 499.12564 A 40.599552 12.991857 0 1 1  310.72189,499.12564 A 40.599552 12.991857 0 1 1  391.92099 499.12564 z"
@@ -95,13 +102,13 @@
            sodipodi:role="line">Person</tspan></text>
     </g>
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 339.14158,423.61047 L 318.57114,405.20534"
+       style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:2.0999999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 340.14127,424.27693 L 319.57083,405.8718"
        id="path6152"
        sodipodi:nodetypes="cc" />
     <g
        id="g5159"
-       transform="matrix(0.462092,0,0,0.462092,335.22765,159.50172)">
+       transform="matrix(0.462092,0,0,0.462092,336.22734,160.16818)">
       <path
          transform="translate(-126.12927,65.584051)"
          d="M 391.92099 499.12564 A 40.599552 12.991857 0 1 1  310.72189,499.12564 A 40.599552 12.991857 0 1 1  391.92099 499.12564 z"
@@ -135,12 +142,13 @@
            sodipodi:role="line">Person</tspan></text>
     </g>
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 425.75397,408.45331 L 403.01822,421.9865"
+       style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:2.20000005;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 426.75366,409.11977 L 404.01791,422.65296"
        id="path6154"
        sodipodi:nodetypes="cc" />
     <g
-       id="g4144">
+       id="g4144"
+       transform="translate(0.9996783,0.6664522)">
       <path
          transform="translate(15.69799,-8.6612375)"
          d="M 391.92099 499.12564 A 40.599552 12.991857 0 1 1  310.72189,499.12564 A 40.599552 12.991857 0 1 1  391.92099 499.12564 z"
@@ -174,12 +182,12 @@
            sodipodi:role="line">Person</tspan></text>
     </g>
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="M 331.29234,452.57148 L 251.71722,473.68325"
+       style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:4.19999981;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 332.29203,453.23794 L 252.71691,474.34971"
        id="path5181" />
     <g
        id="g5133"
-       transform="matrix(0.7155253,0,0,0.7155253,65.071921,105.33679)">
+       transform="matrix(0.7155253,0,0,0.7155253,66.071599,106.00325)">
       <path
          transform="translate(-126.12927,65.584051)"
          d="M 391.92099 499.12564 A 40.599552 12.991857 0 1 1  310.72189,499.12564 A 40.599552 12.991857 0 1 1  391.92099 499.12564 z"
@@ -213,13 +221,13 @@
            sodipodi:role="line">Person</tspan></text>
     </g>
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 480.96934,477.20188 L 403.55953,453.38348"
+       style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:3.5999999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 481.96903,477.86834 L 404.55922,454.04994"
        id="path6156"
        sodipodi:nodetypes="cc" />
     <g
        id="g5169"
-       transform="matrix(0.6672183,0,0,0.6672183,356.37696,131.89052)">
+       transform="matrix(0.6672183,0,0,0.6672183,357.37665,132.55698)">
       <path
          transform="translate(-126.12927,65.584051)"
          d="M 391.92099 499.12564 A 40.599552 12.991857 0 1 1  310.72189,499.12564 A 40.599552 12.991857 0 1 1  391.92099 499.12564 z"
@@ -254,12 +262,12 @@
     </g>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#5f5f5f;stroke-width:5.80000019;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 364.58396,473.95391 L 346.17883,563.27293"
+       d="M 365.58365,474.62037 L 347.17852,563.93939"
        id="path6158"
        sodipodi:nodetypes="cc" />
     <g
        id="g5139"
-       transform="matrix(0.9785302,0,0,0.9785302,126.26105,61.39325)">
+       transform="matrix(0.9785302,0,0,0.9785302,127.26074,62.059702)">
       <path
          transform="translate(-126.12927,65.584051)"
          d="M 391.92099 499.12564 A 40.599552 12.991857 0 1 1  310.72189,499.12564 A 40.599552 12.991857 0 1 1  391.92099 499.12564 z"
@@ -293,7 +301,8 @@
            sodipodi:role="line">Person</tspan></text>
     </g>
     <g
-       id="g11980">
+       id="g11980"
+       transform="translate(0.9996783,0.6664522)">
       <rect
          y="529.98132"
          x="396.25162"
@@ -315,7 +324,7 @@
     </g>
     <g
        id="g11985"
-       transform="matrix(0.6947413,0,0,0.6947413,264.68168,76.522344)">
+       transform="matrix(0.6947413,0,0,0.6947413,265.68137,77.188796)">
       <rect
          y="529.98132"
          x="396.25162"
@@ -337,7 +346,7 @@
     </g>
     <g
        id="g11993"
-       transform="matrix(0.4883721,0,0,0.4883721,267.04598,114.43893)">
+       transform="matrix(0.4883721,0,0,0.4883721,268.04567,115.10539)">
       <rect
          y="529.98132"
          x="396.25162"
@@ -359,7 +368,7 @@
     </g>
     <g
        id="g12001"
-       transform="matrix(0.4651163,0,0,0.4651163,142.92929,123.51611)">
+       transform="matrix(0.4651163,0,0,0.4651163,143.92898,124.18257)">
       <rect
          y="529.98132"
          x="396.25162"
@@ -381,7 +390,7 @@
     </g>
     <g
        id="g12009"
-       transform="matrix(0.6744186,0,0,0.6744186,-19.040875,74.842435)">
+       transform="matrix(0.6744186,0,0,0.6744186,-18.041197,75.508887)">
       <rect
          y="529.98132"
          x="396.25162"

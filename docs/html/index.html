@@ -1,75 +1,91 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Origo - social client</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="de"><div class="titlepage"><div><div><h1 class="title"><a name="id870508"></a>Origo - social client</h1></div><div><h2 class="subtitle">Entwicklungsdokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright © 2008 Mario Volke, Alle Rechte vorbehalten.</p></div></div><hr></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="preface"><a href="#id870574">Vorwort</a></span></dt><dt><span class="chapter"><a href="#id870719">1. Motivation &amp; Vision</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id870620">Motivation</a></span></dt><dt><span class="sect1"><a href="#id870569">Vision</a></span></dt></dl></dd><dt><span class="chapter"><a href="#id870505">2. Konzept</a></span></dt></dl></div><div class="preface" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id870574"></a>Vorwort</h2></div></div></div><div class="mediaobject"><a name="logo"></a><img src="../images/logo.png" alt="Origo Logo"></div><p>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Origo - social client</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0" /></head><body><div class="book" lang="de" xml:lang="de"><div class="titlepage"><div><div><h1 class="title"><a id="id871988"></a>Origo - social client</h1></div><div><h2 class="subtitle">Entwicklungsdokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright Â© 2008 Mario Volke, Alle Rechte vorbehalten.</p></div></div><hr /></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="preface"><a href="#id871967">Vorwort</a></span></dt><dt><span class="chapter"><a href="#id872242">1. Motivation &amp; Vision</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id872100">Motivation</a></span></dt><dt><span class="sect1"><a href="#id872050">Vision</a></span></dt></dl></dd><dt><span class="chapter"><a href="#id872106">2. Konzept</a></span></dt></dl></div><div class="preface" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id871967"></a>Vorwort</h2></div></div></div><div class="mediaobject"><a id="logo"></a><img src="../images/logo.png" alt="Origo Logo" /></div><p>
 		Diese Dokumentation entstand parallel zur Konzeptions- und 
 		Entwicklungsphase. Ziel dieses Dokuments ist es, dem Leser 
 		zum einen aufzuzeigen, welche Problemstellungen mit <span class="emphasis"><em>Origo</em></span> 
-		gelöst werden könnten und zum anderen werden die Konzepte und 
+		gelÃ¶st werden kÃ¶nnten und zum anderen werden die Konzepte und 
 		Module von <span class="emphasis"><em>Origo</em></span> vorgestellt, um die angesprochenen Probleme 
-		zu lösen.
-	</p></div><div class="chapter" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id870719"></a>Kapitel 1. Motivation &amp; Vision</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id870620">Motivation</a></span></dt><dt><span class="sect1"><a href="#id870569">Vision</a></span></dt></dl></div><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870620"></a>Motivation</h2></div></div></div><p>
-			Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
-			bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
+		zu lÃ¶sen.
+	</p></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872242"></a>Kapitel 1. Motivation &amp; Vision</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id872100">Motivation</a></span></dt><dt><span class="sect1"><a href="#id872050">Vision</a></span></dt></dl></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872100"></a>Motivation</h2></div></div></div><p>
+			Seit den AnfÃ¤ngen des World Wide Web, Ã¼ber den Boom von Web 2.0, 
+			bis heute sind unzÃ¤hlige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
 			entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
 			untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
 			zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
-			zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
-			Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
-		</p></div><div class="sect1" lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id870569"></a>Vision</h2></div></div></div><p>
+			zu registrieren. Dadurch besteht die eigene IdentitÃ¤t im Web meistens aus einer ganzen 
+			FÃ¼lle an unterschiedlichen Netzwerken, Benutzernamen, PasswÃ¶rtern, etc.
+		</p></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872050"></a>Vision</h2></div></div></div><p>
 			Das sog. <span class="emphasis"><em>Semantic Web</em></span>, welches durch mehrere Sprachen und 
 			Standards vom <acronym class="acronym"><a class="link" href="http://www.w3c.org" target="_top">W3C</a></acronym>
-			definiert wird, stellt den nötigen Rahmen bereit, um offene Schnittstellen über 
+			definiert wird, stellt den nÃ¶tigen Rahmen bereit, um offene Schnittstellen Ã¼ber 
 			Ontologien zu erstellen und damit die Datensilos heutiger sozialer Netzwerke 
 			aufzubrechen. Durch die <span class="emphasis"><em>Friend of a Friend</em></span> (<acronym class="acronym">FOAF</acronym>) 
 			Ontologie ist eine solche Schnittstelle um Personen im Semantic Web zu beschreiben bereits 
-			vorhanden. Mit dieser Ontologie ist es nicht nur möglich sich selbst über verschiedenste
-			Metadaten zu beschreiben, zusätzlich lassen sich Verbindungen und Beziehungen zwischen 
+			vorhanden. Mit dieser Ontologie ist es nicht nur mÃ¶glich sich selbst Ã¼ber verschiedenste
+			Metadaten zu beschreiben, zusÃ¤tzlich lassen sich Verbindungen und Beziehungen zwischen 
 			Personen darstellen.
 		</p><p>
 			Die Daten werden in der Regel in <acronym class="acronym">RDF/XML</acronym> serialisiert. Solche RDF-Dokumente,
-			die FOAF-Daten enthalten, können von den verschiedenen sozialen Netzwerken veröffentlich werden.
-			Personen werden über <acronym class="acronym">URIs</acronym> identifizierbar. Damit wird es möglich
-			Personen über die bisherigen Grenzen sozialer Netzwerke hinweg miteinander zu verbinden.
-			Es entsteht ein großes <span class="strong"><strong>verteiltes soziales Netzwerk</strong></span>.
-		</p><p>
-			Damit ein User die vollständige Kontrolle über seinen persönliche URI und seine veröffentlichten Daten behält,
+			die FOAF-Daten enthalten, kÃ¶nnen von den verschiedenen sozialen Netzwerken verÃ¶ffentlich werden.
+			Personen werden Ã¼ber <acronym class="acronym">URIs</acronym> identifizierbar. Damit wird es mÃ¶glich
+			Personen Ã¼ber die bisherigen Grenzen sozialer Netzwerke hinweg miteinander zu verbinden.
+			Es entsteht ein groÃŸes <span class="strong"><strong>verteiltes soziales Netzwerk</strong></span>.
+		</p><div class="mediaobject" align="right"><img src="../images/socialnetwork.png" align="right" alt="Ein verteiltes soziales Netzwerk" /><div class="caption"><p>Ein verteiltes soziales Netzwerk</p></div></div><p>
+			Damit ein User die vollstÃ¤ndige Kontrolle Ã¼ber seinen persÃ¶nliche URI und seine verÃ¶ffentlichten Daten behÃ¤lt,
 			sollte er die RDF-Daten auf seinen eigenen Webspace oder Webserver laden.
-			Die Verwaltung dieser Daten wird aber schnell unübersichtlich und die XML-Dokumente selbst zu schreiben 
+			Die Verwaltung dieser Daten wird aber schnell unÃ¼bersichtlich und die XML-Dokumente selbst zu schreiben 
 			kostet Zeit. Der <span class="emphasis"><em>Orgio</em></span> Client schafft eine einfache Schnittstelle zum User.
-			Dieser kann dadurch auch ohne direkte Kenntnisse über die Semantic Web Technologien seine
-			Daten vollständig selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
+			Dieser kann dadurch auch ohne direkte Kenntnisse Ã¼ber die Semantic Web Technologien seine
+			Daten vollstÃ¤ndig selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhÃ¤ngig.
 			Auf bereits bestehende Profile in anderen sozialen Netzwerken kann mit Hilfe von Origo verlinkt werden,
-			sofern die Nutzerdaten auch semantisch verfügbar sind.
-		</p></div></div><div class="chapter" lang="de"><div class="titlepage"><div><div><h2 class="title"><a name="id870505"></a>Kapitel 2. Konzept</h2></div></div></div><p>
+			sofern die Nutzerdaten auch semantisch verfÃ¼gbar sind.
+		</p></div></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872106"></a>Kapitel 2. Konzept</h2></div></div></div><p>
 		<span class="emphasis"><em>Origo</em></span> soll dem Nutzer auf komfortable und 
-		flexible Weise erlauben seine Identität und sein soziales Netzwerk 
-		im semantischen Web zu überschauen und zu verwalten. Das Wort Origo 
-		kommt aus dem Lateinischen und Bedeuted &#8222;<span class="emphasis"><em>Ursprung</em></span>&#8220;. 
-		Der URI des Nutzers wird damit quasi zum Ursprung seines persönlichen 
+		flexible Weise erlauben seine IdentitÃ¤t und sein soziales Netzwerk 
+		im semantischen Web zu Ã¼berschauen und zu verwalten. Das Wort Origo 
+		kommt aus dem Lateinischen und Bedeuted â€ž<span class="emphasis"><em>Ursprung</em></span>â€œ. 
+		Der URI des Nutzers wird damit quasi zum Ursprung seines persÃ¶nlichen 
 		Graphen im <span class="emphasis"><em>Semantic Web</em></span>.
-	</p><p>
-		Origo ist vollständig modular aufgebaut, um möglichst flexibel auf 
-		individuelle Bedürfnisse eingehen zu können.
-		Das Origo Packet enthält vier serverseitige Module:
-	</p><div class="itemizedlist"><ul type="disc"><li><span style="color: red">&lt;title&gt;Resource Negotiator&lt;/title&gt;</span><p>
-				Der Resource Negotiator leitet eine HTTP-Anfrage abhängig 
-				vom HTTP-Header entweder auf die RDF-Daten oder auf ein 
-				festgelegtes HTML-Dokument weiter.
-			</p></li><li><span style="color: red">&lt;title&gt;RDF Distributor&lt;/title&gt;</span><p>
+		Das Origo Paket besteht aus mehreren Teilen, die teilweise optional zu verwenden sind:
+	</p><div class="itemizedlist"><ul type="disc"><li><p><span class="strong"><strong>RDF Distributor</strong></span></p><p>
 				Der RDF Distributor generiert die RDF-Daten aus dem sog.
-				Triple Store und liefert diese über einen Caching-Mechanismus aus.
-			</p></li><li><span style="color: red">&lt;title&gt;SPARQL Endpoint&lt;/title&gt;</span><p>
-				Der SPARQL Endpoint ist die zentrale Schnittstelle aller Daten 
-				zum Triple Store.
-			</p></li><li><span style="color: red">&lt;title&gt;SPARQL Endpoint Proxy&lt;/title&gt;</span><p>
-				Liegt der SPARQL Endpoint auf einer anderen Domain als der Client, 
-				so muss der SPARQL Endpoint Proxy die Anfragen des Clients 
-				serverseitig weiterleiten. Es gilt die <span class="emphasis"><em>Same Domain Policy</em></span>. 
-			</p></li></ul></div><p>
-		Das Hauptmodul von Origo ist der Client. Er besteht wiederum aus zwei Modulen,
-		die allerdings nur logisch voneinander getrennt sind:
-	</p><div class="itemizedlist"><ul type="disc"><li><span style="color: red">&lt;title&gt;Origo Editor&lt;/title&gt;</span><p>
-				Mit dem Origo Editor kann der Nutzer seine persönlichen Daten verwalten 
-				und seinen persönliche URI mit weiteren Profilen verknüpfen.
-			</p></li><li><span style="color: red">&lt;title&gt;Origo Browser&lt;/title&gt;</span><p>
-				Der Origo Browser erlaubt es dem Nutzer sein soziales Netzwerk 
-				zu durchstöbern und neue Freunde hinzuzufügen. 	
+				Triple Store und liefert diese Ã¼ber einen Caching-Mechanismus aus.
+			</p><p>
+				Pfad: <span class="emphasis"><em>origo/</em></span>
+			</p></li><li><p><span class="strong"><strong>Origo Client</strong></span></p><p>
+				Das Hauptmodul von Origo ist der Client. Er besteht wiederum aus zwei Modulen,
+				die allerdings nur logisch voneinander getrennt sind:
+			</p><div class="itemizedlist"><ul type="circle"><li><p><span class="strong"><strong>Origo Editor</strong></span></p><p>
+						Mit dem Origo Editor kann der Nutzer seine persÃ¶nlichen Daten verwalten 
+						und seinen persÃ¶nliche URI mit weiteren Profilen verknÃ¼pfen.
+					</p></li><li><p><span class="strong"><strong>Origo Browser</strong></span></p><p>
+						Der Origo Browser erlaubt es dem Nutzer sein soziales Netzwerk 
+						zu durchstÃ¶bern und neue Freunde hinzuzufÃ¼gen. 	
+					</p></li></ul></div><p>
+				Der Client bietet verschiedene AuthentifizierungsmÃ¶glichkeiten und nutzt
+				einen SPARQL-Endpoint, um auf den Triple Store zuzugreifen.
+			</p><p>
+				Pfad: <span class="emphasis"><em>origo/client/</em></span>
+			</p></li><li><p><span class="strong"><strong>Konfiguration</strong></span></p><p>
+				Die Konfiguration von Origo wird Ã¼ber eine zentrale INI-Datei vorgenommen.
+				Der Negotiator wird separat konfiguriert, da sich dieser auch auf einem anderen 
+				Server befinden kann.
+			</p><p>
+				Pfad: <span class="emphasis"><em>origo/config/</em></span>
+			</p></li><li><p><span class="strong"><strong>Installer</strong></span> (optional)</p><p>
+				Die Konfiguration von Origo kann bequem Ã¼ber den Installer vorgenommen werden.
+				Dieser schreibt die benÃ¶tigten Konfigurationsdateien und unterstÃ¼tzt den User darin,
+				die Zugriffsberechtigungen auf die verschiedenen Ordner richtig zu setzen.
+			</p><p>
+				Pfad: <span class="emphasis"><em>origo/install/</em></span>
+			</p></li><li><p><span class="strong"><strong>Negotiator</strong></span> (optional)</p><p>
+				Der Negotiator lÃ¤sst sich an einem beliebigen Ort quasi vorschalten
+				und leitet eine HTTP-Anfrage dadurch abhÃ¤ngig 
+				vom HTTP-Header entweder auf das RDF-Dokument oder auf ein 
+				festgelegtes HTML-Dokument weiter.
+				Ein weiterer Vorteil dieser Methode ist, dass der persÃ¶nliche URI beliebig gewÃ¤hlt 
+				werden kann und kein Hash-URI mehr sein muss.
+			</p><p>
+				Pfad: <span class="emphasis"><em>origo/optional/negotiator/</em></span>
 			</p></li></ul></div></div></div></body></html>
