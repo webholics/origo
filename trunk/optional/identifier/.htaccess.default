@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^/people/you$ "full uri of origo" [R=303,L]
