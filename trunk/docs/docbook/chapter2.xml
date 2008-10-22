@@ -11,6 +11,20 @@
 		Der URI des Nutzers wird damit quasi zum Ursprung seines persönlichen 
 		Graphen im <emphasis>Semantic Web</emphasis>.
 	</para>
+	<mediaobject>
+		<imageobject role="fo">
+			<imagedata align="center" format="SVG" fileref="../images/concept.svg"/>
+		</imageobject>
+		<imageobject role="html">
+			<imagedata align="center" format="PNG" fileref="../images/concept.png"/>
+		</imageobject>
+		<textobject>
+			<phrase>Das Origo Konzept</phrase>
+		</textobject>
+		<caption>
+			<para>Das Origo Konzept</para>
+		</caption>
+	</mediaobject>
 	<para>
 		Das Origo Paket besteht aus mehreren Teilen, die teilweise optional zu verwenden sind:
 	</para>

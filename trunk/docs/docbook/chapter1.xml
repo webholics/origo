@@ -50,10 +50,11 @@
 			</caption>
 		</mediaobject>
 		<para>
-			Damit ein User die vollständige Kontrolle über seinen persönliche URI und seine veröffentlichten Daten behält,
+			Damit ein User die vollständige Kontrolle über seinen persönlichen URI und seine veröffentlichten Daten behält,
 			sollte er die RDF-Daten auf seinen eigenen Webspace oder Webserver laden.
 			Die Verwaltung dieser Daten wird aber schnell unübersichtlich und die XML-Dokumente selbst zu schreiben 
-			kostet Zeit. Der <emphasis>Orgio</emphasis> Client schafft eine einfache Schnittstelle zum User.
+			kostet Zeit. Das <emphasis>Orgio</emphasis> Paket kann auf dem eigenen Webserver selbst installiert und eingerichtet werden.
+			Der Origo Client schafft dann eine einfach und intuitiv zu bedienende Schnittstelle zum User.
 			Dieser kann seine Daten dadurch auch ohne direkte Kenntnisse über die Semantic Web Technologien vollständig 
 			selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
 			Auf bereits bestehende Profile in anderen sozialen Netzwerken kann mit Hilfe von Origo verlinkt werden,
