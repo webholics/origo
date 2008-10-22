@@ -1,33 +1,23 @@
 <?php	
 /**
- * Origo 
+ * Origo - social client
+ * SPARQL endpoint
+ *
  * Copyright (C) 2008 Mario Volke
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * All rights reserved.
  */
 
 // unfortunately ARC2 does not yet support E_STRICT
 //error_reporting(E_ALL|E_STRICT);
 error_reporting(E_ALL);
 
-require_once 'libs/arc/ARC2.php';
+require_once '../../libs/arc2/ARC2.php';
 
-define('CONFIG_FILE', 'config/config.ini');
+define('CONFIG_FILE', '../../config/config.ini');
 
 // check if configuration file exists
 if(!is_file(CONFIG_FILE)) {
-	die('Origo SPARQL Endpoint error: Configuration file does not exist.');
+	die('Origo error: Configuration file does not exist.');
 }
 
 // load configuration from ini file
@@ -59,8 +49,8 @@ $endpoint_config = array(
 
 	'endpoint_timeout' => 60, /* this feature is not yet implemented in ARC2 */
 	'endpoint_max_limit' => 5000,
-	'endpoint_read_key' => $config['endpoint']['key'],
-	'endpoint_write_key' => $config['endpoint']['key']
+	'endpoint_read_key' => $config['api']['key'],
+	'endpoint_write_key' => $config['api']['key']
 );
 
 $ep = ARC2::getStoreEndpoint($endpoint_config);
