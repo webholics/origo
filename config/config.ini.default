@@ -1,0 +1,12 @@
+; Origo global configuration
+
+[negotiation]
+
+; (optional) An HTML-Document that describes your person. Maybe your private homepage.
+homepage = "http://www.example.com"
+
+[misc]
+
+; Should be disabled on production servers
+; Set to 1 or 0
+display_errors = 0

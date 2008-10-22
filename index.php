@@ -1,31 +1,21 @@
 <?php	
 /**
- * Origo 
+ * Origo - social client
+ * content negotiatior
+ *
  * Copyright (C) 2008 Mario Volke
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * All rights reserved.
  */
  
 error_reporting(E_ALL|E_STRICT);
 
-require_once 'libs/php_content_negotiation/content_negotiation.inc.php';
+require_once 'libs/php-content-negotiation/content_negotiation.inc.php';
 
 define('CONFIG_FILE', 'config/config.ini');
 
 // check if configuration file exists
 if(!is_file(CONFIG_FILE)) {
-	die('Origo Resource Identifier error: Configuration file does not exist.');
+	die('Origo error: Configuration file does not exist.');
 }
 
 // load configuration from ini file
@@ -52,31 +42,30 @@ if($_SERVER['SERVER_PORT'] != 80) {
 }
 
 $uri = $protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI']; 
+// remove trailing slash
+$uri = rtrim($uri, '/');
 
-if($uri != $config['resource']['identifier']) {
-	header('HTTP/1.0 404 Not Found');
-	die('Origo Resource Identifier error: 404 Resource not found.');
-}
-
+// content negotiation
 $mime_types = array(
-	'type' => array(),
-	'app_preference' => array()
+	'type' => array(
+		'application/rdf+xml'	
+	),
+	'app_preference' => array(
+		1.0	
+	)
 );
-$uris = array();
-foreach($config['mime_types'] as $key => $mime) {
-	$pref = 1.0;
-	if(isset($config['preferences'][$key])) {
-		$pref = $config['preferences'][$key];
-	}
-	if(isset($config['uris'][$key]) && !empty($config['uris'][$key])) {
-		$mime_types['type'][] = $mime;
-		$mime_types['app_preference'][] = $pref;
-		$uris[$mime] = $config['uris'][$key];
-	}
+$uris = array(
+	'application/rdf+xml' => $uri . '/rdf'	
+);
+
+// add users website
+if(isset($config['negotiation']['homepage']) && !empty($config['negotiation']['homepage'])) {
+	$mime_types['type'][] = 'text/html';
+	$mime_types['app_preference'][] = 0.8;
+	$uris['text/html'] = $config['negotiation']['homepage'];
 }
 
 $mime_best = content_negotiation::mime_best_negotiation($mime_types);
 
 header('HTTP/1.1 303 See Other');
 header('Location: ' . $uris[$mime_best]);
-

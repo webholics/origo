@@ -16,13 +16,24 @@
 	</para>
 	<itemizedlist>
 		<listitem>
+			<para><emphasis role="strong">Content Negotiator</emphasis></para>
+			<para>
+				Der Content Negotiator leitet eine HTTP-Anfrage abhängig 
+				vom HTTP-Header entweder auf das RDF-Dokument oder auf ein 
+				festgelegtes HTML-Dokument weiter.
+			</para>
+			<para>
+				Pfad: <emphasis>origo/</emphasis>
+			</para>
+		</listitem>
+		<listitem>
 			<para><emphasis role="strong">RDF Distributor</emphasis></para>
 			<para>
 				Der RDF Distributor generiert die RDF-Daten aus dem sog.
 				Triple Store und liefert diese über einen Caching-Mechanismus aus.
 			</para>
 			<para>
-				Pfad: <emphasis>origo/</emphasis>
+				Pfad: <emphasis>origo/rdf</emphasis>
 			</para>
 		</listitem>
 		<listitem>
@@ -78,17 +89,17 @@
 			</para>
 		</listitem>
 		<listitem>
-			<para><emphasis role="strong">Negotiator</emphasis> (optional)</para>
+			<para><emphasis role="strong">Identifier</emphasis> (optional)</para>
 			<para>
-				Der Negotiator lässt sich an einem beliebigen Ort quasi vorschalten
-				und leitet eine HTTP-Anfrage abhängig 
-				vom HTTP-Header entweder auf das RDF-Dokument oder auf ein 
-				festgelegtes HTML-Dokument weiter.
-				Ein weiterer Vorteil dieser Methode ist, dass der persönliche URI beliebig gewählt 
-				werden kann und dieser dadruch kein Hash-URI mehr sein muss.
+				Der Identifier ist eigentlich kein richtiges Modul. Es ist vielmehr eine
+				Vorgehensweise, um über eine 303 Weiterleitung einen beliebigen URI,
+				der sich auch auf einer anderen Domain befinden kann, quasi vorzuschalten.
+				Ein Vorteil dieser Methode ist, dass der persönliche URI beliebig gewählt 
+				werden kann und dieser dadurch kein Hash-URI mehr sein muss.
+				Diese Möglichkeit ist nur für fortgeschrittene Nutzer geeignet.
 			</para>
 			<para>
-				Pfad: <emphasis>origo/optional/negotiator/</emphasis>
+				Pfad: <emphasis>origo/optional/identifier/</emphasis>
 			</para>
 		</listitem>
 	</itemizedlist>
