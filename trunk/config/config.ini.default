@@ -1,5 +1,19 @@
 ; Origo global configuration
 
+[global]
+
+; Two ways to construct your personal URI:
+; - Hash URI -- without identifier module
+;   Your personal URI will be http://[location of origo installation]#[your initials]
+;   identifier = "#[your initials]"
+; - 303 URI -- with identifier module
+;   The identifier below has to be the location from which you redirect.
+;   identifier = "http://www.example.com"
+
+; Should be disabled on production servers
+; Set to 1 or 0
+display_errors = 0
+
 [negotiation]
 
 ; (optional) An HTML-Document that describes your person. Maybe your private homepage.
@@ -13,13 +27,22 @@ name = "[database name]"
 username = "[username]"
 password = "[password]"
 
-[api]
+[client]
+	
+; Authentication
+; There are 3 options:
+; - none -- no authentication
+; - basic -- HTTP Basic autentication
+;   (you have to set auth_basic_username and auth_basic_password)
+; - openid -- OpenID authentication
+;   (you have to set auth_openid)
+auth = none
+	
+auth_basic_username =
+auth_basic_password =
+	
+auth_openid =
 
 ; This API key gives read and write access to the triple store.
-key = "[api_key]"
+api_key = "[api_key]"
 
-[misc]
-
-; Should be disabled on production servers
-; Set to 1 or 0
-display_errors = 0
