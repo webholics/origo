@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter 
+	xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink"> 
+	<title>Das verteilte soziale Netzwerk</title>
+	<para>
+		Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
+		bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
+		entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
+		untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
+		zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
+		zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
+		Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
+	</para>
+	<mediaobject>
+		<imageobject role="fo">
+			<imagedata align="center" format="SVG" fileref="../images/origonetwork.svg"/>
+		</imageobject>
+		<imageobject role="html">
+			<imagedata align="center" format="PNG" fileref="../images/origonetwork.png"/>
+		</imageobject>
+		<textobject>
+			<phrase>Origo im Zentrum des sozialen Netzwerks</phrase>
+		</textobject>
+		<caption>
+			<para>Origo im Zentrum des sozialen Netzwerks</para>
+		</caption>
+	</mediaobject>
+</chapter>

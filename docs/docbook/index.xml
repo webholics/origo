@@ -19,4 +19,6 @@
 	<xi:include href="preface.xml"/>
 	<xi:include href="chapter1.xml"/>
 	<xi:include href="chapter2.xml"/>
+	<xi:include href="chapter3.xml"/>
+	<xi:include href="chapter4.xml"/>
 </book>
