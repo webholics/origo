@@ -24,7 +24,7 @@ if(!is_file(CONFIG_FILE)) {
 $config = parse_ini_file(CONFIG_FILE, true);
 
 // should be disabled on prodution servers
-if($config['misc']['display_errors'] == 1) {
+if($config['global']['display_errors'] == 1) {
 	ini_set('display_errors', 1);
 }
 else {
@@ -49,8 +49,8 @@ $endpoint_config = array(
 
 	'endpoint_timeout' => 60, /* this feature is not yet implemented in ARC2 */
 	'endpoint_max_limit' => 5000,
-	'endpoint_read_key' => $config['api']['key'],
-	'endpoint_write_key' => $config['api']['key']
+	'endpoint_read_key' => $config['client']['api_key'],
+	'endpoint_write_key' => $config['client']['api_key']
 );
 
 $ep = ARC2::getStoreEndpoint($endpoint_config);

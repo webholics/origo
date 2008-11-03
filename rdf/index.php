@@ -25,7 +25,7 @@ if(!is_file(CONFIG_FILE)) {
 $config = parse_ini_file(CONFIG_FILE, true);
 
 // should be disabled on prodution servers
-if($config['misc']['display_errors'] == 1) {
+if($config['global']['display_errors'] == 1) {
 	ini_set('display_errors', 1);
 }
 else {

@@ -1,43 +1,48 @@
 <?php	
 /**
- * Origo 
+ * Origo - social client
+ * client
+ *
  * Copyright (C) 2008 Mario Volke
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * All rights reserved.
  */
 
 // unfortunately the openid library does not yet support E_ALL nor E_STRICT
 //error_reporting(E_ALL|E_STRICT);
 error_reporting(E_ALL);
 
-define('CONFIG_FILE', 'config/config.ini');
+define('CONFIG_FILE', '../config/config.ini');
+define('TMP_DIR', '../tmp');
 
 // check if configuration file exists
 if(!is_file(CONFIG_FILE)) {
-	die('Origo Client error: Configuration file does not exist.');
+	die('Origo error: Configuration file does not exist.');
 }
 
 // load configuration from ini file
 $config = parse_ini_file(CONFIG_FILE, true);
 
 // should be disabled on prodution servers
-if($config['misc']['display_errors'] == 1) {
+if($config['global']['display_errors'] == 1) {
 	ini_set('display_errors', 1);
 }
 else {
 	ini_set('display_errors', 0);
 }
+
+// assemble Origo URI
+$scheme = 'http';
+if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+	$scheme .= 's';
+}
+$origo_uri = $scheme . '://' . $_SERVER['SERVER_NAME'];
+if(
+	((!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off') && $_SERVER['SERVER_PORT'] != 80) ||
+	(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['SERVER_PORT'] != 443)
+) {
+	$origo_uri .= ':' . $_SERVER['SERVER_PORT'];
+}
+$origo_uri .= substr(dirname($_SERVER['PHP_SELF']), 0, -7);
 
 // check for Authentication
 if($config['client']['auth'] == 'basic') {
@@ -52,34 +57,30 @@ if($config['client']['auth'] == 'basic') {
 else if($config['client']['auth'] == 'openid') {
 	session_start();
 	
-	if(!is_writeable('tmp')) {
-		die('Origo Client error: tmp directory is not writeable.');
+	if(!is_writeable(TMP_DIR)) {
+		die('Origo error: tmp directory is not writeable.');
 	}
-	if(!is_dir('tmp/openid')) {
-		mkdir('tmp/openid');
-		chmod('tmp/openid', 0775);
+	if(!is_dir(TMP_DIR . '/openid')) {
+		mkdir(TMP_DIR . '/openid');
+		chmod(TMP_DIR . '/openid', 0775);
 	}
 
 	ini_set('include_path', 'libs/php-openid' . PATH_SEPARATOR . ini_get('include_path'));
 	require_once 'Auth/OpenID/Consumer.php';
 	require_once 'Auth/OpenID/FileStore.php';
 
-	$store = new Auth_OpenID_FileStore('tmp/openid');
+	$store = new Auth_OpenID_FileStore(TMP_DIR . '/openid');
 	$consumer = new Auth_OpenID_Consumer($store);
 	
-	$scheme = 'http';
-	if(isset($_SERVER['https']) && $_SERVER['https'] == 'on') {
-		$scheme .= 's';
-	}
-	$realm = $scheme . '://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . dirname($_SERVER['PHP_SELF']) . '/';
-	$return_to = $scheme . '://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['PHP_SELF'];	
+	$realm = $origo_uri . '/client';
+	$return_to = $origo_uri . '/client';	
 
 	$response = $consumer->complete($return_to);
 	if($response->status !== Auth_OpenID_SUCCESS) {	
 		$auth_request = $consumer->begin($config['client']['auth_openid']);
 	
 		if(!$auth_request) {
-			die('Origo Client error: Not a valid OpenID.');
+			die('Origo error: Not a valid OpenID.');
 		}
 	
 		// For OpenID 1, send a redirect.  For OpenID 2, use a Javascript
@@ -88,7 +89,7 @@ else if($config['client']['auth'] == 'openid') {
 			$redirect_url = $auth_request->redirectURL($realm, $return_to);
 			
 			if(Auth_OpenID::isFailure($redirect_url)) {
-				die('Origo Client error: Could not redirect to OpenID server.');
+				die('Origo error: Could not redirect to OpenID server.');
 			} 
 			else {
 				header('Location: ' . $redirect_url);
@@ -100,7 +101,7 @@ else if($config['client']['auth'] == 'openid') {
 			$form_html = $auth_request->htmlMarkup($realm, $return_to, false, array('id' => $form_id));
 	
 			if(Auth_OpenID::isFailure($form_html)) {
-					die('Origo Client error: Could not redirect to OpenID server.');
+					die('Origo error: Could not redirect to OpenID server.');
 			} 
 			else {
 				die($form_html);
@@ -109,18 +110,36 @@ else if($config['client']['auth'] == 'openid') {
 	}
 }
 
+if($config['global']['identifier'][0] == '#') {
+	$identifier = $origo_uri . '/' . $config['global']['identifier'];
+}
+else {
+	$identifier = $config['global']['identifier'];
+}
+
 // generate flash vars
-$flashVars = 'identifier=' . urlencode($config['client']['resource'])
-           . '&amp;endpoint=' . urlencode($config['endpoint']['location'])
-           . '&amp;key=' . urlencode($config['endpoint']['key']);
+$flashVars = 'identifier=' . urlencode($identifier)
+           . '&amp;api_key=' . urlencode($config['client']['api_key']);
 
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	<head>
-		<title>Origo</title>
+		<title>Origo - social client</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />
+
+		<meta name="robots" content="noindex, nofollow" />
+		<meta name="keywords" content="origo, social client, foaf, semantic web, social network" />
+
+		<meta name="description" content="Origo - social client - helps you in managing your social identity within the semantic web." />
+		<meta name="copyright" content="copyright(c) 2008<?php if(date('Y') > 2008): echo '-' . date('Y'); endif; ?> Mario Volke. All right reserved." />
+		<meta name="author" content="Mario Volke" />
+		<meta name="dc.creator" content="Mario Volke" />
+		<meta name="language" content="en" />
+		<meta name="date" content="<?= date('c') ?>" />
+
 		<style type="text/css" media="screen">
 			html, body, #content	{ height:100%; }
 			body					{ margin:0; padding:0; overflow:hidden; }
