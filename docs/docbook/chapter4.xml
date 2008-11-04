@@ -2,7 +2,7 @@
 <chapter 
 	xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
-	<title>Technische Umsetzung</title>
+	<title>Der persönliche URI</title>
 	<para>
 		Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
 		bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
@@ -12,4 +12,41 @@
 		zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
 		Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
 	</para>
+	<mediaobject>
+		<imageobject role="fo">
+			<imagedata align="center" format="SVG" fileref="../images/urihash.svg"/>
+		</imageobject>
+		<imageobject role="html">
+			<imagedata align="center" format="PNG" fileref="../images/urihash.png"/>
+		</imageobject>
+		<textobject>
+			<phrase>Hash URI</phrase>
+		</textobject>
+		<caption>
+			<para>Hash URI</para>
+		</caption>
+	</mediaobject>
+	<para>
+		Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
+		bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
+		entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
+		untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
+		zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
+		zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
+		Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
+	</para>
+	<mediaobject>
+		<imageobject role="fo">
+			<imagedata align="center" format="SVG" fileref="../images/uri303.svg"/>
+		</imageobject>
+		<imageobject role="html">
+			<imagedata align="center" format="PNG" fileref="../images/uri303.png"/>
+		</imageobject>
+		<textobject>
+			<phrase>303 URI</phrase>
+		</textobject>
+		<caption>
+			<para>303 URI</para>
+		</caption>
+	</mediaobject>
 </chapter>
