@@ -2,7 +2,7 @@
 <chapter 
 	xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
-	<title>Der Client</title>
+	<title>Technische Umsetzung</title>
 	<para>
 		Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
 		bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
@@ -12,4 +12,18 @@
 		zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
 		Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
 	</para>
+	<mediaobject>
+		<imageobject role="fo">
+			<imagedata align="center" format="SVG" fileref="../images/technologies.svg"/>
+		</imageobject>
+		<imageobject role="html">
+			<imagedata align="center" format="PNG" fileref="../images/technologies.png"/>
+		</imageobject>
+		<textobject>
+			<phrase>Technologien, Sprachen und Libraries in Origo</phrase>
+		</textobject>
+		<caption>
+			<para>Technologien, Sprachen und Libraries in Origo</para>
+		</caption>
+	</mediaobject>
 </chapter>
