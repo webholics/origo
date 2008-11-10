@@ -4,13 +4,25 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
 	<title>Der persönliche URI</title>
 	<para>
-		Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
-		bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
-		entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
-		untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
-		zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
-		zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
-		Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
+		Der persönliche URI identifiziert den Nutzer von Origo und
+		wird dadurch zum zentralen Element im Semantic Web.
+		Origo bietet zwei verschiedene Möglichkeiten diesen URI 
+		zu konfigurieren.
+	</para>
+	<para>
+		Der sog. <emphasis>Hash URI</emphasis> wird vom Installer unterstützt und
+		steht damit schnell und einfach zur Verfügung. Der vordere Teil der URI
+		ergibt sich direkt aus dem Ort an dem Origo installiert wurde. Zusätzlich
+		wird ein Hash-Wert angehängt, um den Nutzer zu identifizieren. 
+		Der Hash-Wert kann frei gewählt werden. Es empfiehlt sich aber die eigenen
+		Initialen oder den Vornamen zu verwenden.
+	</para>
+	<para>
+		Beim Aufruf der URI im Browser wird der Hash-Wert automatisch abgeschnitten.
+		Der Browser ruft also den Ort der Origo Installation auf. Dort greift der
+		Content Negotiatior ein und leitet die Anfrage entsprechend des angeforderten
+		Inhalts entweder auf die RDF-Daten oder auf ein vorher konfiguriertes HTML-Dokument
+		weiter.
 	</para>
 	<mediaobject>
 		<imageobject role="fo">
@@ -27,13 +39,12 @@
 		</caption>
 	</mediaobject>
 	<para>
-		Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
-		bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
-		entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
-		untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
-		zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
-		zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
-		Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
+		Fortgeschrittenen Nutzern steht eine weitere Möglichkeit der Konfiguration
+		des eigenen URI zur Verfügung. An einem beliebigen Ort, der sich auch unter einer
+		anderen Domain befinden kann, wird eine 303-HTTP-Weiterleitung eingerichtet,
+		die eine Anfrage auf den Ort der Origo Installation leitet. Dadurch kann der
+		persönliche URI relativ beliebig gewählt werden. Nach der 303-Weiterleitung finden 
+		dann die selben Prozesse statt, wie beim Hash-URI.
 	</para>
 	<mediaobject>
 		<imageobject role="fo">

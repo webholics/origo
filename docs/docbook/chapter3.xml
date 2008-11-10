@@ -4,13 +4,20 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
 	<title>Das verteilte soziale Netzwerk</title>
 	<para>
-		Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
-		bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
-		entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
-		untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
-		zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
-		zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
-		Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
+		Das Origo Packet wird auf dem eigenen Webserver oder Webspace installiert und verwaltet
+		von da an die eigene Identität im Semantic Web. Über den Origo Client lassen sich Personen,
+		die ebenfalls eine semantische Identität haben, als Freunde hinzufügen. Intern wird über
+		<emphasis>foaf:knows</emphasis>, einer Eigenschaft aus der FOAF-Ontologie auf den URI dieser 
+		Person verlinkt. Eine solche Verlinkung lässt sich unabhängig davon erstellen, ob diese 
+		Person ebenfalls Origo einsetzt oder nicht.
+	</para>
+	<para>
+		Häufig existieren bereits Profile in anderen in sich geschlossenen sozialen Netzwerken.
+		Der Zugriff auf diese Netzwerke ist möglich, wenn ein RDF-Export der dort vorliegenden Daten
+		möglich ist. Ein solcher Export kann sowohl von dem Betreiber dieses Netzwerkes selbst, 
+		als auch von einem externen Dienst, der über eine API mit dem Netzwerk kommuniziert,
+		bereitgestellt werden. Wenn ein solcher Export vorhanden ist, dann kann Origo über
+		die Eigenschaft <emphasis>owl:sameAs</emphasis> auf das externe Profil verlinken.
 	</para>
 	<mediaobject>
 		<imageobject role="fo">
