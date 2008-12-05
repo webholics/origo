@@ -11,10 +11,12 @@
 //error_reporting(E_ALL|E_STRICT);
 error_reporting(E_ALL);
 
-require_once '../libs/arc/ARC2.php';
+require_once '../libs/arc2/ARC2.php';
 
 define('CONFIG_FILE', '../config/config.ini');
 define('TMP_DIR', '../tmp');
+define('TMP_FILE', 'data.rdf');
+define('GRAPH_URI', 'urn:origo:identity');
 
 // check if configuration file exists
 if(!is_file(CONFIG_FILE)) {
@@ -44,20 +46,31 @@ if(!is_writable(TMP_DIR)) {
 	die('Origo error: Tmp directory is not writable.');
 }
 
-$file = $config['cache']['dir'] . '/' . $config['cache']['file'];
+$file = TMP_DIR . '/' . TMP_FILE;
 // check if cache file is too old
 if(!is_file($file) || time() > filemtime($file) + $config['cache']['lifetime']) {
 	$store_config = array(
-		'remote_store_endpoint' => $config['endpoint']['location'] . '?key=' . urlencode($config['endpoint']['key'])
+		// mysql database access
+		'db_host' => $config['database']['host'],
+		'db_name' => $config['database']['name'],
+		'db_user' => $config['database']['username'],
+		'db_pwd' => $config['database']['password'],
+
+		// stone_name is used as table prefix
+		'store_name' => 'origo'
 	);
 
-	$store = ARC2::getRemoteStore($store_config);
+	$store = ARC2::getStore($store_config);
+
+	if(!$store->isSetUp()) {
+		$store->setUp();
+	}
 	
 	$query = "CONSTRUCT {"
 	       . "  ?s ?p ?o ."
 		   . "}"
 		   . "WHERE {"
-		   . "  GRAPH <" . $config['distributor']['resource'] . "> {"
+		   . "  GRAPH <" . GRAPH_URI . "> {"
 		   . "	  ?s ?p ?o ."
 		   . "  }"
 		   . "}";
