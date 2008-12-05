@@ -18,7 +18,17 @@
 		{
 			api_key = Application.application.parameters["api_key"];
 			
-			apiLoad.send();
+			loadTriples();
+		}
+		
+		private function loadTriples():void
+		{
+			api.addEventListener(ResultEvent.RESULT, apiLoadResult);
+			
+			api.send({
+				query: "SELECT ?s ?p ?o WHERE { ?s ?p ?o . }",
+				key: api_key
+			});
 		}
 		
 		private function formatBinding(binding:XML):String
@@ -37,12 +47,17 @@
 	
 		private function apiFault(event:FaultEvent):void
 		{
-			Alert.show(event.fault.message.toString());
+			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
+			//api.removeEventListener(ResultEvent.RESULT, apiInsertResult);
+			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
+
 			Alert.show("An error occured while communicating with the sparql endpoint.", "Error");
 		}
 		
 		private function apiLoadResult(event:ResultEvent):void
 		{
+			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
+			
 			triples.removeAll();
 			
 			for each(var triple:Object in event.result.sparql::results.sparql::result) {
@@ -75,28 +90,75 @@
 			
 				for each(var i:int in triplesGrid.selectedIndices) {
 					qu += triples[i]["s"] + " " + triples[i]["p"] + " " + triples[i]["o"] + ".";
-					triples.removeItemAt(i);
 				}
 			
 				qu += "}";
-				trace(qu);
-				apiDelete.send({
+
+				api.addEventListener(ResultEvent.RESULT, apiDeleteResult);
+
+				api.send({
 					query: qu,
 					key: api_key
 				});
 			}
+			else
+				Alert.show("No triples selected.");
+		}
+		
+		private function apiDeleteResult(event:ResultEvent):void
+		{
+			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
+			
+			loadTriples();
+		}
+		
+		private function formatNode(type:String, node:String):String
+		{
+			switch(type) {
+				case "bnode":
+					return "<_:" + node + ">";
+				case "uri":
+					return "<" + node + ">";
+				case "literal":
+					return "\"" + node + "\"";
+			}
+			
+			return "";
+		}
+		
+		private function insertTriple():void 
+		{
+			
+			var qu:String = "INSERT INTO <urn:origo:identity> {";
+			
+			qu += formatNode(sComboBox.selectedLabel, sTextInput.text) + " ";
+			qu += formatNode(pComboBox.selectedLabel, pTextInput.text) + " ";
+			qu += formatNode(oComboBox.selectedLabel, oTextInput.text) + ".";
+			
+			qu += "}";
+
+			api.addEventListener(ResultEvent.RESULT, apiInsertResult);
+
+			api.send({
+				query: qu,
+				key: api_key
+			});
+		}
+		
+		private function apiInsertResult(event:ResultEvent):void
+		{
+			api.removeEventListener(ResultEvent.RESULT, apiInsertResult);
+			
+			loadTriples();
 		}
 	]]>
 	</mx:Script>
 	
-	<mx:HTTPService id="apiLoad" url="api/" useProxy="false" method="POST" resultFormat="e4x" fault="apiFault(event);" result="apiLoadResult(event);" showBusyCursor="true">
-		<mx:request xmlns="">
-			<query>SELECT ?s ?p ?o WHERE \{ ?s ?p ?o . \}</query>
-			<key>{api_key}</key>
-		</mx:request>
-	</mx:HTTPService>
+	<mx:HTTPService id="api" url="api/" useProxy="false" method="POST" resultFormat="e4x" fault="apiFault(event);" showBusyCursor="true" />
 	
-	<mx:HTTPService id="apiDelete" url="api/" useProxy="false" method="POST" resultFormat="e4x" fault="apiFault(event);" showBusyCursor="true" />
+	<mx:StringValidator source="{sTextInput}" property="text" required="true"/>
+	<mx:StringValidator source="{pTextInput}" property="text" required="true"/>
+	<mx:StringValidator source="{oTextInput}" property="text" required="true"/>
 	
 	<mx:ApplicationControlBar y="10" right="10" left="10">
 		<mx:ToggleButtonBar dataProvider="mainViewStack">
@@ -104,16 +166,53 @@
 	</mx:ApplicationControlBar>
 	<mx:ViewStack id="mainViewStack" right="10" left="10" top="51" bottom="45">
 		<mx:Canvas label="View 1" width="100%" height="100%">
-			<mx:DataGrid id="triplesGrid" height="521" dataProvider="{triples}" right="0" left="0" top="0" editable="false" allowMultipleSelection="true">
+			<mx:DataGrid id="triplesGrid" height="339" dataProvider="{triples}" right="0" left="0" top="0" editable="false" allowMultipleSelection="true">
 				<mx:columns>
 					<mx:DataGridColumn headerText="s" dataField="s"/>
 					<mx:DataGridColumn headerText="p" dataField="p"/>
 					<mx:DataGridColumn headerText="o" dataField="o"/>			
 				</mx:columns>
 			</mx:DataGrid>
-			<mx:Label y="529" text="{triples.length} Triples found" width="302" textAlign="right" right="0"/>
-			<mx:Button y="555" label="-" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" right="0" click="deleteSelectedTriples();"/>
-			<mx:Button y="555" label="+" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" themeColor="#009DFF" textSelectedColor="#009dff" textRollOverColor="#009dff" right="48"/>
+			<mx:Label y="347" text="{triples.length} Triples found" width="302" textAlign="right" right="0"/>
+			<mx:Button y="347" label="-" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="deleteSelectedTriples();" left="304" width="40"/>
+			<mx:Button y="347" label="+" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" themeColor="#009DFF" textSelectedColor="#009dff" textRollOverColor="#009dff" click="insertTriple();" left="256" width="40"/>
+			<mx:Form y="348" height="275" left="0" width="248">
+				<mx:FormHeading label="Insert new triple"/>
+				<mx:FormItem label="s type">
+					<mx:ComboBox id="sComboBox">
+						<mx:ArrayCollection>
+							<mx:String>uri</mx:String>
+							<mx:String>literal</mx:String>
+							<mx:String>bnode</mx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>
+				</mx:FormItem>
+				<mx:FormItem label="s" required="true">
+					<mx:TextInput id="sTextInput"/>
+				</mx:FormItem>
+				<mx:FormItem label="p type">
+					<mx:ComboBox id="pComboBox">
+						<mx:ArrayCollection>
+							<mx:String>uri</mx:String>
+							<mx:String>literal</mx:String>
+							<mx:String>bnode</mx:String>
+						</mx:ArrayCollection></mx:ComboBox>
+				</mx:FormItem>
+				<mx:FormItem label="p" required="true">
+					<mx:TextInput id="pTextInput"/>
+				</mx:FormItem>
+				<mx:FormItem label="o type">
+					<mx:ComboBox id="oComboBox">
+						<mx:ArrayCollection>
+							<mx:String>uri</mx:String>
+							<mx:String>literal</mx:String>
+							<mx:String>bnode</mx:String>
+						</mx:ArrayCollection></mx:ComboBox>
+				</mx:FormItem>
+				<mx:FormItem label="o" required="true">
+					<mx:TextInput id="oTextInput"/>
+				</mx:FormItem>
+			</mx:Form>
 		</mx:Canvas>
 		<mx:Form label="Editor" width="100%" height="100%">
 		</mx:Form>
