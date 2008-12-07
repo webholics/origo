@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	creationComplete="init()" 
+	backgroundGradientAlphas="[1.0, 1.0]" 
+	backgroundGradientColors="[#4D4D4D, #4D4D4D]" 
+	xmlns:editor="com.origo.client.editor.*"
+	xmlns:browser="com.origo.client.browser.*">
 	<mx:Script>
 	<![CDATA[
 		import mx.collections.ArrayCollection;
@@ -7,16 +12,15 @@
 		import mx.rpc.events.FaultEvent;
 		import mx.rpc.events.ResultEvent;
 	
-		[Bindable]
-		private var api_key:String;
-		[Bindable]
-		private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
-		[Bindable]
-		private var triples:ArrayCollection = new ArrayCollection();
+		[Bindable] private var apiKey:String;
+		[Bindable] private var apiUrl:String;
+		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
+		[Bindable] private var triples:ArrayCollection = new ArrayCollection();
 	
 		private function init():void 
 		{
-			api_key = Application.application.parameters["api_key"];
+			apiKey = Application.application.parameters["api_key"];
+			apiUrl = "api/";
 			
 			loadTriples();
 		}
@@ -27,7 +31,7 @@
 			
 			api.send({
 				query: "SELECT ?s ?p ?o WHERE { ?s ?p ?o . }",
-				key: api_key
+				key: apiKey
 			});
 		}
 		
@@ -98,7 +102,7 @@
 
 				api.send({
 					query: qu,
-					key: api_key
+					key: apiKey
 				});
 			}
 			else
@@ -141,7 +145,7 @@
 
 			api.send({
 				query: qu,
-				key: api_key
+				key: apiKey
 			});
 		}
 		
@@ -154,18 +158,19 @@
 	]]>
 	</mx:Script>
 	
-	<mx:HTTPService id="api" url="api/" useProxy="false" method="POST" resultFormat="e4x" fault="apiFault(event);" showBusyCursor="true" />
+	<mx:HTTPService id="api" url="{apiUrl}" useProxy="false" method="POST" resultFormat="e4x" fault="apiFault(event);" showBusyCursor="true" />
 	
 	<mx:StringValidator source="{sTextInput}" property="text" required="true"/>
 	<mx:StringValidator source="{pTextInput}" property="text" required="true"/>
 	<mx:StringValidator source="{oTextInput}" property="text" required="true"/>
 	
-	<mx:ApplicationControlBar y="10" right="10" left="10">
+	<mx:ApplicationControlBar y="106" right="10" left="10">
 		<mx:ToggleButtonBar dataProvider="mainViewStack">
 		</mx:ToggleButtonBar>
 	</mx:ApplicationControlBar>
-	<mx:ViewStack id="mainViewStack" right="10" left="10" top="51" bottom="45">
-		<mx:Canvas label="View 1" width="100%" height="100%">
+	<mx:ViewStack id="mainViewStack" right="10" left="10" top="147" bottom="36">
+	
+		<mx:Canvas label="Dashboard" width="100%" height="100%">
 			<mx:DataGrid id="triplesGrid" height="339" dataProvider="{triples}" right="0" left="0" top="0" editable="false" allowMultipleSelection="true">
 				<mx:columns>
 					<mx:DataGridColumn headerText="s" dataField="s"/>
@@ -214,10 +219,12 @@
 				</mx:FormItem>
 			</mx:Form>
 		</mx:Canvas>
-		<mx:Form label="Editor" width="100%" height="100%">
-		</mx:Form>
+		
+		<editor:Editor label="Editor" width="100%" height="100%" apiKey="{apiKey}" apiUrl="{apiUrl}" />
+		
+		<browser:Browser label="Browser" width="100%" height="100%" />
 	</mx:ViewStack>
-	<mx:ApplicationControlBar bottom="10" right="10" left="10">
-		<mx:ProgressBar labelPlacement="left" textAlign="left"/>
-	</mx:ApplicationControlBar>
+	<mx:Label text="© Copyright 2008 Mario Volke. All right reserved." color="#737373" bottom="10" left="10"/>
+	<mx:Image width="200" height="88" scaleContent="false" left="10" top="10" source="../assets/logo.png">
+	</mx:Image>
 </mx:Application>

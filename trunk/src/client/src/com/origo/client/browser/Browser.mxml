@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600">
+	<mx:HBox left="0" bottom="0" top="0" right="0">
+		<mx:Panel width="250" height="200" layout="absolute" title="Browser">
+		</mx:Panel>
+		<mx:Canvas width="100%" height="100%">
+		</mx:Canvas>
+	</mx:HBox>
+	
+</mx:Canvas>
