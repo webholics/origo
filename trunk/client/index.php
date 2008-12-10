@@ -7,42 +7,11 @@
  * All rights reserved.
  */
 
-// unfortunately the openid library does not yet support E_ALL nor E_STRICT
-//error_reporting(E_ALL|E_STRICT);
-error_reporting(E_ALL);
+require '../includes/startup.php';
+require_once '../includes/currentUri.php';
+require_once '../includes/identifier.php';
 
-define('CONFIG_FILE', '../config/config.ini');
-define('TMP_DIR', '../tmp');
-
-// check if configuration file exists
-if(!is_file(CONFIG_FILE)) {
-	die('Origo error: Configuration file does not exist.');
-}
-
-// load configuration from ini file
-$config = parse_ini_file(CONFIG_FILE, true);
-
-// should be disabled on prodution servers
-if($config['global']['display_errors'] == 1) {
-	ini_set('display_errors', 1);
-}
-else {
-	ini_set('display_errors', 0);
-}
-
-// assemble Origo URI
-$scheme = 'http';
-if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-	$scheme .= 's';
-}
-$origo_uri = $scheme . '://' . $_SERVER['SERVER_NAME'];
-if(
-	((!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off') && $_SERVER['SERVER_PORT'] != 80) ||
-	(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['SERVER_PORT'] != 443)
-) {
-	$origo_uri .= ':' . $_SERVER['SERVER_PORT'];
-}
-$origo_uri .= substr(dirname($_SERVER['PHP_SELF']), 0, -7);
+$origo_uri = $config['global']['document_uri'];
 
 // check for Authentication
 if($config['client']['auth'] == 'basic') {
@@ -72,8 +41,9 @@ else if($config['client']['auth'] == 'openid') {
 	$store = new Auth_OpenID_FileStore(TMP_DIR . '/openid');
 	$consumer = new Auth_OpenID_Consumer($store);
 	
-	$realm = $origo_uri . '/client';
-	$return_to = $origo_uri . '/client';	
+	$client_uri = currentUri();
+	$realm = $client_uri;
+	$return_to = $client_uri;	
 
 	$response = $consumer->complete($return_to);
 	if($response->status !== Auth_OpenID_SUCCESS) {	
@@ -110,16 +80,11 @@ else if($config['client']['auth'] == 'openid') {
 	}
 }
 
-if($config['global']['identifier'][0] == '#') {
-	$identifier = $origo_uri . '/' . $config['global']['identifier'];
-}
-else {
-	$identifier = $config['global']['identifier'];
-}
-
 // generate flash vars
-$flashVars = 'identifier=' . urlencode($identifier)
-           . '&amp;api_key=' . urlencode($config['client']['api_key']);
+$flashVars = 'identifier=' . urlencode(identifier($config))
+           . '&amp;api_key=' . urlencode($config['client']['api_key'])
+		   . 'identity_graph=' . urlencode(IDENTITY_GRAPH)
+		   . 'document_uri=' . urlencode($config['global']['document_uri']);
 
 ?>
 
