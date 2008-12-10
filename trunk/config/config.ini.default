@@ -2,9 +2,14 @@
 
 [global]
 
+; The URI of the FOAF-Document.
+; Normally this should be the location of the origo installation.
+; Please write the URI without trailing slash.
+document_uri = "http://[location of origo installation]"
+
 ; Two ways to construct your personal URI:
 ; - Hash URI -- without identifier module
-;   Your personal URI will be http://[location of origo installation]#[your initials]
+;   Your personal URI will be document_uri + #[your initials]
 ;   identifier = "#[your initials]"
 ; - 303 URI -- with identifier module
 ;   The identifier below has to be the location from which you redirect.
