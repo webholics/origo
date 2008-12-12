@@ -83,8 +83,8 @@ else if($config['client']['auth'] == 'openid') {
 // generate flash vars
 $flashVars = 'identifier=' . urlencode(identifier($config))
            . '&amp;api_key=' . urlencode($config['client']['api_key'])
-		   . 'identity_graph=' . urlencode(IDENTITY_GRAPH)
-		   . 'document_uri=' . urlencode($config['global']['document_uri']);
+		   . '&amp;identity_graph=' . urlencode(IDENTITY_GRAPH)
+		   . '&amp;document_uri=' . urlencode($config['global']['document_uri']);
 
 ?>
 
