@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600"
+	initialize="init()">
+
+	<mx:Script>
+	<![CDATA[
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		
+		public var apiKey:String;
+		[Bindable] public var apiUrl:String;
+		public var identifier:String;
+		public var identityGraph:String;
+		
+		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
+		
+		public function init():void
+		{
+			api.addEventListener(ResultEvent.RESULT, apiLoadResult);
+
+			api.send({
+				query: 	"PREFIX foaf: <http://xmlns.com/foaf/0.1> " +
+
+						"SELECT ?title ?nick ?homepage ?mbox ?mbox_sha1sum ?img ?family_name ?givenname WHERE {" +
+							"GRAPH <" + identityGraph + "> {" +
+								"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
+								"OPTIONAL { <" + identifier + "> foaf:title ?title }." +
+								"OPTIONAL { <" + identifier + "> foaf:nick ?nick }." +
+								"OPTIONAL { <" + identifier + "> foaf:homepage ?homepage }." +
+								"OPTIONAL { <" + identifier + "> foaf:mbox ?mbox }." +
+								"OPTIONAL { <" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum }." +
+								"OPTIONAL { <" + identifier + "> foaf:img ?img }." +
+								"OPTIONAL { <" + identifier + "> foaf:family_name ?family_name }." +
+								"OPTIONAL { <" + identifier + "> foaf:givenname ?givenname }." +
+							"}" +
+						"}",
+				key: apiKey
+			});
+		}
+		
+		private function save():void
+		{
+			
+		}
+		
+		private function apiFault(event:FaultEvent):void
+		{
+			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
+
+			Alert.show("An error occured while communicating with the sparql endpoint.", "Error");
+		}
+		
+		private function apiLoadResult(event:ResultEvent):void
+		{
+			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
+			
+			trace(event.result.toString());
+			
+			if(event.result.sparql::results && event.result.sparql::results.sparql::result) {
+				var result:Object = event.result.sparql::results.sparql::result;
+				if(result.sparql::binding.(@name="title").children()[0]) {
+					inputTitle.text = result.sparql::binding.(@name="title").children()[0];
+				}
+				if(result.sparql::binding.(@name="givenname").children()[0]) {
+					inputGivenName.text = result.sparql::binding.(@name="givenname").children()[0];
+				}
+				if(result.sparql::binding.(@name="family_name").children()[0]) {
+					inputFamilyName.text = result.sparql::binding.(@name="family_name").children()[0];
+				}
+				if(result.sparql::binding.(@name="nick").children()[0]) {
+					inputNickname.text = result.sparql::binding.(@name="nick").children()[0];
+				}
+				if(result.sparql::binding.(@name="homepage").children()[0]) {
+					inputHomepage.text = result.sparql::binding.(@name="homepage").children()[0];
+				}
+				if(result.sparql::binding.(@name="mbox").children()[0]) {
+					inputEmail.text = result.sparql::binding.(@name="mbox").children()[0];
+				}
+				if(result.sparql::binding.(@name="img").children()[0]) {
+					inputImage.text = result.sparql::binding.(@name="img").children()[0];
+				}
+			}
+		}
+	]]>
+	</mx:Script>
+	
+	<mx:HTTPService id="api" url="{apiUrl}" useProxy="false" method="POST" resultFormat="e4x" fault="apiFault(event);" showBusyCursor="true" />
+
+	<mx:FormHeading label="Basics"/>
+	<mx:FormItem label="Title (Mr, Mrs, Ms, Dr, etc.)">
+		<mx:TextInput id="inputTitle" maxChars="100" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="Given name">
+		<mx:TextInput id="inputGivenName" maxChars="100" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="Family name">
+		<mx:TextInput id="inputFamilyName" maxChars="100" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="Nickname">
+		<mx:TextInput id="inputNickname" maxChars="100" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="Homepage">
+		<mx:TextInput id="inputHomepage" maxChars="200" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="Email">
+		<mx:TextInput id="inputEmail" maxChars="200" width="300"/>
+		<mx:CheckBox id="checkboxEmail" label="encrypt" selected="true"/>
+	</mx:FormItem>
+	<mx:FormItem label="Url to an image">
+		<mx:TextInput id="inputImage" maxChars="200" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem>
+		<mx:HRule width="300"/>
+		<mx:Button label="Save" click="save()"/>
+	</mx:FormItem>
+	
+</mx:Form>
