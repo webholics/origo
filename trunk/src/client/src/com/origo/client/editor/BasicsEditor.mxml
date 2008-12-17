@@ -8,6 +8,10 @@
 		import mx.controls.Alert;
 		import mx.rpc.events.FaultEvent;
 		import mx.rpc.events.ResultEvent;
+		import com.hurlant.util.Hex;
+		import com.hurlant.crypto.hash.SHA1;
+		import com.hurlant.crypto.Crypto;
+		import com.hurlant.crypto.hash.IHash;
 		
 		public var apiKey:String;
 		[Bindable] public var apiUrl:String;
@@ -21,19 +25,19 @@
 			api.addEventListener(ResultEvent.RESULT, apiLoadResult);
 
 			api.send({
-				query: 	"PREFIX foaf: <http://xmlns.com/foaf/0.1> " +
+				query: 	"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
 
 						"SELECT ?title ?nick ?homepage ?mbox ?mbox_sha1sum ?img ?family_name ?givenname WHERE {" +
 							"GRAPH <" + identityGraph + "> {" +
 								"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
-								"OPTIONAL { <" + identifier + "> foaf:title ?title }." +
-								"OPTIONAL { <" + identifier + "> foaf:nick ?nick }." +
-								"OPTIONAL { <" + identifier + "> foaf:homepage ?homepage }." +
-								"OPTIONAL { <" + identifier + "> foaf:mbox ?mbox }." +
-								"OPTIONAL { <" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum }." +
-								"OPTIONAL { <" + identifier + "> foaf:img ?img }." +
-								"OPTIONAL { <" + identifier + "> foaf:family_name ?family_name }." +
-								"OPTIONAL { <" + identifier + "> foaf:givenname ?givenname }." +
+								"OPTIONAL { <" + identifier + "> foaf:title ?title }" +
+								"OPTIONAL { <" + identifier + "> foaf:nick ?nick }" +
+								"OPTIONAL { <" + identifier + "> foaf:homepage ?homepage }" +
+								"OPTIONAL { <" + identifier + "> foaf:mbox ?mbox }" +
+								"OPTIONAL { <" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum }" +
+								"OPTIONAL { <" + identifier + "> foaf:img ?img }" +
+								"OPTIONAL { <" + identifier + "> foaf:family_name ?family_name }" +
+								"OPTIONAL { <" + identifier + "> foaf:givenname ?givenname }" +
 							"}" +
 						"}",
 				key: apiKey
@@ -42,12 +46,39 @@
 		
 		private function save():void
 		{
+			api.addEventListener(ResultEvent.RESULT, apiDeleteResult);
 			
+			var query:String = 
+				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+
+				"DELETE FROM <" + identityGraph + "> {" +
+					"<" + identifier + "> foaf:title ?title ." +
+					"<" + identifier + "> foaf:nick ?nick ." +
+					"<" + identifier + "> foaf:homepage ?homepage ." +
+					"<" + identifier + "> foaf:mbox ?mbox .";
+			
+			if(inputEmailEnc.text != "[encrypted email in database]") {
+				query += "<" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum .";
+			}
+				
+			query +=
+					"<" + identifier + "> foaf:img ?img ." +
+					"<" + identifier + "> foaf:family_name ?family_name ." +
+					"<" + identifier + "> foaf:givenname ?givenname ." +
+					"<" + identifier + "> foaf:name ?name ." +
+				"}";
+
+			api.send({
+				query: query,
+				key: apiKey
+			});
 		}
 		
 		private function apiFault(event:FaultEvent):void
 		{
 			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
+			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
+			api.removeEventListener(ResultEvent.RESULT, apiSaveResult);
 
 			Alert.show("An error occured while communicating with the sparql endpoint.", "Error");
 		}
@@ -56,32 +87,89 @@
 		{
 			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
 			
-			trace(event.result.toString());
-			
 			if(event.result.sparql::results && event.result.sparql::results.sparql::result) {
-				var result:Object = event.result.sparql::results.sparql::result;
-				if(result.sparql::binding.(@name="title").children()[0]) {
-					inputTitle.text = result.sparql::binding.(@name="title").children()[0];
+				var result:Object = event.result.sparql::results.sparql::result[0];
+				if(result.sparql::binding.(@name=="title").children()[0]) {
+					inputTitle.text = result.sparql::binding.(@name=="title").children()[0];
 				}
-				if(result.sparql::binding.(@name="givenname").children()[0]) {
-					inputGivenName.text = result.sparql::binding.(@name="givenname").children()[0];
+				if(result.sparql::binding.(@name=="givenname").children()[0]) {
+					inputGivenName.text = result.sparql::binding.(@name=="givenname").children()[0];
 				}
-				if(result.sparql::binding.(@name="family_name").children()[0]) {
-					inputFamilyName.text = result.sparql::binding.(@name="family_name").children()[0];
+				if(result.sparql::binding.(@name=="family_name").children()[0]) {
+					inputFamilyName.text = result.sparql::binding.(@name=="family_name").children()[0];
 				}
-				if(result.sparql::binding.(@name="nick").children()[0]) {
-					inputNickname.text = result.sparql::binding.(@name="nick").children()[0];
+				if(result.sparql::binding.(@name=="nick").children()[0]) {
+					inputNickname.text = result.sparql::binding.(@name=="nick").children()[0];
 				}
-				if(result.sparql::binding.(@name="homepage").children()[0]) {
-					inputHomepage.text = result.sparql::binding.(@name="homepage").children()[0];
+				if(result.sparql::binding.(@name=="homepage").children()[0]) {
+					inputHomepage.text = result.sparql::binding.(@name=="homepage").children()[0];
 				}
-				if(result.sparql::binding.(@name="mbox").children()[0]) {
-					inputEmail.text = result.sparql::binding.(@name="mbox").children()[0];
+				if(result.sparql::binding.(@name=="mbox").children()[0]) {
+					inputEmail.text = result.sparql::binding.(@name=="mbox").children()[0];
 				}
-				if(result.sparql::binding.(@name="img").children()[0]) {
-					inputImage.text = result.sparql::binding.(@name="img").children()[0];
+				if(result.sparql::binding.(@name=="mbox_sha1sum").children()[0]) {
+					inputEmailEnc.text = "[encrypted email in database]";
+				}
+				if(result.sparql::binding.(@name=="img").children()[0]) {
+					inputImage.text = result.sparql::binding.(@name=="img").children()[0];
 				}
 			}
+		}
+		
+		private function apiDeleteResult(event:ResultEvent):void
+		{
+			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
+			api.addEventListener(ResultEvent.RESULT, apiSaveResult);
+			
+			var query:String = 
+				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+
+				"INSERT INTO <" + identityGraph + "> {";
+				
+			if(inputTitle.text != "") {
+				query += "<" + identifier + "> foaf:title \"" + inputTitle.text + "\" .";
+			}
+			if(inputNickname.text != "") {
+				query += "<" + identifier + "> foaf:nick \"" + inputNickname.text + "\" .";
+			}
+			if(inputHomepage.text != "") {
+				query += "<" + identifier + "> foaf:homepage <" + inputHomepage.text + "> .";
+			}
+			if(inputEmail.text != "") {
+				query += "<" + identifier + "> foaf:mbox <mailto:" + inputEmail.text + "> .";
+			}
+			if(inputEmailEnc.text != "[encrypted email in database]" && inputEmailEnc.text != "") {
+				var data:ByteArray = Hex.toArray(Hex.fromString("mailto:" + inputEmailEnc.text));
+				var hash:IHash = Crypto.getHash("sha1");
+				var result:ByteArray = hash.hash(data);
+				query += "<" + identifier + "> foaf:mbox_sha1sum \"" + Hex.fromArray(result) + "\" .";
+			}
+			if(inputImage.text != "") {
+				query += "<" + identifier + "> foaf:img <" + inputImage.text + "> .";
+			}
+			if(inputFamilyName.text != "") {
+				query += "<" + identifier + "> foaf:family_name \"" + inputFamilyName.text + "\" .";
+			}
+			if(inputGivenName.text != "") {
+				query += "<" + identifier + "> foaf:givenname \"" + inputGivenName.text + "\" .";
+			}
+			if(inputFamilyName.text != "" && inputGivenName.text != "") {
+				query += "<" + identifier + "> foaf:name \"" + inputGivenName.text + " " + inputFamilyName.text + "\" .";
+			}
+
+			query += "}";
+
+			api.send({
+				query: query,
+				key: apiKey
+			});
+		}
+		
+		private function apiSaveResult(event:ResultEvent):void
+		{
+			api.removeEventListener(ResultEvent.RESULT, apiSaveResult);
+			
+			Alert.show("The data has been saved.");
 		}
 	]]>
 	</mx:Script>
@@ -106,7 +194,9 @@
 	</mx:FormItem>
 	<mx:FormItem label="Email">
 		<mx:TextInput id="inputEmail" maxChars="200" width="300"/>
-		<mx:CheckBox id="checkboxEmail" label="encrypt" selected="true"/>
+	</mx:FormItem>
+	<mx:FormItem label="Email encrypted">
+		<mx:TextInput id="inputEmailEnc" maxChars="200" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem label="Url to an image">
 		<mx:TextInput id="inputImage" maxChars="200" width="300"/>
