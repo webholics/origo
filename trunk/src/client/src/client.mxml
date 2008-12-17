@@ -11,6 +11,8 @@
 		import mx.controls.Alert;
 		import mx.rpc.events.FaultEvent;
 		import mx.rpc.events.ResultEvent;
+		
+		import com.origo.client.StatusReporter;
 	
 		[Bindable] private var apiKey:String;
 		[Bindable] private var apiUrl:String;
@@ -18,6 +20,7 @@
 		[Bindable] private var identityGraph:String;
 		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
 		[Bindable] private var triples:ArrayCollection = new ArrayCollection();
+		[Bindable] private var reporter:StatusReporter = new StatusReporter();
 	
 		private function init():void 
 		{
@@ -226,12 +229,13 @@
 		
 		<editor:Editor label="Editor" width="100%" height="100%" 
 			apiKey="{apiKey}" apiUrl="{apiUrl}" 
-			identifier="{identifier}" identityGraph="{identityGraph}"/>
+			identifier="{identifier}" identityGraph="{identityGraph}"
+			reporter="{reporter}"/>
 		
 		<browser:Browser label="Browser" width="100%" height="100%" />
 	</mx:ViewStack>
-	<mx:Label text="© Copyright 2008 Mario Volke. All right reserved." color="#737373" bottom="10" left="10"/>
 	<mx:Image width="200" height="88" scaleContent="false" left="10" top="10" source="../assets/logo.png">
 	</mx:Image>
-	<mx:Button x="487" y="36" label="Button" fillAlphas="[1.0, 1.0, 1.0, 1.0]" fillColors="[#383838, #383838]" color="#CCCCCC"/>
+	<mx:Label text="© Copyright 2008 Mario Volke. All right reserved." color="#737373" bottom="10" left="10"/>
+	<mx:Label width="491" textAlign="right" color="#737373" bottom="10" right="10" text="{reporter.status}"/>
 </mx:Application>

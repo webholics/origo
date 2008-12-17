@@ -4,6 +4,7 @@
 
 	<mx:Script>
 	<![CDATA[
+		import com.origo.client.StatusReporter;
 		import mx.collections.ArrayCollection;
 		import mx.controls.Alert;
 		import mx.rpc.events.FaultEvent;
@@ -17,6 +18,7 @@
 		[Bindable] public var apiUrl:String;
 		public var identifier:String;
 		public var identityGraph:String;
+		public var reporter:StatusReporter;
 		
 		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
 		
@@ -47,6 +49,8 @@
 		private function save():void
 		{
 			api.addEventListener(ResultEvent.RESULT, apiDeleteResult);
+			
+			reporter.status = "Deleting old data...";
 			
 			var query:String = 
 				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
@@ -80,15 +84,15 @@
 			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
 			api.removeEventListener(ResultEvent.RESULT, apiSaveResult);
 
-			Alert.show("An error occured while communicating with the sparql endpoint.", "Error");
+			reporter.status = "An error occured while communicating with the sparql endpoint.";
 		}
 		
 		private function apiLoadResult(event:ResultEvent):void
 		{
 			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
-			
+			trace(event.result.toString());
 			if(event.result.sparql::results && event.result.sparql::results.sparql::result) {
-				var result:Object = event.result.sparql::results.sparql::result[0];
+				var result:Object = event.result.sparql::results.sparql::result;
 				if(result.sparql::binding.(@name=="title").children()[0]) {
 					inputTitle.text = result.sparql::binding.(@name=="title").children()[0];
 				}
@@ -120,6 +124,8 @@
 		{
 			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
 			api.addEventListener(ResultEvent.RESULT, apiSaveResult);
+			
+			reporter.status = "Inserting new data...";
 			
 			var query:String = 
 				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
@@ -169,7 +175,7 @@
 		{
 			api.removeEventListener(ResultEvent.RESULT, apiSaveResult);
 			
-			Alert.show("The data has been saved.");
+			reporter.status = "Data has been saved.";
 		}
 	]]>
 	</mx:Script>
