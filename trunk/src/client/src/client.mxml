@@ -13,6 +13,7 @@
 		import mx.rpc.events.ResultEvent;
 		
 		import com.origo.client.StatusReporter;
+		import com.origo.client.TripleStore;
 	
 		[Bindable] private var apiKey:String;
 		[Bindable] private var apiUrl:String;
@@ -21,6 +22,7 @@
 		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
 		[Bindable] private var triples:ArrayCollection = new ArrayCollection();
 		[Bindable] private var reporter:StatusReporter = new StatusReporter();
+		[Bindable] private var store:TripleStore;
 	
 		private function init():void 
 		{
@@ -29,17 +31,15 @@
 			identifier = Application.application.parameters["identifier"];
 			identityGraph = Application.application.parameters["identity_graph"];
 			
+			store = new TripleStore("api/", Application.application.parameters["api_key"], reporter);
+			
 			loadTriples();
 		}
 		
 		private function loadTriples():void
 		{
-			api.addEventListener(ResultEvent.RESULT, apiLoadResult);
-			
-			api.send({
-				query: "SELECT ?s ?p ?o WHERE { GRAPH <" + identityGraph + "> { ?s ?p ?o . } }",
-				key: apiKey
-			});
+			store.addEventListener("result", apiLoadResult);
+			store.executeQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + identityGraph + "> { ?s ?p ?o . } }");
 		}
 		
 		private function formatBinding(binding:XML):String
@@ -58,20 +58,21 @@
 	
 		private function apiFault(event:FaultEvent):void
 		{
-			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
-			//api.removeEventListener(ResultEvent.RESULT, apiInsertResult);
-			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
+			store.removeEventListener("result", apiDeleteResult);
+			store.removeEventListener("result", apiLoadResult);
 
 			Alert.show("An error occured while communicating with the sparql endpoint.", "Error");
 		}
 		
-		private function apiLoadResult(event:ResultEvent):void
+		private function apiLoadResult(event:Event):void
 		{
-			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
+			store.removeEventListener("result", apiLoadResult);
 			
 			triples.removeAll();
 			
-			for each(var triple:Object in event.result.sparql::results.sparql::result) {
+			var result:Object = store.results[0];
+			
+			for each(var triple:Object in result.sparql::results.sparql::result) {
 				triples.addItem({
 					s: formatBinding(triple.sparql::binding.(@name=="s").children()[0]),
 					p: formatBinding(triple.sparql::binding.(@name=="p").children()[0]),
@@ -105,20 +106,16 @@
 			
 				qu += "}";
 
-				api.addEventListener(ResultEvent.RESULT, apiDeleteResult);
-
-				api.send({
-					query: qu,
-					key: apiKey
-				});
+				store.addEventListener("result", apiDeleteResult);
+				store.executeQuery(qu);
 			}
 			else
 				Alert.show("No triples selected.");
 		}
 		
-		private function apiDeleteResult(event:ResultEvent):void
+		private function apiDeleteResult(event:Event):void
 		{
-			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
+			store.removeEventListener("result", apiDeleteResult);
 			
 			loadTriples();
 		}
@@ -136,40 +133,8 @@
 			
 			return "";
 		}
-		
-		private function insertTriple():void 
-		{
-			
-			var qu:String = "INSERT INTO <" + identityGraph + "> {";
-			
-			qu += formatNode(sComboBox.selectedLabel, sTextInput.text) + " ";
-			qu += formatNode(pComboBox.selectedLabel, pTextInput.text) + " ";
-			qu += formatNode(oComboBox.selectedLabel, oTextInput.text) + ".";
-			
-			qu += "}";
-
-			api.addEventListener(ResultEvent.RESULT, apiInsertResult);
-
-			api.send({
-				query: qu,
-				key: apiKey
-			});
-		}
-		
-		private function apiInsertResult(event:ResultEvent):void
-		{
-			api.removeEventListener(ResultEvent.RESULT, apiInsertResult);
-			
-			loadTriples();
-		}
 	]]>
 	</mx:Script>
-	
-	<mx:HTTPService id="api" url="{apiUrl}" useProxy="false" method="POST" resultFormat="e4x" fault="apiFault(event);" showBusyCursor="true" />
-	
-	<mx:StringValidator source="{sTextInput}" property="text" required="true"/>
-	<mx:StringValidator source="{pTextInput}" property="text" required="true"/>
-	<mx:StringValidator source="{oTextInput}" property="text" required="true"/>
 	
 	<mx:ApplicationControlBar y="106" right="10" left="10">
 		<mx:ToggleButtonBar dataProvider="mainViewStack">
@@ -186,49 +151,12 @@
 				</mx:columns>
 			</mx:DataGrid>
 			<mx:Label y="347" text="{triples.length} Triples found" width="302" textAlign="right" right="0"/>
-			<mx:Button y="347" label="-" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="deleteSelectedTriples();" left="304" width="40"/>
-			<mx:Button y="347" label="+" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" themeColor="#009DFF" textSelectedColor="#009dff" textRollOverColor="#009dff" click="insertTriple();" left="256" width="40"/>
-			<mx:Form y="348" height="275" left="0" width="248">
-				<mx:FormHeading label="Insert new triple"/>
-				<mx:FormItem label="s type">
-					<mx:ComboBox id="sComboBox">
-						<mx:ArrayCollection>
-							<mx:String>uri</mx:String>
-							<mx:String>literal</mx:String>
-							<mx:String>bnode</mx:String>
-						</mx:ArrayCollection>
-					</mx:ComboBox>
-				</mx:FormItem>
-				<mx:FormItem label="s" required="true">
-					<mx:TextInput id="sTextInput"/>
-				</mx:FormItem>
-				<mx:FormItem label="p type">
-					<mx:ComboBox id="pComboBox">
-						<mx:ArrayCollection>
-							<mx:String>uri</mx:String>
-							<mx:String>literal</mx:String>
-							<mx:String>bnode</mx:String>
-						</mx:ArrayCollection></mx:ComboBox>
-				</mx:FormItem>
-				<mx:FormItem label="p" required="true">
-					<mx:TextInput id="pTextInput"/>
-				</mx:FormItem>
-				<mx:FormItem label="o type">
-					<mx:ComboBox id="oComboBox">
-						<mx:ArrayCollection>
-							<mx:String>uri</mx:String>
-							<mx:String>literal</mx:String>
-							<mx:String>bnode</mx:String>
-						</mx:ArrayCollection></mx:ComboBox>
-				</mx:FormItem>
-				<mx:FormItem label="o" required="true">
-					<mx:TextInput id="oTextInput"/>
-				</mx:FormItem>
-			</mx:Form>
+			<mx:Button y="347" label="-" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="deleteSelectedTriples();" left="0" width="40"/>
+			<mx:Button y="347" label="reload" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="loadTriples();" left="48" width="72" fontWeight="normal"/>
 		</mx:Canvas>
 		
 		<editor:Editor label="Editor" width="100%" height="100%" 
-			apiKey="{apiKey}" apiUrl="{apiUrl}" 
+			store="{store}"
 			identifier="{identifier}" identityGraph="{identityGraph}"
 			reporter="{reporter}"/>
 		

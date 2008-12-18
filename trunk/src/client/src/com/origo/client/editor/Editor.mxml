@@ -4,6 +4,7 @@
 
 	<mx:Script>
 	<![CDATA[
+		import com.origo.client.TripleStore;
 		import com.origo.client.StatusReporter;
 		import mx.controls.Alert;
 		
@@ -12,6 +13,7 @@
 		[Bindable] public var identityGraph:String;
 		[Bindable] public var identifier:String;
 		[Bindable] public var reporter:StatusReporter;
+		[Bindable] public var store:TripleStore;
 	]]>
 	</mx:Script>
 
@@ -21,7 +23,9 @@
 	</mx:Panel>
 	<mx:ViewStack id="editorViewStack" width="100%" height="100%">
 		<editor:BasicsEditor label="Basics" width="100%" height="100%" 
-			apiKey="{apiKey}" apiUrl="{apiUrl}" identifier="{identifier}" identityGraph="{identityGraph}" reporter="{reporter}"/>
+			store="{store}" 
+			identifier="{identifier}" identityGraph="{identityGraph}" 
+			reporter="{reporter}"/>
 		<mx:Canvas label="Personal Info" width="100%" height="100%">
 		</mx:Canvas>
 		<mx:Canvas label="Online Accounts / IM" width="100%" height="100%">

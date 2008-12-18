@@ -4,53 +4,56 @@
 
 	<mx:Script>
 	<![CDATA[
+		import com.origo.client.TripleStore;
 		import com.origo.client.StatusReporter;
+		
 		import mx.collections.ArrayCollection;
 		import mx.controls.Alert;
 		import mx.rpc.events.FaultEvent;
 		import mx.rpc.events.ResultEvent;
+		
 		import com.hurlant.util.Hex;
 		import com.hurlant.crypto.hash.SHA1;
 		import com.hurlant.crypto.Crypto;
 		import com.hurlant.crypto.hash.IHash;
 		
-		public var apiKey:String;
-		[Bindable] public var apiUrl:String;
 		public var identifier:String;
 		public var identityGraph:String;
 		public var reporter:StatusReporter;
+		public var store:TripleStore;
 		
 		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
 		
 		public function init():void
 		{
-			api.addEventListener(ResultEvent.RESULT, apiLoadResult);
+			store.addEventListener("result", apiLoadResult);
 
-			api.send({
-				query: 	"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+			store.executeQuery(
+				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
 
-						"SELECT ?title ?nick ?homepage ?mbox ?mbox_sha1sum ?img ?family_name ?givenname WHERE {" +
-							"GRAPH <" + identityGraph + "> {" +
-								"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
-								"OPTIONAL { <" + identifier + "> foaf:title ?title }" +
-								"OPTIONAL { <" + identifier + "> foaf:nick ?nick }" +
-								"OPTIONAL { <" + identifier + "> foaf:homepage ?homepage }" +
-								"OPTIONAL { <" + identifier + "> foaf:mbox ?mbox }" +
-								"OPTIONAL { <" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum }" +
-								"OPTIONAL { <" + identifier + "> foaf:img ?img }" +
-								"OPTIONAL { <" + identifier + "> foaf:family_name ?family_name }" +
-								"OPTIONAL { <" + identifier + "> foaf:givenname ?givenname }" +
-							"}" +
-						"}",
-				key: apiKey
-			});
+				"SELECT ?title ?nick ?homepage ?mbox ?mbox_sha1sum ?img ?family_name ?givenname WHERE {" +
+					"GRAPH <" + identityGraph + "> {" +
+						"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
+						"OPTIONAL { <" + identifier + "> foaf:title ?title }" +
+						"OPTIONAL { <" + identifier + "> foaf:nick ?nick }" +
+						"OPTIONAL { <" + identifier + "> foaf:homepage ?homepage }" +
+						"OPTIONAL { <" + identifier + "> foaf:mbox ?mbox }" +
+						"OPTIONAL { <" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum }" +
+						"OPTIONAL { <" + identifier + "> foaf:img ?img }" +
+						"OPTIONAL { <" + identifier + "> foaf:family_name ?family_name }" +
+						"OPTIONAL { <" + identifier + "> foaf:givenname ?givenname }" +
+					"}" +
+				"}"
+			);
 		}
 		
 		private function save():void
 		{
-			api.addEventListener(ResultEvent.RESULT, apiDeleteResult);
+			store.addEventListener("result", apiSaveResult);
 			
-			reporter.status = "Deleting old data...";
+			reporter.status = "Saving data...";
+			
+			// delete query
 			
 			var query:String = 
 				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
@@ -72,27 +75,60 @@
 					"<" + identifier + "> foaf:name ?name ." +
 				"}";
 
-			api.send({
-				query: query,
-				key: apiKey
-			});
-		}
-		
-		private function apiFault(event:FaultEvent):void
-		{
-			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
-			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
-			api.removeEventListener(ResultEvent.RESULT, apiSaveResult);
+			store.enqueueQuery(query);
+			
+			// insert query
+			
+			query = 
+				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
 
-			reporter.status = "An error occured while communicating with the sparql endpoint.";
+				"INSERT INTO <" + identityGraph + "> {";
+				
+			if(inputTitle.text != "") {
+				query += "<" + identifier + "> foaf:title \"" + inputTitle.text + "\" .";
+			}
+			if(inputNickname.text != "") {
+				query += "<" + identifier + "> foaf:nick \"" + inputNickname.text + "\" .";
+			}
+			if(inputHomepage.text != "") {
+				query += "<" + identifier + "> foaf:homepage <" + inputHomepage.text + "> .";
+			}
+			if(inputEmail.text != "") {
+				query += "<" + identifier + "> foaf:mbox <mailto:" + inputEmail.text + "> .";
+			}
+			if(inputEmailEnc.text != "[encrypted email in database]" && inputEmailEnc.text != "") {
+				var data:ByteArray = Hex.toArray(Hex.fromString("mailto:" + inputEmailEnc.text));
+				var hash:IHash = Crypto.getHash("sha1");
+				var result:ByteArray = hash.hash(data);
+				query += "<" + identifier + "> foaf:mbox_sha1sum \"" + Hex.fromArray(result) + "\" .";
+			}
+			if(inputImage.text != "") {
+				query += "<" + identifier + "> foaf:img <" + inputImage.text + "> .";
+			}
+			if(inputFamilyName.text != "") {
+				query += "<" + identifier + "> foaf:family_name \"" + inputFamilyName.text + "\" .";
+			}
+			if(inputGivenName.text != "") {
+				query += "<" + identifier + "> foaf:givenname \"" + inputGivenName.text + "\" .";
+			}
+			if(inputFamilyName.text != "" && inputGivenName.text != "") {
+				query += "<" + identifier + "> foaf:name \"" + inputGivenName.text + " " + inputFamilyName.text + "\" .";
+			}
+
+			query += "}";
+			
+			store.enqueueQuery(query);
+			store.executeQueries(identityGraph);
 		}
 		
-		private function apiLoadResult(event:ResultEvent):void
+		private function apiLoadResult(event:Event):void
 		{
-			api.removeEventListener(ResultEvent.RESULT, apiLoadResult);
-			trace(event.result.toString());
-			if(event.result.sparql::results && event.result.sparql::results.sparql::result) {
-				var result:Object = event.result.sparql::results.sparql::result;
+			store.removeEventListener("result", apiLoadResult);
+
+			var eventResult:Object = store.results[0];
+			
+			if(eventResult.sparql::results && eventResult.sparql::results.sparql::result) {
+				var result:Object = eventResult.sparql::results.sparql::result;
 				if(result.sparql::binding.(@name=="title").children()[0]) {
 					inputTitle.text = result.sparql::binding.(@name=="title").children()[0];
 				}
@@ -122,7 +158,7 @@
 		
 		private function apiDeleteResult(event:ResultEvent):void
 		{
-			api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
+			/*api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
 			api.addEventListener(ResultEvent.RESULT, apiSaveResult);
 			
 			reporter.status = "Inserting new data...";
@@ -168,19 +204,17 @@
 			api.send({
 				query: query,
 				key: apiKey
-			});
+			});*/
 		}
 		
-		private function apiSaveResult(event:ResultEvent):void
+		private function apiSaveResult(event:Event):void
 		{
-			api.removeEventListener(ResultEvent.RESULT, apiSaveResult);
+			store.removeEventListener("result", apiSaveResult);
 			
 			reporter.status = "Data has been saved.";
 		}
 	]]>
 	</mx:Script>
-	
-	<mx:HTTPService id="api" url="{apiUrl}" useProxy="false" method="POST" resultFormat="e4x" fault="apiFault(event);" showBusyCursor="true" />
 
 	<mx:FormHeading label="Basics"/>
 	<mx:FormItem label="Title (Mr, Mrs, Ms, Dr, etc.)">
