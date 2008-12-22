@@ -6,30 +6,11 @@
  * Copyright (C) 2008 Mario Volke
  * All rights reserved.
  */
-
-// unfortunately ARC2 does not yet support E_STRICT
-//error_reporting(E_ALL|E_STRICT);
-error_reporting(E_ALL);
-
+ 
 require_once '../../libs/arc2/ARC2.php';
 
-define('CONFIG_FILE', '../../config/config.ini');
-
-// check if configuration file exists
-if(!is_file(CONFIG_FILE)) {
-	die('Origo error: Configuration file does not exist.');
-}
-
-// load configuration from ini file
-$config = parse_ini_file(CONFIG_FILE, true);
-
-// should be disabled on prodution servers
-if($config['global']['display_errors'] == 1) {
-	ini_set('display_errors', 1);
-}
-else {
-	ini_set('display_errors', 0);
-}
+require '../../includes/startup.php';
+require_once '../../includes/setupProfile.php';
 
 $endpoint_config = array(
 	// mysql database access
@@ -55,9 +36,7 @@ $endpoint_config = array(
 
 $ep = ARC2::getStoreEndpoint($endpoint_config);
 
-if(!$ep->isSetUp()) {
-	$ep->setUp();
-}
+setupProfile($ep, $config);
 
 if($errors = $ep->getErrors()) {
 	$out = '';

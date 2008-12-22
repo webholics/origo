@@ -7,9 +7,12 @@
  * All rights reserved.
  */
 
+require_once '../libs/arc2/ARC2.php';
+
 require '../includes/startup.php';
 require_once '../includes/currentUri.php';
 require_once '../includes/identifier.php';
+require_once '../includes/setupProfile.php';
 
 $origo_uri = $config['global']['document_uri'];
 
@@ -79,6 +82,26 @@ else if($config['client']['auth'] == 'openid') {
 		}
 	}
 }
+
+// optimize store tables 
+// in order to keep the store small and fast
+$store_config = array(
+	// mysql database access
+	'db_host' => $config['database']['host'],
+	'db_name' => $config['database']['name'],
+	'db_user' => $config['database']['username'],
+	'db_pwd' => $config['database']['password'],
+
+	// stone_name is used as table prefix
+	'store_name' => 'origo'
+);
+
+$store = ARC2::getStore($store_config);
+
+setupProfile($store, $config);
+
+$store->optimizeTables();
+
 
 // generate flash vars
 $flashVars = 'identifier=' . urlencode(identifier($config))

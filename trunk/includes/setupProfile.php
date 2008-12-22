@@ -9,6 +9,15 @@
 require_once dirname(__FILE__) . '/identifier.php';
 
 /**
+ * Construct the URI for the backup graph.
+ * @param $graph The graph URI to generate a backup graph URI.
+ * @return The URI of the backup graph.
+ */
+function getBackupGraph($graph) {
+	return $graph . ':backup';
+}
+
+/**
  * Setup profile in the triple store.
  * @param $store A conncetion to the triple store.
  * @param $config The config array loaded from the ini config file.
@@ -22,7 +31,18 @@ function setupProfile($store, $config) {
 
 	$uri = $config['global']['document_uri'];
 	$identifier = identifier($config);
-
+	
+	// check if there is backuped data
+	$query = 'SELECT ?s ?p ?o WHERE {' .
+		'GRAPH <' . getBackupGraph(IDENTITY_GRAPH) . '> {' .
+		'?s ?p ?o .' .
+		'}' .
+		'}';
+	$rs = $store->query($query);
+	if(sizeof($rs['result']['rows']) > 0) {
+		return;
+	}
+	
 	// setup personal profile document
 	$ask = $prefix .
 		'ASK WHERE {' .
