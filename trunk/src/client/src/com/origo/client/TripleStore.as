@@ -25,11 +25,20 @@ package com.origo.client
 		 * -1 = nothing to do
 		 */
 		private var backupPhase:Number;
+		/**
+		 * 2 = check if original graph is empty
+		 * 1 = copy from backup graph to original graph
+		 * 0 = delete backup graph
+		 * -1 = not a restore backup phase
+		 */
+		private var restoreBackupPhase:Number;
 		private var currentGraph:String;
 		
 		private var reporter:StatusReporter;
 		
 		private var queryExecuting:Boolean;
+		
+		private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
 		
 		public function TripleStore(url:String, key:String="", reporter:StatusReporter=null)
 		{
@@ -55,6 +64,7 @@ package com.origo.client
 			
 			this.currentGraph = "";
 			this.backupPhase = -1;
+			this.restoreBackupPhase = -1;
 		}
 		
 		/**
@@ -64,9 +74,14 @@ package com.origo.client
 		 */
 		private function apiFault(event:FaultEvent):void
 		{
-			// clear query queue
-			this.queries.removeAll();
-			this._results.removeAll();
+			if(restoreBackupPhase >= 0) {
+				restoreBackupPhase = -1;
+			}
+			else {
+				// clear query queue
+				this.queries.removeAll();
+				this._results.removeAll();
+			}
 			
 			queryExecuting = false;
 
@@ -80,6 +95,23 @@ package com.origo.client
 		 */
 		private function apiResult(event:ResultEvent):void
 		{
+			// check if this is a restore backup
+			if(this.restoreBackupPhase >= 0) {
+				if(this.restoreBackupPhase == 0) {
+					this.queryExecuting = false;
+					
+					// dispatch result event
+					this.dispatchEvent(new Event("result"));
+				}
+				else {
+					--this.restoreBackupPhase;
+					runRestoreBackupPhase();
+				}
+				
+				return;
+			}
+			
+			// otherwise it is a transaction
 			if(this.backupPhase >= 2) {	
 				--this.backupPhase;
 				runBackupPhase();
@@ -131,7 +163,7 @@ package com.origo.client
 		 * Directly execute a query without backing up any data in the triple store.
 		 * Don't forget to add an event listener for "result".
 		 * @param query The SPARQL query to execute.
-		 * @return Boolean Returns true if it was possible to execute the query.
+		 * @return Returns true if it was possible to execute the query.
 		 */
 		public function executeQuery(query:String):Boolean
 		{			
@@ -145,7 +177,7 @@ package com.origo.client
 		/**
 		 * Push a query into the transaction queue to be executed with the next executeQueries() call.
 		 * @param query The SPARQL query to be enqueued.
-		 * @return Boolean Returns true if it was possible to enqueue the query.
+		 * @return Returns true if it was possible to enqueue the query.
 		 */
 		public function enqueueQuery(query:String):Boolean
 		{
@@ -161,7 +193,7 @@ package com.origo.client
 		/**
 		 * Execute the all enqueued queries.
 		 * @param graph If graph is not empty then the graph will be backuped before the transaction begins.
-		 * @return Boolean Returns true if it was possible to execute the transaction.
+		 * @return Returns true if it was possible to execute the transaction.
 		 */
 		public function executeQueries(graph:String=""):Boolean
 		{
@@ -173,6 +205,7 @@ package com.origo.client
 			this._results.removeAll();
 			
 			this.currentGraph = graph;
+			this.restoreBackupPhase = -1;
 			
 			if(graph == "") {
 				this.backupPhase = -1;
@@ -195,7 +228,7 @@ package com.origo.client
 		
 		/**
 		 * Get the results from the last transaction in the order of execution.
-		 * @return Array The results as e4x objects.
+		 * @return The results as e4x objects.
 		 */
 		public function get results():Array
 		{
@@ -206,10 +239,23 @@ package com.origo.client
 		 * From time to time the consistency of the triple store should be checked.
 		 * If something went wrong within a transaction the graph can be restored.
 		 * @param graph The URI of the graph to be checked.
+		 * @return Returns true if it was possible to execute the queries.
 		 */
-		public function tryToRestoreIfEmpty(graph:String):void 
+		public function tryToRestoreIfEmpty(graph:String):Boolean
 		{
+			if(this.queryExecuting || graph == "") {
+				return false;
+			}
 			
+			this.queryExecuting = true;
+			this._results.removeAll();
+			
+			this.currentGraph = graph;
+			this.restoreBackupPhase = 2;
+				
+			runRestoreBackupPhase();
+
+			return true;
 		}
 		
 		/**
@@ -228,6 +274,44 @@ package com.origo.client
 				case 1:
 					this.api.send({
 						query: "INSERT INTO <" + getBackupGraph(this.currentGraph) + "> CONSTRUCT { ?s ?p ?o . } WHERE { GRAPH <" + this.currentGraph + "> { ?s ?p ?o . } }",
+						key: this.key
+					});
+					break;
+				default:
+					break;
+			}
+		}
+		
+		/**
+		 * Runs the current restore backup phase.
+		 */
+		private function runRestoreBackupPhase():void
+		{
+			switch(this.restoreBackupPhase) {
+				case 2:
+					this.api.send({
+						query: "SELECT ?s ?p ?o WHERE { GRAPH <" + this.currentGraph + "> { ?s ?p ?o . } }",
+						key: this.key
+					});
+					break;
+				case 1:
+					if(this.api.lastResult.sparql::results.sparql::result.length() == 0) {
+						this.api.send({
+							query: "INSERT INTO <" + this.currentGraph + "> CONSTRUCT { ?s ?p ?o . } WHERE { GRAPH <" + getBackupGraph(this.currentGraph) + "> { ?s ?p ?o . } }",
+							key: this.key
+						});
+					}
+					else {
+						this.restoreBackupPhase = -1;
+						this.queryExecuting = false;
+					
+						// dispatch result event
+						this.dispatchEvent(new Event("result"));
+					}
+					break;
+				case 0:				
+					this.api.send({
+						query: "DELETE FROM <" + getBackupGraph(this.currentGraph) + ">",
 						key: this.key
 					});
 					break;
