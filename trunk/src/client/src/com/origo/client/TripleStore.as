@@ -147,11 +147,11 @@ package com.origo.client
 				else {
 					// save last result
 					this._results.addItem(event.result);
+					
+					// execute next query
+					this.currentQuery++;
 				}
-				
-				// execute next query
-				this.currentQuery++;
-				
+
 				this.api.send({
 					query: this.queries[this.currentQuery],
 					key: this.key

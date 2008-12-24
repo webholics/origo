@@ -6,11 +6,13 @@
 	<![CDATA[
 		import com.origo.client.TripleStore;
 		import com.origo.client.StatusReporter;
+		import com.origo.client.InputHelper;
 		
 		import mx.collections.ArrayCollection;
 		import mx.controls.Alert;
 		import mx.rpc.events.FaultEvent;
 		import mx.rpc.events.ResultEvent;
+		import mx.events.ValidationResultEvent;
 		
 		import com.hurlant.util.Hex;
 		import com.hurlant.crypto.hash.SHA1;
@@ -28,6 +30,7 @@
 		{
 			store.addEventListener("result", apiLoadResult);
 
+			reporter.status = "Loading data...";
 			store.executeQuery(
 				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
 
@@ -64,7 +67,7 @@
 					"<" + identifier + "> foaf:homepage ?homepage ." +
 					"<" + identifier + "> foaf:mbox ?mbox .";
 			
-			if(inputEmailEnc.text != "[encrypted email in database]") {
+			if(emailEncInput.text != "[encrypted email in database]") {
 				query += "<" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum .";
 			}
 				
@@ -84,35 +87,45 @@
 
 				"INSERT INTO <" + identityGraph + "> {";
 				
-			if(inputTitle.text != "") {
-				query += "<" + identifier + "> foaf:title \"" + inputTitle.text + "\" .";
+			// trim all inputs
+			titleInput.text = InputHelper.trim(titleInput.text);
+			nicknameInput.text = InputHelper.trim(nicknameInput.text);
+			homepageInput.text = InputHelper.trim(homepageInput.text);
+			emailInput.text = InputHelper.trim(emailInput.text);
+			emailEncInput.text = InputHelper.trim(emailEncInput.text);
+			imageInput.text = InputHelper.trim(imageInput.text);
+			familyNameInput.text = InputHelper.trim(familyNameInput.text);
+			givenNameInput.text = InputHelper.trim(givenNameInput.text);
+
+			if(titleInput.text != "") {
+				query += "<" + identifier + "> foaf:title \"" + titleInput.text + "\" .";
 			}
-			if(inputNickname.text != "") {
-				query += "<" + identifier + "> foaf:nick \"" + inputNickname.text + "\" .";
+			if(nicknameInput.text != "") {
+				query += "<" + identifier + "> foaf:nick \"" + nicknameInput.text + "\" .";
 			}
-			if(inputHomepage.text != "") {
-				query += "<" + identifier + "> foaf:homepage <" + inputHomepage.text + "> .";
+			if(homepageInput.text != "") {
+				query += "<" + identifier + "> foaf:homepage <" + homepageInput.text + "> .";
 			}
-			if(inputEmail.text != "") {
-				query += "<" + identifier + "> foaf:mbox <mailto:" + inputEmail.text + "> .";
+			if(emailInput.text != "") {
+				query += "<" + identifier + "> foaf:mbox <" + InputHelper.EmailToUri(emailInput.text) + "> .";
 			}
-			if(inputEmailEnc.text != "[encrypted email in database]" && inputEmailEnc.text != "") {
-				var data:ByteArray = Hex.toArray(Hex.fromString("mailto:" + inputEmailEnc.text));
+			if(emailEncInput.text != "[encrypted email in database]" && emailEncInput.text != "") {
+				var data:ByteArray = Hex.toArray(Hex.fromString(InputHelper.EmailToUri(emailEncInput.text)));
 				var hash:IHash = Crypto.getHash("sha1");
 				var result:ByteArray = hash.hash(data);
 				query += "<" + identifier + "> foaf:mbox_sha1sum \"" + Hex.fromArray(result) + "\" .";
 			}
-			if(inputImage.text != "") {
-				query += "<" + identifier + "> foaf:img <" + inputImage.text + "> .";
+			if(imageInput.text != "") {
+				query += "<" + identifier + "> foaf:img <" + imageInput.text + "> .";
 			}
-			if(inputFamilyName.text != "") {
-				query += "<" + identifier + "> foaf:family_name \"" + inputFamilyName.text + "\" .";
+			if(familyNameInput.text != "") {
+				query += "<" + identifier + "> foaf:family_name \"" + familyNameInput.text + "\" .";
 			}
-			if(inputGivenName.text != "") {
-				query += "<" + identifier + "> foaf:givenname \"" + inputGivenName.text + "\" .";
+			if(givenNameInput.text != "") {
+				query += "<" + identifier + "> foaf:givenname \"" + givenNameInput.text + "\" .";
 			}
-			if(inputFamilyName.text != "" && inputGivenName.text != "") {
-				query += "<" + identifier + "> foaf:name \"" + inputGivenName.text + " " + inputFamilyName.text + "\" .";
+			if(familyNameInput.text != "" && givenNameInput.text != "") {
+				query += "<" + identifier + "> foaf:name \"" + givenNameInput.text + " " + familyNameInput.text + "\" .";
 			}
 
 			query += "}";
@@ -130,120 +143,95 @@
 			if(eventResult.sparql::results && eventResult.sparql::results.sparql::result) {
 				var result:Object = eventResult.sparql::results.sparql::result;
 				if(result.sparql::binding.(@name=="title").children()[0]) {
-					inputTitle.text = result.sparql::binding.(@name=="title").children()[0];
+					titleInput.text = result.sparql::binding.(@name=="title").children()[0];
 				}
 				if(result.sparql::binding.(@name=="givenname").children()[0]) {
-					inputGivenName.text = result.sparql::binding.(@name=="givenname").children()[0];
+					givenNameInput.text = result.sparql::binding.(@name=="givenname").children()[0];
 				}
 				if(result.sparql::binding.(@name=="family_name").children()[0]) {
-					inputFamilyName.text = result.sparql::binding.(@name=="family_name").children()[0];
+					familyNameInput.text = result.sparql::binding.(@name=="family_name").children()[0];
 				}
 				if(result.sparql::binding.(@name=="nick").children()[0]) {
-					inputNickname.text = result.sparql::binding.(@name=="nick").children()[0];
+					nicknameInput.text = result.sparql::binding.(@name=="nick").children()[0];
 				}
 				if(result.sparql::binding.(@name=="homepage").children()[0]) {
-					inputHomepage.text = result.sparql::binding.(@name=="homepage").children()[0];
+					homepageInput.text = result.sparql::binding.(@name=="homepage").children()[0];
 				}
 				if(result.sparql::binding.(@name=="mbox").children()[0]) {
-					inputEmail.text = result.sparql::binding.(@name=="mbox").children()[0];
+					emailInput.text = InputHelper.UriToEmail(result.sparql::binding.(@name=="mbox").children()[0]);
 				}
 				if(result.sparql::binding.(@name=="mbox_sha1sum").children()[0]) {
-					inputEmailEnc.text = "[encrypted email in database]";
+					emailEncInput.text = "[encrypted email in database]";
 				}
 				if(result.sparql::binding.(@name=="img").children()[0]) {
-					inputImage.text = result.sparql::binding.(@name=="img").children()[0];
+					imageInput.text = result.sparql::binding.(@name=="img").children()[0];
 				}
 			}
-		}
-		
-		private function apiDeleteResult(event:ResultEvent):void
-		{
-			/*api.removeEventListener(ResultEvent.RESULT, apiDeleteResult);
-			api.addEventListener(ResultEvent.RESULT, apiSaveResult);
 			
-			reporter.status = "Inserting new data...";
-			
-			var query:String = 
-				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
-
-				"INSERT INTO <" + identityGraph + "> {";
-				
-			if(inputTitle.text != "") {
-				query += "<" + identifier + "> foaf:title \"" + inputTitle.text + "\" .";
-			}
-			if(inputNickname.text != "") {
-				query += "<" + identifier + "> foaf:nick \"" + inputNickname.text + "\" .";
-			}
-			if(inputHomepage.text != "") {
-				query += "<" + identifier + "> foaf:homepage <" + inputHomepage.text + "> .";
-			}
-			if(inputEmail.text != "") {
-				query += "<" + identifier + "> foaf:mbox <mailto:" + inputEmail.text + "> .";
-			}
-			if(inputEmailEnc.text != "[encrypted email in database]" && inputEmailEnc.text != "") {
-				var data:ByteArray = Hex.toArray(Hex.fromString("mailto:" + inputEmailEnc.text));
-				var hash:IHash = Crypto.getHash("sha1");
-				var result:ByteArray = hash.hash(data);
-				query += "<" + identifier + "> foaf:mbox_sha1sum \"" + Hex.fromArray(result) + "\" .";
-			}
-			if(inputImage.text != "") {
-				query += "<" + identifier + "> foaf:img <" + inputImage.text + "> .";
-			}
-			if(inputFamilyName.text != "") {
-				query += "<" + identifier + "> foaf:family_name \"" + inputFamilyName.text + "\" .";
-			}
-			if(inputGivenName.text != "") {
-				query += "<" + identifier + "> foaf:givenname \"" + inputGivenName.text + "\" .";
-			}
-			if(inputFamilyName.text != "" && inputGivenName.text != "") {
-				query += "<" + identifier + "> foaf:name \"" + inputGivenName.text + " " + inputFamilyName.text + "\" .";
-			}
-
-			query += "}";
-
-			api.send({
-				query: query,
-				key: apiKey
-			});*/
+			reporter.status = "Data loaded.";
+			reporter.clearStatusInSeconds(5);
 		}
 		
 		private function apiSaveResult(event:Event):void
 		{
 			store.removeEventListener("result", apiSaveResult);
 			
-			reporter.status = "Data has been saved.";
+			reporter.status = "Data saved.";
+			reporter.clearStatusInSeconds(5);
+		}
+		
+		private function validateForm():Boolean {		
+			var valid:Boolean = true;
+			var vEvent:ValidationResultEvent;
+			
+			vEvent = emailInput_emailValidator.validate();
+			if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+				valid = false;
+			}
+			
+			if(emailEncInput.text != "[encrypted email in database]") {
+				vEvent = emailEncInput_emailValidator.validate(emailEncInput.text);
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+					valid = false;
+				}
+			}
+			
+			return valid;
 		}
 	]]>
 	</mx:Script>
+	
+	<mx:EmailValidator id="emailInput_emailValidator" required="false" source="{emailInput}" property="text"/>
+	<mx:EmailValidator id="emailEncInput_emailValidator" required="false" listener="{emailEncInput}"/>
 
 	<mx:FormHeading label="Basics"/>
 	<mx:FormItem label="Title (Mr, Mrs, Ms, Dr, etc.)">
-		<mx:TextInput id="inputTitle" maxChars="100" width="300"/>
+		<mx:TextInput id="titleInput" maxChars="100" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem label="Given name">
-		<mx:TextInput id="inputGivenName" maxChars="100" width="300"/>
+		<mx:TextInput id="givenNameInput" maxChars="100" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem label="Family name">
-		<mx:TextInput id="inputFamilyName" maxChars="100" width="300"/>
+		<mx:TextInput id="familyNameInput" maxChars="100" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem label="Nickname">
-		<mx:TextInput id="inputNickname" maxChars="100" width="300"/>
+		<mx:TextInput id="nicknameInput" maxChars="100" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem label="Homepage">
-		<mx:TextInput id="inputHomepage" maxChars="200" width="300"/>
+		<mx:TextInput id="homepageInput" maxChars="200" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem label="Email">
-		<mx:TextInput id="inputEmail" maxChars="200" width="300"/>
+		<mx:TextInput id="emailInput" maxChars="200" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem label="Email encrypted">
-		<mx:TextInput id="inputEmailEnc" maxChars="200" width="300"/>
+		<mx:TextInput id="emailEncInput" maxChars="200" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem label="Url to an image">
-		<mx:TextInput id="inputImage" maxChars="200" width="300"/>
+		<mx:TextInput id="imageInput" maxChars="200" width="300"/>
 	</mx:FormItem>
 	<mx:FormItem>
 		<mx:HRule width="300"/>
-		<mx:Button label="Save" click="save()"/>
+		<mx:Button label="Save" click="if(validateForm()) save();"/>
 	</mx:FormItem>
 	
 </mx:Form>

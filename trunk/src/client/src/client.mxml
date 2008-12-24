@@ -33,11 +33,14 @@
 			
 			store = new TripleStore("api/", Application.application.parameters["api_key"], reporter);
 			
-			loadTriples();
+			reporter.status = "Try to restore backup data...";
+			store.addEventListener("result", apiRestoreResult);
+			store.tryToRestoreIfEmpty(identityGraph);
 		}
 		
 		private function loadTriples():void
 		{
+			reporter.status = "Loading data...";
 			store.addEventListener("result", apiLoadResult);
 			store.executeQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + identityGraph + "> { ?s ?p ?o . } }");
 		}
@@ -60,8 +63,16 @@
 		{
 			store.removeEventListener("result", apiDeleteResult);
 			store.removeEventListener("result", apiLoadResult);
+			store.removeEventListener("result", apiRestoreResult);
 
-			Alert.show("An error occured while communicating with the sparql endpoint.", "Error");
+			reporter.status = "An error occured while communicating with the sparql endpoint.";
+		}
+		
+		private function apiRestoreResult(event:Event):void
+		{
+			store.removeEventListener("result", apiRestoreResult);
+			
+			loadTriples();
 		}
 		
 		private function apiLoadResult(event:Event):void
@@ -79,6 +90,9 @@
 					o: formatBinding(triple.sparql::binding.(@name=="o").children()[0])
 				});
 			}
+			
+			reporter.status = "Data loaded.";
+			reporter.clearStatusInSeconds(5);
 		}
 
 		private function displayRow(row:Object, column:DataGridColumn):String
