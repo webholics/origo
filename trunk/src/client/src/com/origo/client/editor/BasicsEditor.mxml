@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Form xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600"
-	initialize="init()">
+	creationComplete="doInit = true; init();" show="init()" hide="doInit = true;">
 
 	<mx:Script>
 	<![CDATA[
@@ -24,30 +24,34 @@
 		public var reporter:StatusReporter;
 		public var store:TripleStore;
 		
+		private var doInit:Boolean;
+		
 		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
 		
 		public function init():void
 		{
-			store.addEventListener("result", apiLoadResult);
+			if(doInit) {
+				store.addEventListener("result", apiLoadResult);
 
-			reporter.status = "Loading data...";
-			store.executeQuery(
-				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				reporter.status = "Loading data...";
+				store.executeQuery(
+					"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
 
-				"SELECT ?title ?nick ?homepage ?mbox ?mbox_sha1sum ?img ?family_name ?givenname WHERE {" +
-					"GRAPH <" + identityGraph + "> {" +
-						"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
-						"OPTIONAL { <" + identifier + "> foaf:title ?title }" +
-						"OPTIONAL { <" + identifier + "> foaf:nick ?nick }" +
-						"OPTIONAL { <" + identifier + "> foaf:homepage ?homepage }" +
-						"OPTIONAL { <" + identifier + "> foaf:mbox ?mbox }" +
-						"OPTIONAL { <" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum }" +
-						"OPTIONAL { <" + identifier + "> foaf:img ?img }" +
-						"OPTIONAL { <" + identifier + "> foaf:family_name ?family_name }" +
-						"OPTIONAL { <" + identifier + "> foaf:givenname ?givenname }" +
-					"}" +
-				"}"
-			);
+					"SELECT ?title ?nick ?homepage ?mbox ?mbox_sha1sum ?img ?family_name ?givenname WHERE {" +
+						"GRAPH <" + identityGraph + "> {" +
+							"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
+							"OPTIONAL { <" + identifier + "> foaf:title ?title }" +
+							"OPTIONAL { <" + identifier + "> foaf:nick ?nick }" +
+							"OPTIONAL { <" + identifier + "> foaf:homepage ?homepage }" +
+							"OPTIONAL { <" + identifier + "> foaf:mbox ?mbox }" +
+							"OPTIONAL { <" + identifier + "> foaf:mbox_sha1sum ?mbox_sha1sum }" +
+							"OPTIONAL { <" + identifier + "> foaf:img ?img }" +
+							"OPTIONAL { <" + identifier + "> foaf:family_name ?family_name }" +
+							"OPTIONAL { <" + identifier + "> foaf:givenname ?givenname }" +
+						"}" +
+					"}"
+				);
+			}
 		}
 		
 		private function save():void
