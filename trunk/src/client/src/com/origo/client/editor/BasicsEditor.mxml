@@ -31,6 +31,15 @@
 		public function init():void
 		{
 			if(doInit) {
+				titleInput.text = "";
+				nicknameInput.text = "";
+				homepageInput.text = "";
+				emailInput.text = "";
+				emailEncInput.text = "";
+				imageInput.text = "";
+				familyNameInput.text = "";
+				givenNameInput.text = "";
+				
 				store.addEventListener("result", apiLoadResult);
 
 				reporter.status = "Loading data...";
@@ -144,30 +153,30 @@
 
 			var eventResult:Object = store.results[0];
 			
-			if(eventResult.sparql::results && eventResult.sparql::results.sparql::result) {
+			if(eventResult.sparql::results.length() > 0 && eventResult.sparql::results.sparql::result.length() > 0) {
 				var result:Object = eventResult.sparql::results.sparql::result;
-				if(result.sparql::binding.(@name=="title").children()[0]) {
+				if(result.sparql::binding.(@name=="title").children().length() > 0) {
 					titleInput.text = result.sparql::binding.(@name=="title").children()[0];
 				}
-				if(result.sparql::binding.(@name=="givenname").children()[0]) {
+				if(result.sparql::binding.(@name=="givenname").children().length() > 0) {
 					givenNameInput.text = result.sparql::binding.(@name=="givenname").children()[0];
 				}
-				if(result.sparql::binding.(@name=="family_name").children()[0]) {
+				if(result.sparql::binding.(@name=="family_name").children().length() > 0) {
 					familyNameInput.text = result.sparql::binding.(@name=="family_name").children()[0];
 				}
-				if(result.sparql::binding.(@name=="nick").children()[0]) {
+				if(result.sparql::binding.(@name=="nick").children().length() > 0) {
 					nicknameInput.text = result.sparql::binding.(@name=="nick").children()[0];
 				}
-				if(result.sparql::binding.(@name=="homepage").children()[0]) {
+				if(result.sparql::binding.(@name=="homepage").children().length() > 0) {
 					homepageInput.text = result.sparql::binding.(@name=="homepage").children()[0];
 				}
-				if(result.sparql::binding.(@name=="mbox").children()[0]) {
+				if(result.sparql::binding.(@name=="mbox").children().length() > 0) {
 					emailInput.text = InputHelper.UriToEmail(result.sparql::binding.(@name=="mbox").children()[0]);
 				}
-				if(result.sparql::binding.(@name=="mbox_sha1sum").children()[0]) {
+				if(result.sparql::binding.(@name=="mbox_sha1sum").children().length() > 0) {
 					emailEncInput.text = "[encrypted email in database]";
 				}
-				if(result.sparql::binding.(@name=="img").children()[0]) {
+				if(result.sparql::binding.(@name=="img").children().length() > 0) {
 					imageInput.text = result.sparql::binding.(@name=="img").children()[0];
 				}
 			}

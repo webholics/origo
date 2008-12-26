@@ -5,6 +5,25 @@
 	backgroundGradientColors="[#4D4D4D, #4D4D4D]" 
 	xmlns:editor="com.origo.client.editor.*"
 	xmlns:browser="com.origo.client.browser.*">
+	
+	<mx:states>
+		<mx:State name="header">
+			<mx:AddChild position="lastChild">
+				<mx:Label id="headerWelcome" text="welcome" width="161" color="#737373" fontSize="15" textAlign="right" right="10" top="51.7"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label id="headerName" text="Max Mustermann" width="369" height="28.333332" textAlign="right" right="10" fontSize="24" color="#C5C5C5" top="69.7"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="headerWithImage" basedOn="header">
+			<mx:AddChild position="lastChild">
+				<mx:Image id="headerImage" width="88" height="88" scaleContent="true" right="10" top="10"/>
+			</mx:AddChild>
+			<mx:SetStyle target="{headerWelcome}" name="right" value="106"/>
+			<mx:SetStyle target="{headerName}" name="right" value="106"/>
+		</mx:State>
+	</mx:states>
+	
 	<mx:Script>
 	<![CDATA[
 		import mx.collections.ArrayCollection;
@@ -38,120 +57,57 @@
 			store.tryToRestoreIfEmpty(identityGraph);
 		}
 		
-		private function loadTriples():void
+		private function loadHeaderData():void
 		{
 			reporter.status = "Loading data...";
 			store.addEventListener("result", apiLoadResult);
-			store.executeQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + identityGraph + "> { ?s ?p ?o . } }");
-		}
-		
-		private function formatBinding(binding:XML):String
-		{
-			switch(binding.name().localName) {
-				case "bnode":
-					return "<_:" + binding.toString() + ">";
-				case "uri":
-					return "<" + binding.toString() + ">";
-				case "literal":
-					return "\"" + binding.toString() + "\"";
-			}
-			
-			return "";
-		}
-	
-		private function apiFault(event:FaultEvent):void
-		{
-			store.removeEventListener("result", apiDeleteResult);
-			store.removeEventListener("result", apiLoadResult);
-			store.removeEventListener("result", apiRestoreResult);
+			store.executeQuery(
+					"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
 
-			reporter.status = "An error occured while communicating with the sparql endpoint.";
+					"SELECT ?name ?img WHERE {" +
+						"GRAPH <" + identityGraph + "> {" +
+							"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
+							"OPTIONAL { <" + identifier + "> foaf:name ?name }" +
+							"OPTIONAL { <" + identifier + "> foaf:img ?img }" +
+						"}" +
+					"}"
+				);
 		}
 		
 		private function apiRestoreResult(event:Event):void
 		{
 			store.removeEventListener("result", apiRestoreResult);
 			
-			loadTriples();
+			loadHeaderData();
 		}
 		
 		private function apiLoadResult(event:Event):void
 		{
 			store.removeEventListener("result", apiLoadResult);
 			
-			triples.removeAll();
-			
 			var result:Object = store.results[0];
 			
-			for each(var triple:Object in result.sparql::results.sparql::result) {
-				triples.addItem({
-					s: formatBinding(triple.sparql::binding.(@name=="s").children()[0]),
-					p: formatBinding(triple.sparql::binding.(@name=="p").children()[0]),
-					o: formatBinding(triple.sparql::binding.(@name=="o").children()[0])
-				});
+			if(result..sparql::binding.(@name=="name").length() > 0) {
+				currentState = "header";
+				headerName.text = result.sparql::results.sparql::result.sparql::binding.(@name=="name").children()[0];
+				
+				if(result..sparql::binding.(@name=="img").length() > 0) {
+					currentState = "headerWithImage";
+					headerImage.source = result.sparql::results.sparql::result.sparql::binding.(@name=="img").children()[0];
+				}
 			}
 			
 			reporter.status = "Data loaded.";
 			reporter.clearStatusInSeconds(5);
-		}
-
-		private function displayRow(row:Object, column:DataGridColumn):String
-		{
-			switch(column.headerText) {
-				case "s":
-					return formatBinding(row.sparql::binding.(@name=="s").children()[0]);
-				case "p":
-					return formatBinding(row.sparql::binding.(@name=="p").children()[0]);
-				case "o":
-					return formatBinding(row.sparql::binding.(@name=="o").children()[0]);
-			}
-
-			return "";
-		}
-		
-		private function deleteSelectedTriples():void
-		{
-			if(triplesGrid.selectedIndices.length > 0) {
-				var qu:String = "DELETE FROM <" + identityGraph + "> {";
-			
-				for each(var i:int in triplesGrid.selectedIndices) {
-					qu += triples[i]["s"] + " " + triples[i]["p"] + " " + triples[i]["o"] + ".";
-				}
-			
-				qu += "}";
-
-				store.addEventListener("result", apiDeleteResult);
-				store.executeQuery(qu);
-			}
-			else
-				Alert.show("No triples selected.");
-		}
-		
-		private function apiDeleteResult(event:Event):void
-		{
-			store.removeEventListener("result", apiDeleteResult);
-			
-			loadTriples();
-		}
-		
-		private function formatNode(type:String, node:String):String
-		{
-			switch(type) {
-				case "bnode":
-					return "<_:" + node + ">";
-				case "uri":
-					return "<" + node + ">";
-				case "literal":
-					return "\"" + node + "\"";
-			}
-			
-			return "";
 		}
 	]]>
 	</mx:Script>
 	
 	<mx:Fade id="fadeOut" duration="500" alphaFrom="1.0" alphaTo="0.0"/>
 	<mx:Fade id="fadeIn" duration="500" alphaFrom="0.0" alphaTo="1.0"/>
+	
+	<mx:Image width="200" height="88" scaleContent="false" left="10" top="10" source="../assets/logo.png">
+	</mx:Image>
 	
 	<mx:ApplicationControlBar y="106" right="10" left="10">
 		<mx:ToggleButtonBar dataProvider="mainViewStack">
@@ -161,16 +117,7 @@
 	
 		<mx:Canvas label="Dashboard" width="100%" height="100%" 
 			showEffect="{fadeIn}" hideEffect="{fadeOut}">
-			<mx:DataGrid id="triplesGrid" height="339" dataProvider="{triples}" right="0" left="0" top="0" editable="false" allowMultipleSelection="true">
-				<mx:columns>
-					<mx:DataGridColumn headerText="s" dataField="s"/>
-					<mx:DataGridColumn headerText="p" dataField="p"/>
-					<mx:DataGridColumn headerText="o" dataField="o"/>			
-				</mx:columns>
-			</mx:DataGrid>
-			<mx:Label y="347" text="{triples.length} Triples found" width="302" textAlign="right" right="0"/>
-			<mx:Button y="347" label="-" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="deleteSelectedTriples();" left="0" width="40"/>
-			<mx:Button y="347" label="reload" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="loadTriples();" left="48" width="72" fontWeight="normal"/>
+			<mx:Label text="DASHBOARD" width="385" height="263" fontSize="36" color="#626262" fontWeight="normal" horizontalCenter="0" verticalCenter="73" textAlign="center"/>
 		</mx:Canvas>
 		
 		<editor:Editor label="Editor" width="100%" height="100%" 
@@ -183,8 +130,7 @@
 			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
 			
 	</mx:ViewStack>
-	<mx:Image width="200" height="88" scaleContent="false" left="10" top="10" source="../assets/logo.png">
-	</mx:Image>
+
 	<mx:Label text="© Copyright 2008 Mario Volke. All right reserved." color="#737373" bottom="10" left="10"/>
 	<mx:Label width="491" textAlign="right" color="#737373" bottom="10" right="10" text="{reporter.status}"/>
 </mx:Application>

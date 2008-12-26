@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600"
+	creationComplete="doInit = true; init();" show="init()" hide="doInit = true;">
+		
+	<mx:Script>
+	<![CDATA[
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		
+		import com.origo.client.StatusReporter;
+		import com.origo.client.TripleStore;
+	
+		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
+		[Bindable] private var triples:ArrayCollection = new ArrayCollection();
+		
+		public var identifier:String;
+		public var identityGraph:String;
+		public var reporter:StatusReporter;
+		public var store:TripleStore;
+		
+		private var doInit:Boolean;
+		
+		private function init():void
+		{
+			loadTriples();
+		}
+		
+		private function loadTriples():void
+		{
+			reporter.status = "Loading data...";
+			store.addEventListener("result", apiLoadResult);
+			store.executeQuery("SELECT ?s ?p ?o WHERE { GRAPH <" + identityGraph + "> { ?s ?p ?o . } }");
+		}
+		
+		private function formatBinding(binding:XML):String
+		{
+			switch(binding.name().localName) {
+				case "bnode":
+					return "<_:" + binding.toString() + ">";
+				case "uri":
+					return "<" + binding.toString() + ">";
+				case "literal":
+					return "\"" + binding.toString() + "\"";
+			}
+			
+			return "";
+		}
+		
+		private function apiLoadResult(event:Event):void
+		{
+			store.removeEventListener("result", apiLoadResult);
+			
+			triples.removeAll();
+			
+			var result:Object = store.results[0];
+			
+			for each(var triple:Object in result.sparql::results.sparql::result) {
+				triples.addItem({
+					s: formatBinding(triple.sparql::binding.(@name=="s").children()[0]),
+					p: formatBinding(triple.sparql::binding.(@name=="p").children()[0]),
+					o: formatBinding(triple.sparql::binding.(@name=="o").children()[0])
+				});
+			}
+			
+			reporter.status = "Data loaded.";
+			reporter.clearStatusInSeconds(5);
+		}
+
+		private function displayRow(row:Object, column:DataGridColumn):String
+		{
+			switch(column.headerText) {
+				case "s":
+					return formatBinding(row.sparql::binding.(@name=="s").children()[0]);
+				case "p":
+					return formatBinding(row.sparql::binding.(@name=="p").children()[0]);
+				case "o":
+					return formatBinding(row.sparql::binding.(@name=="o").children()[0]);
+			}
+
+			return "";
+		}
+		
+		private function deleteSelectedTriples():void
+		{
+			if(triplesGrid.selectedIndices.length > 0) {
+				var qu:String = "DELETE FROM <" + identityGraph + "> {";
+			
+				for each(var i:int in triplesGrid.selectedIndices) {
+					qu += triples[i]["s"] + " " + triples[i]["p"] + " " + triples[i]["o"] + ".";
+				}
+			
+				qu += "}";
+
+				store.addEventListener("result", apiDeleteResult);
+				store.executeQuery(qu);
+			}
+			else
+				Alert.show("No triples selected.");
+		}
+		
+		private function apiDeleteResult(event:Event):void
+		{
+			store.removeEventListener("result", apiDeleteResult);
+			
+			loadTriples();
+		}
+		
+		private function formatNode(type:String, node:String):String
+		{
+			switch(type) {
+				case "bnode":
+					return "<_:" + node + ">";
+				case "uri":
+					return "<" + node + ">";
+				case "literal":
+					return "\"" + node + "\"";
+			}
+			
+			return "";
+		}
+	]]>
+	</mx:Script>
+
+<mx:DataGrid id="triplesGrid" height="548" dataProvider="{triples}" right="10" left="10" top="10" editable="false" allowMultipleSelection="true">
+	<mx:columns>
+		<mx:DataGridColumn headerText="s" dataField="s"/>
+		<mx:DataGridColumn headerText="p" dataField="p"/>
+		<mx:DataGridColumn headerText="o" dataField="o"/>			
+	</mx:columns>
+</mx:DataGrid>
+<mx:Label y="572" text="{triples.length} Triples found" width="302" textAlign="right" right="10"/>
+<mx:Button y="566" label="-" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="deleteSelectedTriples();" left="10" width="40"/>
+<mx:Button y="566" label="reload" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="loadTriples();" left="58" width="72" fontWeight="normal"/>
+
+</mx:Canvas>

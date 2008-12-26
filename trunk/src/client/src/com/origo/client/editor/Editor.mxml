@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600"
 	xmlns:editor="com.origo.client.editor.*">
-
+	
 	<mx:Script>
 	<![CDATA[
 		import com.origo.client.TripleStore;
@@ -19,12 +19,15 @@
 	
 	<mx:Fade id="fadeOut" duration="500" alphaFrom="1.0" alphaTo="0.0"/>
 	<mx:Fade id="fadeIn" duration="500" alphaFrom="0.0" alphaTo="1.0"/>
-
-	<mx:Panel width="250" height="100%" layout="absolute" title="Profile sections">
-		<mx:LinkBar dataProvider="editorViewStack" direction="vertical" separatorWidth="0" left="10" right="10" top="10" bottom="10">
-		</mx:LinkBar>
-	</mx:Panel>
-	<mx:ViewStack id="editorViewStack" width="100%" height="100%">
+	
+	<mx:VBox height="100%" width="250" verticalGap="10">
+		<mx:Panel width="100%" height="269" layout="absolute" title="Profile editor">
+			<mx:LinkBar dataProvider="profileViewStack" direction="vertical" separatorWidth="0" left="10" right="10" top="10" bottom="10">
+			</mx:LinkBar>
+		</mx:Panel>
+	</mx:VBox>
+	
+	<mx:ViewStack id="profileViewStack" width="100%" height="100%">
 		<editor:BasicsEditor label="Basics" width="100%" height="100%" 
 			store="{store}" 
 			identifier="{identifier}" identityGraph="{identityGraph}" 
@@ -42,5 +45,14 @@
 		<mx:Canvas label="Documents and Images" width="100%" height="100%"
 			showEffect="{fadeIn}" hideEffect="{fadeOut}">
 		</mx:Canvas>
+		<mx:Canvas label="Import profile" width="100%" height="100%"
+			showEffect="{fadeIn}" hideEffect="{fadeOut}">
+		</mx:Canvas>
+		<editor:TripleEditor label="Edit data" width="100%" height="100%" 
+			store="{store}" 
+			identifier="{identifier}" identityGraph="{identityGraph}" 
+			reporter="{reporter}"
+			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
 	</mx:ViewStack>
+
 </mx:HBox>
