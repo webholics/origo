@@ -147,10 +147,10 @@ package com.origo.client
 				else {
 					// save last result
 					this._results.addItem(event.result);
-					
-					// execute next query
-					this.currentQuery++;
 				}
+					
+				// execute next query
+				this.currentQuery++;
 
 				this.api.send({
 					query: this.queries[this.currentQuery],
@@ -218,7 +218,7 @@ package com.origo.client
 			}
 			else {
 				this.backupPhase = 2;
-				this.currentQuery = 0;
+				this.currentQuery = -1;
 				
 				runBackupPhase();
 			}
@@ -302,11 +302,9 @@ package com.origo.client
 						});
 					}
 					else {
-						this.restoreBackupPhase = -1;
-						this.queryExecuting = false;
-					
-						// dispatch result event
-						this.dispatchEvent(new Event("result"));
+						// continue with next restore backup phase
+						this.restoreBackupPhase = 0;
+						runRestoreBackupPhase();
 					}
 					break;
 				case 0:				

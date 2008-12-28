@@ -94,6 +94,7 @@
 			store.enqueueQuery(query);
 			
 			// insert query
+			var needsInsert:Boolean = false;
 			
 			query = 
 				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
@@ -111,39 +112,50 @@
 			givenNameInput.text = InputHelper.trim(givenNameInput.text);
 
 			if(titleInput.text != "") {
+				needsInsert = true;
 				query += "<" + identifier + "> foaf:title \"" + titleInput.text + "\" .";
 			}
 			if(nicknameInput.text != "") {
+				needsInsert = true;
 				query += "<" + identifier + "> foaf:nick \"" + nicknameInput.text + "\" .";
 			}
 			if(homepageInput.text != "") {
+				needsInsert = true;
 				query += "<" + identifier + "> foaf:homepage <" + homepageInput.text + "> .";
 			}
 			if(emailInput.text != "") {
+				needsInsert = true;
 				query += "<" + identifier + "> foaf:mbox <" + InputHelper.EmailToUri(emailInput.text) + "> .";
 			}
 			if(emailEncInput.text != "[encrypted email in database]" && emailEncInput.text != "") {
+				needsInsert = true;
 				var data:ByteArray = Hex.toArray(Hex.fromString(InputHelper.EmailToUri(emailEncInput.text)));
 				var hash:IHash = Crypto.getHash("sha1");
 				var result:ByteArray = hash.hash(data);
 				query += "<" + identifier + "> foaf:mbox_sha1sum \"" + Hex.fromArray(result) + "\" .";
 			}
 			if(imageInput.text != "") {
+				needsInsert = true;
 				query += "<" + identifier + "> foaf:img <" + imageInput.text + "> .";
 			}
 			if(familyNameInput.text != "") {
+				needsInsert = true;
 				query += "<" + identifier + "> foaf:family_name \"" + familyNameInput.text + "\" .";
 			}
 			if(givenNameInput.text != "") {
+				needsInsert = true;
 				query += "<" + identifier + "> foaf:givenname \"" + givenNameInput.text + "\" .";
 			}
 			if(familyNameInput.text != "" && givenNameInput.text != "") {
+				needsInsert = true;
 				query += "<" + identifier + "> foaf:name \"" + givenNameInput.text + " " + familyNameInput.text + "\" .";
 			}
 
 			query += "}";
 			
-			store.enqueueQuery(query);
+			if(needsInsert) {
+				store.enqueueQuery(query);
+			}
 			store.executeQueries(identityGraph);
 		}
 		

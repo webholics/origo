@@ -86,7 +86,7 @@
 			store.removeEventListener("result", apiLoadResult);
 			
 			var result:Object = store.results[0];
-			
+
 			if(result..sparql::binding.(@name=="name").length() > 0) {
 				currentState = "header";
 				headerName.text = result.sparql::results.sparql::result.sparql::binding.(@name=="name").children()[0];
