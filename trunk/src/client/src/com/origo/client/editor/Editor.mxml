@@ -38,19 +38,23 @@
 			identifier="{identifier}" identityGraph="{identityGraph}" 
 			reporter="{reporter}"
 			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
-		<mx:Canvas label="Online Accounts / IM" width="100%" height="100%"
+		<editor:AccountsEditor label="Online Accounts / IM" width="100%" height="100%" 
+			store="{store}" 
+			identifier="{identifier}" identityGraph="{identityGraph}" 
+			reporter="{reporter}"
+			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
+		<mx:Canvas label="Friends" width="100%" height="100%"
 			showEffect="{fadeIn}" hideEffect="{fadeOut}">
 		</mx:Canvas>
-		<mx:Canvas label="Projects and Groups" width="100%" height="100%"
-			showEffect="{fadeIn}" hideEffect="{fadeOut}">
-		</mx:Canvas>
-		<mx:Canvas label="Documents and Images" width="100%" height="100%"
-			showEffect="{fadeIn}" hideEffect="{fadeOut}">
-		</mx:Canvas>
+		<editor:ExternalProfilesEditor label="External Profiles" width="100%" height="100%" 
+			store="{store}" 
+			identifier="{identifier}" identityGraph="{identityGraph}" 
+			reporter="{reporter}"
+			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
 		<mx:Canvas label="Import profile" width="100%" height="100%"
 			showEffect="{fadeIn}" hideEffect="{fadeOut}">
 		</mx:Canvas>
-		<editor:TripleEditor label="Edit data" width="100%" height="100%" 
+		<editor:TripleEditor label="Edit Data" width="100%" height="100%" 
 			store="{store}" 
 			identifier="{identifier}" identityGraph="{identityGraph}" 
 			reporter="{reporter}"

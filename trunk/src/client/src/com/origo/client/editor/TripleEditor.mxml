@@ -65,20 +65,6 @@
 			reporter.status = "Data loaded.";
 			reporter.clearStatusInSeconds(5);
 		}
-
-		private function displayRow(row:Object, column:DataGridColumn):String
-		{
-			switch(column.headerText) {
-				case "s":
-					return formatBinding(row.sparql::binding.(@name=="s").children()[0]);
-				case "p":
-					return formatBinding(row.sparql::binding.(@name=="p").children()[0]);
-				case "o":
-					return formatBinding(row.sparql::binding.(@name=="o").children()[0]);
-			}
-
-			return "";
-		}
 		
 		private function deleteSelectedTriples():void
 		{
@@ -104,32 +90,18 @@
 			
 			loadTriples();
 		}
-		
-		private function formatNode(type:String, node:String):String
-		{
-			switch(type) {
-				case "bnode":
-					return "<_:" + node + ">";
-				case "uri":
-					return "<" + node + ">";
-				case "literal":
-					return "\"" + node + "\"";
-			}
-			
-			return "";
-		}
 	]]>
 	</mx:Script>
 
-<mx:DataGrid id="triplesGrid" height="548" dataProvider="{triples}" right="10" left="10" top="10" editable="false" allowMultipleSelection="true">
+<mx:DataGrid id="triplesGrid" dataProvider="{triples}" right="10" left="10" top="10" editable="false" allowMultipleSelection="true" bottom="42">
 	<mx:columns>
 		<mx:DataGridColumn headerText="s" dataField="s"/>
 		<mx:DataGridColumn headerText="p" dataField="p"/>
 		<mx:DataGridColumn headerText="o" dataField="o"/>			
 	</mx:columns>
 </mx:DataGrid>
-<mx:Label y="572" text="{triples.length} Triples found" width="302" textAlign="right" right="10"/>
-<mx:Button y="566" label="-" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="deleteSelectedTriples();" left="10" width="40"/>
-<mx:Button y="566" label="reload" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="loadTriples();" left="58" width="72" fontWeight="normal"/>
+<mx:Label text="{triples.length} triples found" width="302" textAlign="right" right="10" bottom="10"/>
+<mx:Button label="-" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="deleteSelectedTriples();" left="10" width="40" bottom="10"/>
+<mx:Button label="reload" cornerRadius="0" fillAlphas="[1.0, 1.0]" fillColors="[#353535, #151515]" color="#FFFFFF" fontSize="12" alpha="1.0" borderColor="#000000" textRollOverColor="#009dff" textSelectedColor="#009dff" themeColor="#009dff" click="loadTriples();" left="58" width="72" fontWeight="normal" bottom="10"/>
 
 </mx:Canvas>

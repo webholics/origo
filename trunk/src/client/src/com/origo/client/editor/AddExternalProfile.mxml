@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="424" height="252" title="Add external profile">
+
+	<mx:Script>
+	<![CDATA[
+		import mx.managers.PopUpManager;
+		import mx.events.ValidationResultEvent;
+		import com.origo.client.InputHelper;
+		
+		import com.origo.client.StatusReporter;
+		import com.origo.client.TripleStore;
+		
+		private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
+		
+		public var identifier:String;
+		public var identityGraph:String;
+		public var reporter:StatusReporter;
+		public var store:TripleStore;
+		
+		private function validateForm():Boolean 
+		{		
+			var valid:Boolean = true;
+			var vEvent:ValidationResultEvent;
+			
+			vEvent = labelInput_requiredValidator.validate();
+			if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+				valid = false;
+			}
+			
+			vEvent = sameAsInput_requiredValidator.validate();
+			if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+				valid = false;
+			}
+			
+			vEvent = seeAlsoInput_requiredValidator.validate();
+			if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+				valid = false;
+			}
+			
+			return valid;
+		}
+		
+		private function save():void
+		{
+			store.addEventListener("result", apiSaveResult);
+			
+			reporter.status = "Saving data...";
+			
+			// trim all inputs
+			labelInput.text = InputHelper.trim(labelInput.text);
+			sameAsInput.text = InputHelper.trim(sameAsInput.text);
+			seeAlsoInput.text = InputHelper.trim(seeAlsoInput.text);
+			
+			// insert query
+			var query:String = 
+				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+				"INSERT INTO <" + identityGraph + "> {" +
+				"<" + identifier + "> owl:sameAs <" + sameAsInput.text + "> ." +
+				"<" + sameAsInput.text + "> rdfs:seeAlso <" + seeAlsoInput.text + "> ." +
+				"<" + sameAsInput.text + "> rdfs:label \"" + labelInput.text + "\" ." + 
+				"}";
+			
+			store.executeQuery(query);
+		}
+		
+		private function apiSaveResult(event:Event):void
+		{
+			store.removeEventListener("result", apiSaveResult);
+			
+			reporter.status = "Data saved.";
+			reporter.clearStatusInSeconds(5);
+			
+			PopUpManager.removePopUp(this);
+		}
+		
+		private function cancel():void 
+		{
+			PopUpManager.removePopUp(this);
+		}
+	]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="labelInput_requiredValidator" source="{labelInput}" property="text" required="true"/>
+	<mx:StringValidator id="sameAsInput_requiredValidator" source="{sameAsInput}" property="text" required="true"/>
+	<mx:StringValidator id="seeAlsoInput_requiredValidator" source="{seeAlsoInput}" property="text" required="true"/>
+	
+	<mx:Form y="10" height="156" left="10" right="10">
+		<mx:FormItem label="Titel" required="true">
+			<mx:TextInput id="labelInput" maxChars="100"/>
+		</mx:FormItem>
+		<mx:FormItem label="Profile website" required="true">
+			<mx:TextInput id="sameAsInput" maxChars="100"/>
+		</mx:FormItem>
+		<mx:FormItem label="Profile FOAF document" required="true">
+			<mx:TextInput maxChars="100" id="seeAlsoInput"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button label="Cancel" click="cancel();" />
+		<mx:Button label="Save" click="if(validateForm()) save();"/>
+	</mx:ControlBar>
+	
+</mx:Panel>
