@@ -43,13 +43,15 @@ if(!is_file($file) || time() > filemtime($file) + $config['cache']['lifetime']) 
 
 	// we want nice namespaces
 	$ns = array(
+  		'rdfs' => 'http://www.w3.org/2000/01/rdf-schema#',
 		'foaf' => 'http://xmlns.com/foaf/0.1/',
 		'dc' => 'http://purl.org/dc/elements/1.1/',
 		'owl' => 'http://www.w3.org/2002/07/owl#',
 		'vcard' => 'http://www.w3.org/2001/vcard-rdf/3.0#',
 		'skos' => 'http://www.w3.org/2004/02/skos/core#',
 		'sioc' => 'http://rdfs.org/sioc/ns#',
-		'xfn' => 'http://gmpg.org/xfn/11#'
+		'xfn' => 'http://gmpg.org/xfn/11#',
+		'rel' => 'http://purl.org/vocab/relationship/'
 	);
 
 	$serializer_config = array(
