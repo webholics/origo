@@ -55,6 +55,9 @@
 			reporter.status = "Try to restore backup data...";
 			store.addEventListener("result", apiRestoreResult);
 			store.tryToRestoreIfEmpty(identityGraph);
+			
+			uriBrowserInput.visible = false;
+			gotoBrowserButton.visible = false;
 		}
 		
 		private function loadHeaderData():void
@@ -112,6 +115,10 @@
 	<mx:ApplicationControlBar y="106" right="10" left="10">
 		<mx:ToggleButtonBar dataProvider="mainViewStack">
 		</mx:ToggleButtonBar>
+		<mx:HBox width="30">
+		</mx:HBox>
+		<mx:TextInput id="uriBrowserInput" width="405" text="enter foaf uri" textAlign="left" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"/>
+		<mx:Button id="gotoBrowserButton" label="goto" textAlign="left" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"/>
 	</mx:ApplicationControlBar>
 	<mx:ViewStack id="mainViewStack" right="10" left="10" top="147" bottom="36">
 	
@@ -126,7 +133,7 @@
 			reporter="{reporter}"
 			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
 		
-		<browser:Browser label="Browser" width="100%" height="100%" 
+		<browser:Browser id="browser" label="Browser" width="100%" height="100%" 
 			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
 			
 	</mx:ViewStack>
