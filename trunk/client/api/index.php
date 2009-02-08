@@ -31,7 +31,13 @@ $endpoint_config = array(
 	'endpoint_timeout' => 60, /* this feature is not yet implemented in ARC2 */
 	'endpoint_max_limit' => 5000,
 	'endpoint_read_key' => $config['client']['api_key'],
-	'endpoint_write_key' => $config['client']['api_key']
+	'endpoint_write_key' => $config['client']['api_key'],
+
+	'store_triggers' => array(
+		'insert' => array('graphTimestamp'),
+		'delete' => array('graphTimestamp'),
+		'load' => array('subPropertyInference', 'subClassInference')
+	)
 );
 
 $ep = ARC2::getStoreEndpoint($endpoint_config);

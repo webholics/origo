@@ -31,6 +31,23 @@ function setupProfile($store, $config) {
 
 	$uri = $config['global']['document_uri'];
 	$identifier = identifier($config);
+
+	// prepare browser graph
+	// load diverse ontologies
+	$ask = $prefix .
+		'ASK WHERE {' .
+		'GRAPH <' . BROWSER_GRAPH . '> {' .
+		'?s ?p ?o' .
+		'} }';
+	if(!$store->query($ask, 'raw')) {
+		$default_vocabs = array(
+			'http://xmlns.com/foaf/spec/index.rdf',
+			'http://purl.org/vocab/relationship/rel-vocab-20040308.rdf',
+		);
+		foreach($default_vocabs as $vocab) {
+			$store->query('LOAD <' . $vocab . '> INTO <' . BROWSER_GRAPH . '>');
+		}
+	}
 	
 	// check if there is backuped data
 	$query = 'SELECT ?s ?p ?o WHERE {' .

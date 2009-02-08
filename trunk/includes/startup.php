@@ -15,6 +15,7 @@ define('CONFIG_FILE', realpath(dirname(__FILE__) . '/../config/config.ini'));
 define('TMP_DIR', realpath(dirname(__FILE__) . '/../tmp'));
 define('TMP_RDF_FILE', 'data.rdf');
 define('IDENTITY_GRAPH', 'urn:origo:identity');
+define('BROWSER_GRAPH', 'urn:origo:browser');
 
 // check if configuration file exists
 if(!is_file(CONFIG_FILE)) {

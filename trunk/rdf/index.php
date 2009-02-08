@@ -13,20 +13,33 @@ require '../includes/startup.php';
 require_once '../includes/setupProfile.php';
 
 $file = TMP_DIR . '/' . TMP_RDF_FILE;
+
+$store_config = array(
+	// mysql database access
+	'db_host' => $config['database']['host'],
+	'db_name' => $config['database']['name'],
+	'db_user' => $config['database']['username'],
+	'db_pwd' => $config['database']['password'],
+
+	// stone_name is used as table prefix
+	'store_name' => 'origo'
+);
+
+$store = ARC2::getStore($store_config);
+
+// load created triple to detect updates in graph
+$query = 'PREFIX dct: <http://purl.org/dc/terms/> .' .
+	'SELECT ?date WHERE {' .
+	'<' . IDENTITY_GRAPH . '> dct:created ?date .' .
+	'}';
+$rs = $store->query($query);
+$time = -1;
+if(sizeof($rs['result']['rows']) > 0) {
+	$time = strtotime($rs['result']['rows'][0]['date']);
+}
+
 // check if cache file is too old
-if(!is_file($file) || time() > filemtime($file) + $config['cache']['lifetime']) {
-	$store_config = array(
-		// mysql database access
-		'db_host' => $config['database']['host'],
-		'db_name' => $config['database']['name'],
-		'db_user' => $config['database']['username'],
-		'db_pwd' => $config['database']['password'],
-
-		// stone_name is used as table prefix
-		'store_name' => 'origo'
-	);
-
-	$store = ARC2::getStore($store_config);
+if(!is_file($file) || $time > filemtime($file)) {
 
 	setupProfile($store, $config);
 	
@@ -46,6 +59,7 @@ if(!is_file($file) || time() > filemtime($file) + $config['cache']['lifetime']) 
   		'rdfs' => 'http://www.w3.org/2000/01/rdf-schema#',
 		'foaf' => 'http://xmlns.com/foaf/0.1/',
 		'dc' => 'http://purl.org/dc/elements/1.1/',
+		'dct' => 'http://purl.org/dc/terms/',
 		'owl' => 'http://www.w3.org/2002/07/owl#',
 		'vcard' => 'http://www.w3.org/2001/vcard-rdf/3.0#',
 		'skos' => 'http://www.w3.org/2004/02/skos/core#',
