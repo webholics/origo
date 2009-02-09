@@ -22,7 +22,12 @@ $store_config = array(
 	'db_pwd' => $config['database']['password'],
 
 	// stone_name is used as table prefix
-	'store_name' => 'origo'
+	'store_name' => 'origo',
+
+	'store_triggers' => array(
+		'insert' => array('graphTimestamp'),
+		'delete' => array('graphTimestamp')
+	)
 );
 
 $store = ARC2::getStore($store_config);

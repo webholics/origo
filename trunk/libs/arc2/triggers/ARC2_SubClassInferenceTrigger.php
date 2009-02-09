@@ -19,7 +19,10 @@ class ARC2_SubClassInferenceTrigger extends ARC2_Class {
 
   function go() { /* automatically called by store or endpoint */
     $a = $this->a;
-    $graph = $a['query_infos']['query']['target_graphs'][0];
+	if(isset($a['query_infos']['query']['target_graphs']))
+    	$graph = $a['query_infos']['query']['target_graphs'][0];
+	else if(isset($a['query_infos']['query']['target_graph']))
+		$graph = $a['query_infos']['query']['target_graph'];
 
 	// BROWSER_GRAPH is set in startup.php
 	// inferencing is only used in BROWSER_GRAPH

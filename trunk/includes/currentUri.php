@@ -11,7 +11,7 @@
  * @return string the current requested URI
  */
 function currentUri() {
-	strtolower($_SERVER['SERVER_PROTOCOL']);
+	$protocol = strtolower($_SERVER['SERVER_PROTOCOL']);
 	$protocol = substr($protocol, 0, strpos($protocol, '/'));
 	
 	$port = '';
