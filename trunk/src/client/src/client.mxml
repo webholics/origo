@@ -38,6 +38,7 @@
 		[Bindable] private var apiUrl:String;
 		[Bindable] private var identifier:String;
 		[Bindable] private var identityGraph:String;
+		[Bindable] private var browserGraph:String;
 		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
 		[Bindable] private var triples:ArrayCollection = new ArrayCollection();
 		[Bindable] private var reporter:StatusReporter = new StatusReporter();
@@ -49,6 +50,7 @@
 			apiUrl = "api/";
 			identifier = Application.application.parameters["identifier"];
 			identityGraph = Application.application.parameters["identity_graph"];
+			browserGraph = Application.application.parameters["browser_graph"];
 			
 			store = new TripleStore("api/", Application.application.parameters["api_key"], reporter);
 			
@@ -58,6 +60,7 @@
 			
 			uriBrowserInput.visible = false;
 			gotoBrowserButton.visible = false;
+			labelBrowserInput.visible = false;
 		}
 		
 		private function loadHeaderData():void
@@ -117,8 +120,10 @@
 		</mx:ToggleButtonBar>
 		<mx:HBox width="30">
 		</mx:HBox>
-		<mx:TextInput id="uriBrowserInput" width="405" text="enter foaf uri" textAlign="left" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"/>
-		<mx:Button id="gotoBrowserButton" label="goto" textAlign="left" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"/>
+		<mx:Label id="labelBrowserInput" text="Person URI:" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"/>
+		<mx:TextInput id="uriBrowserInput" width="280" text="" textAlign="left" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"/>
+		<mx:Button id="gotoBrowserButton" label="goto" textAlign="left" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"
+			click="{browser.loadUri(uriBrowserInput.text)}" />
 	</mx:ApplicationControlBar>
 	<mx:ViewStack id="mainViewStack" right="10" left="10" top="147" bottom="36">
 	
@@ -134,7 +139,11 @@
 			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
 		
 		<browser:Browser id="browser" label="Browser" width="100%" height="100%" 
-			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
+			showEffect="{fadeIn}" hideEffect="{fadeOut}" 
+			store="{store}"
+			personInput="{uriBrowserInput}"
+			identifier="{identifier}"
+			browserGraph="{browserGraph}" reporter="{reporter}" />
 			
 	</mx:ViewStack>
 

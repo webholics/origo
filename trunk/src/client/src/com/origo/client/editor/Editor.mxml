@@ -8,8 +8,6 @@
 		import com.origo.client.StatusReporter;
 		import mx.controls.Alert;
 		
-		[Bindable] public var apiKey:String;
-		[Bindable] public var apiUrl:String;
 		[Bindable] public var identityGraph:String;
 		[Bindable] public var identifier:String;
 		[Bindable] public var reporter:StatusReporter;
