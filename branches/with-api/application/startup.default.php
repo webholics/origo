@@ -18,7 +18,8 @@ define('APPLICATION_PATH', realpath(dirname(__FILE__)));
 
 set_include_path(
 	APPLICATION_PATH . '[path to Zend Framework Library]' 
-	. PATH_SEPARATOR . APPLICATION_BASEPATH . '/../library/'
+	. PATH_SEPARATOR . APPLICATION_PATH . '/controllers/'
+	. PATH_SEPARATOR . APPLICATION_PATH . '/../library/'
 	. PATH_SEPARATOR . get_include_path()
 );
 

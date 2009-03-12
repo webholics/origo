@@ -45,7 +45,7 @@ class BaseController extends Zend_Controller_Action
 				'cache_dir' => APPLICATION_PATH . '/../' . $config->caching->dir
 			);
 			// getting a Zend_Cache_Core object
-			$cache = Zend_Cache::factory('Core', 'File', $frontendOptions, $backendOptions);
+			self::$_cache = Zend_Cache::factory('Core', 'File', $frontendOptions, $backendOptions);
 		}
 
 		return self::$_cache;
@@ -55,7 +55,7 @@ class BaseController extends Zend_Controller_Action
 	 * Construct the personal URI.
 	 * @return string
 	 */
-	function getIdentifier() {
+	protected function getIdentifier() {
 		$config = $this->getConfig();
 		
 		// check if identifier is a hash
@@ -94,7 +94,7 @@ class BaseController extends Zend_Controller_Action
 		$prefix = 'PREFIX foaf: <http://xmlns.com/foaf/0.1/> . ';
 
 		$uri = $config->profile->location;
-		$identifier = $this->getIdentitifer();
+		$identifier = $this->getIdentifier();
 
 		// setup personal profile document
 		$ask = $prefix .

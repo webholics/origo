@@ -37,7 +37,7 @@ class ProfileController extends BaseController
 			)
 		);
 		$uris = array(
-			'application/rdf+xml' => $this->view->url(array(), 'profile_url')	
+			'application/rdf+xml' => $this->view->url(array(), 'profile_rdf')	
 		);
 
 		// add html ressource
@@ -53,6 +53,7 @@ class ProfileController extends BaseController
 		// redirect with 303 See Other
 		$this->_helper->Redirector
 			->setCode(303)
+			->setPrependBase()
 			->gotoUrl($uris[$mime_best]);
 	}
 
@@ -73,7 +74,7 @@ class ProfileController extends BaseController
 					?s ?p ?o .
 				}
 				WHERE {
-					?S ?p ?o .
+					?s ?p ?o .
 				}
 			';
 

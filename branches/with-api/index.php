@@ -7,23 +7,23 @@
 * @author Mario Volke (mario.volke@webholics.de)
 */
 
-if(!is_file(realpath(dirname(__FILE__)) . '/startup.php'))
+if(!is_file(realpath(dirname(__FILE__)) . '/application/startup.php'))
 	die('Origo error: startup.php not found!');
 
-require_once realpath(dirname(__FILE__)) . '/startup.php';
+require_once realpath(dirname(__FILE__)) . '/application/startup.php';
 
 try {
 	$config = Zend_Registry::get('config');
 
 	$frontController = Zend_Controller_Front::getInstance();
 	$frontController->setControllerDirectory(APPLICATION_PATH . '/controllers');
-	$frontController->setParam('env', APPLICATION_ENVIRONMENT);
+	$frontController->setParam('env', $config->misc->environment);
 
 	// set custom routes
 	require_once(APPLICATION_PATH . '/routes.php');
 
 	if($config->misc->environment == 'development') {
-		$frontController->throwExceptions(true);
+		$frontController->throwExceptions(false);
 		$frontController->registerPlugin(new Zend_Controller_Plugin_ErrorHandler());
 	}
 	
