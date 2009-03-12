@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600"
+	creationComplete="doInit = true; init();" show="init()" hide="doInit = true;">
+
+	<mx:Script>
+	<![CDATA[
+		import com.origo.client.TripleStore;
+		import com.origo.client.StatusReporter;
+		import com.origo.client.InputHelper;
+		
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		import mx.events.ValidationResultEvent;
+		
+		import com.hurlant.util.Hex;
+		import com.hurlant.crypto.hash.SHA1;
+		import com.hurlant.crypto.Crypto;
+		import com.hurlant.crypto.hash.IHash;
+		
+		public var identifier:String;
+		public var identityGraph:String;
+		public var reporter:StatusReporter;
+		public var store:TripleStore;
+		
+		private var doInit:Boolean;
+		
+		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
+		
+		public function init():void
+		{
+			if(doInit) {
+				icqInput.text = "";
+				msnInput.text = "";
+				aimInput.text = "";
+				yahooInput.text = "";
+				jabberInput.text = "";
+				
+				store.addEventListener("result", apiLoadResult);
+
+				reporter.status = "Loading data...";
+				store.executeQuery(
+					"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+
+					"SELECT ?icq ?msn ?aim ?yahoo ?jabber WHERE {" +
+						"GRAPH <" + identityGraph + "> {" +
+							"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
+							"OPTIONAL { <" + identifier + "> foaf:icqChatID ?icq }" +
+							"OPTIONAL { <" + identifier + "> foaf:msnChatID ?msn }" +
+							"OPTIONAL { <" + identifier + "> foaf:aimChatID ?aim }" +
+							"OPTIONAL { <" + identifier + "> foaf:yahooChatID ?yahoo }" +
+							"OPTIONAL { <" + identifier + "> foaf:jabberID ?jabber }" +
+						"}" +
+					"}"
+				);
+			}
+		}
+		
+		private function save():void
+		{
+			store.addEventListener("result", apiSaveResult);
+			
+			reporter.status = "Saving data...";
+			
+			// delete query
+			
+			var query:String = 
+				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+
+				"DELETE FROM <" + identityGraph + "> {" +
+					"<" + identifier + "> foaf:icqChatID ?icq ." +
+					"<" + identifier + "> foaf:msnChatID ?msn ." +
+					"<" + identifier + "> foaf:aimChatID ?aim ." +
+					"<" + identifier + "> foaf:yahooChatID ?yahoo ." +
+					"<" + identifier + "> foaf:jabberID ?jabber ." +
+				"}";
+
+			store.enqueueQuery(query);
+			
+			// insert query
+			var needsInsert:Boolean = false;
+			
+			query = 
+				"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+
+				"INSERT INTO <" + identityGraph + "> {";
+				
+			// trim all inputs
+			icqInput.text = InputHelper.trim(icqInput.text);
+			msnInput.text = InputHelper.trim(msnInput.text);
+			aimInput.text = InputHelper.trim(aimInput.text);
+			yahooInput.text = InputHelper.trim(yahooInput.text);
+			jabberInput.text = InputHelper.trim(jabberInput.text)
+
+			if(icqInput.text != "") {
+				needsInsert = true;
+				query += "<" + identifier + "> foaf:icqChatID \"" + icqInput.text + "\" .";
+			}
+			if(msnInput.text != "") {
+				needsInsert = true;
+				query += "<" + identifier + "> foaf:msnChatID \"" + msnInput.text + "\" .";
+			}
+			if(aimInput.text != "") {
+				needsInsert = true;
+				query += "<" + identifier + "> foaf:aimChatID \"" + aimInput.text + "\" .";
+			}
+			if(yahooInput.text != "") {
+				needsInsert = true;
+				query += "<" + identifier + "> foaf:yahooChatID \"" + yahooInput.text + "\" .";
+			}
+			if(jabberInput.text != "") {
+				needsInsert = true;
+				query += "<" + identifier + "> foaf:jabberID \"" + jabberInput.text + "\" .";
+			}
+
+			query += "}";
+
+			if(needsInsert) {
+				store.enqueueQuery(query);
+			}
+			store.executeQueries(identityGraph);
+		}
+		
+		private function apiLoadResult(event:Event):void
+		{
+			store.removeEventListener("result", apiLoadResult);
+
+			var eventResult:Object = store.results[0];
+			
+			if(eventResult.sparql::results.length() > 0 && eventResult.sparql::results.sparql::result.length() > 0) {
+				var result:Object = eventResult.sparql::results.sparql::result;
+				if(result.sparql::binding.(@name=="icq").children().length() > 0) {
+					icqInput.text = result.sparql::binding.(@name=="icq").children()[0];
+				}
+				if(result.sparql::binding.(@name=="msn").children().length() > 0) {
+					msnInput.text = result.sparql::binding.(@name=="msn").children()[0];
+				}
+				if(result.sparql::binding.(@name=="aim").children().length() > 0) {
+					aimInput.text = result.sparql::binding.(@name=="aim").children()[0];
+				}
+				if(result.sparql::binding.(@name=="yahoo").children().length() > 0) {
+					yahooInput.text = result.sparql::binding.(@name=="yahoo").children()[0];
+				}
+				if(result.sparql::binding.(@name=="jabber").children().length() > 0) {
+					jabberInput.text = result.sparql::binding.(@name=="jabber").children()[0];
+				}
+			}
+
+			reporter.status = "Data loaded.";
+			reporter.clearStatusInSeconds(5);
+		}
+		
+		private function apiSaveResult(event:Event):void
+		{
+			store.removeEventListener("result", apiSaveResult);
+			
+			reporter.status = "Data saved.";
+			reporter.clearStatusInSeconds(5);
+		}
+		
+		private function validateForm():Boolean {		
+			var valid:Boolean = true;
+			var vEvent:ValidationResultEvent;
+			
+			vEvent = jabberInput_emailValidator.validate();
+			if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+				valid = false;
+			}
+			
+			return valid;
+		}
+	]]>
+	</mx:Script>
+	
+	<mx:EmailValidator id="jabberInput_emailValidator" required="false" source="{jabberInput}" property="text"/>
+
+	<mx:FormHeading label="Online Accounts / IM"/>
+	<mx:FormItem label="ICQ chat ID">
+		<mx:TextInput id="icqInput" maxChars="200" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="MSN chat ID">
+		<mx:TextInput id="msnInput" maxChars="200" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="AIM chat ID">
+		<mx:TextInput id="aimInput" maxChars="200" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="Yahoo chat ID">
+		<mx:TextInput id="yahooInput" maxChars="200" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem label="Jabber ID">
+		<mx:TextInput id="jabberInput" maxChars="200" width="300"/>
+	</mx:FormItem>
+	<mx:FormItem>
+		<mx:HRule width="300"/>
+		<mx:Button label="Save" click="if(validateForm()) save();"/>
+	</mx:FormItem>
+	
+</mx:Form>

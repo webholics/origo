@@ -48,7 +48,7 @@ else {
 }
 
 if(!is_writable(APPLICATION_PATH . '/../' . $config->cache->dir)) {
-	die('Origo error: Tmp directory is not writable.');
+	die('Origo error: Cache directory is not writable.');
 }
 
 unset($config, $registry, $dbAdapter);

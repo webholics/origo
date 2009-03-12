@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	creationComplete="init()" 
+	backgroundGradientAlphas="[1.0, 1.0]" 
+	backgroundGradientColors="[#4D4D4D, #4D4D4D]" 
+	xmlns:editor="com.origo.client.editor.*"
+	xmlns:browser="com.origo.client.browser.*">
+	
+	<mx:states>
+		<mx:State name="header">
+			<mx:AddChild position="lastChild">
+				<mx:Label id="headerWelcome" text="welcome" width="161" color="#737373" fontSize="15" textAlign="right" right="10" top="51.7"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label id="headerName" text="Max Mustermann" width="369" height="28.333332" textAlign="right" right="10" fontSize="24" color="#C5C5C5" top="69.7"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="headerWithImage" basedOn="header">
+			<mx:AddChild position="lastChild">
+				<mx:Image id="headerImage" width="88" height="88" scaleContent="true" right="10" top="10"/>
+			</mx:AddChild>
+			<mx:SetStyle target="{headerWelcome}" name="right" value="106"/>
+			<mx:SetStyle target="{headerName}" name="right" value="106"/>
+		</mx:State>
+	</mx:states>
+	
+	<mx:Script>
+	<![CDATA[
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		
+		import com.origo.client.StatusReporter;
+		import com.origo.client.TripleStore;
+	
+		[Bindable] private var apiKey:String;
+		[Bindable] private var apiUrl:String;
+		[Bindable] private var identifier:String;
+		[Bindable] private var identityGraph:String;
+		[Bindable] private var browserGraph:String;
+		[Bindable] private var sparql:Namespace = new Namespace("http://www.w3.org/2005/sparql-results#");
+		[Bindable] private var triples:ArrayCollection = new ArrayCollection();
+		[Bindable] private var reporter:StatusReporter = new StatusReporter();
+		[Bindable] private var store:TripleStore;
+	
+		private function init():void 
+		{
+			apiKey = Application.application.parameters["api_key"];
+			apiUrl = "api/";
+			identifier = Application.application.parameters["identifier"];
+			identityGraph = Application.application.parameters["identity_graph"];
+			browserGraph = Application.application.parameters["browser_graph"];
+			
+			store = new TripleStore("api/", Application.application.parameters["api_key"], reporter);
+			
+			reporter.status = "Try to restore backup data...";
+			store.addEventListener("result", apiRestoreResult);
+			store.tryToRestoreIfEmpty(identityGraph);
+			
+			uriBrowserInput.visible = false;
+			gotoBrowserButton.visible = false;
+			labelBrowserInput.visible = false;
+		}
+		
+		private function loadHeaderData():void
+		{
+			reporter.status = "Loading data...";
+			store.addEventListener("result", apiLoadResult);
+			store.executeQuery(
+					"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+
+					"SELECT ?name ?img WHERE {" +
+						"GRAPH <" + identityGraph + "> {" +
+							"<" + identifier + "> rdf:type <http://xmlns.com/foaf/0.1/Person> . " +
+							"OPTIONAL { <" + identifier + "> foaf:name ?name }" +
+							"OPTIONAL { <" + identifier + "> foaf:img ?img }" +
+						"}" +
+					"}"
+				);
+		}
+		
+		private function apiRestoreResult(event:Event):void
+		{
+			store.removeEventListener("result", apiRestoreResult);
+			
+			loadHeaderData();
+		}
+		
+		private function apiLoadResult(event:Event):void
+		{
+			store.removeEventListener("result", apiLoadResult);
+			
+			var result:Object = store.results[0];
+
+			if(result..sparql::binding.(@name=="name").length() > 0) {
+				currentState = "header";
+				headerName.text = result.sparql::results.sparql::result.sparql::binding.(@name=="name").children()[0];
+				
+				if(result..sparql::binding.(@name=="img").length() > 0) {
+					currentState = "headerWithImage";
+					headerImage.source = result.sparql::results.sparql::result.sparql::binding.(@name=="img").children()[0];
+				}
+			}
+			
+			reporter.status = "Data loaded.";
+			reporter.clearStatusInSeconds(5);
+		}
+	]]>
+	</mx:Script>
+	
+	<mx:Fade id="fadeOut" duration="500" alphaFrom="1.0" alphaTo="0.0"/>
+	<mx:Fade id="fadeIn" duration="500" alphaFrom="0.0" alphaTo="1.0"/>
+	
+	<mx:Image width="200" height="88" scaleContent="false" left="10" top="10" source="../assets/logo.png">
+	</mx:Image>
+	
+	<mx:ApplicationControlBar y="106" right="10" left="10">
+		<mx:ToggleButtonBar dataProvider="mainViewStack">
+		</mx:ToggleButtonBar>
+		<mx:HBox width="30">
+		</mx:HBox>
+		<mx:Label id="labelBrowserInput" text="Person URI:" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"/>
+		<mx:TextInput id="uriBrowserInput" width="280" text="" textAlign="left" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"/>
+		<mx:Button id="gotoBrowserButton" label="goto" textAlign="left" showEffect="{fadeIn}" hideEffect="{fadeOut}" visible="{browser.visible}"
+			click="{browser.loadUri(uriBrowserInput.text)}" />
+	</mx:ApplicationControlBar>
+	<mx:ViewStack id="mainViewStack" right="10" left="10" top="147" bottom="36">
+	
+		<mx:Canvas label="Dashboard" width="100%" height="100%" 
+			showEffect="{fadeIn}" hideEffect="{fadeOut}">
+			<mx:Label text="DASHBOARD" width="385" height="263" fontSize="36" color="#626262" fontWeight="normal" horizontalCenter="0" verticalCenter="73" textAlign="center"/>
+		</mx:Canvas>
+		
+		<editor:Editor label="Editor" width="100%" height="100%" 
+			store="{store}"
+			identifier="{identifier}" identityGraph="{identityGraph}"
+			reporter="{reporter}"
+			showEffect="{fadeIn}" hideEffect="{fadeOut}"/>
+		
+		<browser:Browser id="browser" label="Browser" width="100%" height="100%" 
+			showEffect="{fadeIn}" hideEffect="{fadeOut}" 
+			store="{store}"
+			personInput="{uriBrowserInput}"
+			identifier="{identifier}"
+			browserGraph="{browserGraph}" reporter="{reporter}" />
+			
+	</mx:ViewStack>
+
+	<mx:Label text="© Copyright 2008 Mario Volke. All right reserved." color="#737373" bottom="10" left="10"/>
+	<mx:Label width="491" textAlign="right" color="#737373" bottom="10" right="10" text="{reporter.status}"/>
+</mx:Application>
