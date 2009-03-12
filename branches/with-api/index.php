@@ -3,8 +3,8 @@
 * Origo - social client
 * Bootstrap
 *
-* @copyright (C) 2008-2009 Mario Volke, All right reserved.
-* @author Mario Volke (mario.volke@webholics.de)
+* @copyright Copyright (c) 2008-2009 Mario Volke
+* @author    Mario Volke <mario.volke@webholics.de>
 */
 
 if(!is_file(realpath(dirname(__FILE__)) . '/application/startup.php'))

@@ -3,8 +3,8 @@
 * Origo - social client
 * ProfileController
 *
-* @copyright (C) 2008-2009 Mario Volke, All right reserved.
-* @author Mario Volke (mario.volke@webholics.de)
+* @copyright Copyright (c) 2008-2009 Mario Volke
+* @author    Mario Volke <mario.volke@webholics.de>
 */
 
 require_once 'library/php-content-negotiation/content_negotiation.inc.php';
@@ -123,8 +123,9 @@ class ProfileController extends BaseController
 			$cache->save($doc, $cacheId, array('profile'));
 		}
 
-		header('Content-Type: application/rdf+xml;charset=utf-8');
-		echo $doc;
+		$this->getResponse()
+			->setHeader('Content-Type', 'application/rdf+xml')
+			->appendBody($doc);
 	}
 
 	/**
@@ -185,8 +186,9 @@ class ProfileController extends BaseController
 			$cache->save($doc, $cacheId, array('profile'));
 		}
 
-		header('Content-Type: application/turtle;charset=utf-8');
-		echo $doc;
+		$this->getResponse()
+			->setHeader('Content-Type', 'application/turtle')
+			->appendBody($doc);
 	}
 
 	/**
@@ -247,8 +249,9 @@ class ProfileController extends BaseController
 			$cache->save($doc, $cacheId, array('profile'));
 		}
 
-		header('Content-Type: application/json;charset=utf-8');
-		echo $doc;
+		$this->getResponse()
+			->setHeader('Content-Type', 'application/json')
+			->appendBody($doc);
 	}
 
 	/**

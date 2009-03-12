@@ -3,8 +3,8 @@
 * Origo - social client
 * BaseController
 *
-* @copyright (C) 2008-2009 Mario Volke, All right reserved.
-* @author Mario Volke (mario.volke@webholics.de)
+* @copyright Copyright (c) 2008-2009 Mario Volke
+* @author    Mario Volke <mario.volke@webholics.de>
 */
 
 require_once 'library/arc2/ARC2.php';
