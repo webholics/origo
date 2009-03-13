@@ -33,8 +33,26 @@ $router->addRoute('api_test', new Zend_Controller_Router_Route('api/test',
 ));
 
 // EditorApiController
+$router->addRoute('api_editor_get', new Zend_Controller_Router_Route('api/editor/get',
+	array('controller' => 'editorApi', 'action' => 'get')
+));
 $router->addRoute('api_editor_update', new Zend_Controller_Router_Route('api/editor/update',
 	array('controller' => 'editorApi', 'action' => 'update')
+));
+$router->addRoute('api_editor_delete', new Zend_Controller_Router_Route('api/editor/delete',
+	array('controller' => 'editorApi', 'action' => 'delete')
+));
+$router->addRoute('api_editor_clean', new Zend_Controller_Router_Route('api/editor/clean',
+	array('controller' => 'editorApi', 'action' => 'clean')
+));
+$router->addRoute('api_editor_profiles_get', new Zend_Controller_Router_Route('api/editor/profiles/get',
+	array('controller' => 'editorApi', 'action' => 'profilesget')
+));
+$router->addRoute('api_editor_profiles_insert', new Zend_Controller_Router_Route('api/editor/profiles/insert',
+	array('controller' => 'editorApi', 'action' => 'profilesinsert')
+));
+$router->addRoute('api_editor_profiles_delete', new Zend_Controller_Router_Route('api/editor/profiles/delete',
+	array('controller' => 'editorApi', 'action' => 'profilesdelete')
 ));
 
 unset($router);

@@ -77,6 +77,7 @@ class ApiController extends BaseController
 	{
 		switch($type) {
 			case 'uri':
+				$value = str_replace(array('<', '>'), array('%3C', '%3E'), $value);
 			default:
 				$value = str_replace('"', '""', $value);
 		}
