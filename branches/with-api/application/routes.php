@@ -48,11 +48,20 @@ $router->addRoute('api_editor_clean', new Zend_Controller_Router_Route('api/edit
 $router->addRoute('api_editor_profiles_get', new Zend_Controller_Router_Route('api/editor/profiles/get',
 	array('controller' => 'editorApi', 'action' => 'profilesget')
 ));
-$router->addRoute('api_editor_profiles_insert', new Zend_Controller_Router_Route('api/editor/profiles/insert',
-	array('controller' => 'editorApi', 'action' => 'profilesinsert')
+$router->addRoute('api_editor_profiles_update', new Zend_Controller_Router_Route('api/editor/profiles/update',
+	array('controller' => 'editorApi', 'action' => 'profilesupdate')
 ));
 $router->addRoute('api_editor_profiles_delete', new Zend_Controller_Router_Route('api/editor/profiles/delete',
 	array('controller' => 'editorApi', 'action' => 'profilesdelete')
+));
+$router->addRoute('api_editor_relationships_get', new Zend_Controller_Router_Route('api/editor/relationships/get',
+	array('controller' => 'editorApi', 'action' => 'relationshipsget')
+));
+$router->addRoute('api_editor_relationships_update', new Zend_Controller_Router_Route('api/editor/relationships/update',
+	array('controller' => 'editorApi', 'action' => 'relationshipsupdate')
+));
+$router->addRoute('api_editor_relationships_delete', new Zend_Controller_Router_Route('api/editor/relationships/delete',
+	array('controller' => 'editorApi', 'action' => 'relationshipsdelete')
 ));
 
 unset($router);
