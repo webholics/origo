@@ -44,11 +44,10 @@ class ApiController extends BaseController
 			$this->getResponse()->setHttpResponseCode($http_code);
 		
 		$xml = 
-			"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" .
-			"<error>" .
-				"<error_code>" . $code . "</error_code>" .
-				"<error_message>" . $message . "</error_message>" .
-			"</error>";
+			'<error>' .
+				'<error_code>' . $code . '</error_code>' .
+				'<error_message>' . $message . '</error_message>' .
+			'</error>';
 
 		$this->outputXml($xml);
 	}
@@ -59,7 +58,30 @@ class ApiController extends BaseController
 	 */
 	public function testAction()
 	{
-		echo "oohhhhooooo";
+		$this->outputXml('
+			<request>
+				<code>200</code>
+				<message>API status: OK</message>
+			</request>
+		');
+	}
+
+	/**
+	 * Escape values for triple store queries.
+	 *
+	 * @param string $value The value to escape.
+	 * @param string $type (uri|literal)
+	 * @return string
+	 */
+	protected function escape($value, $type='literal') 
+	{
+		switch($type) {
+			case 'uri':
+			default:
+				$value = str_replace('"', '""', $value);
+		}
+
+		return $value;
 	}
 
 	/**
@@ -76,8 +98,13 @@ class ApiController extends BaseController
 
 		if($xml instanceof SimpleXMLElement)
 			$response->appendBody($xml->asXML());
-		else
+		else {
+			$xml = trim($xml);
+			if(substr($xml, 0, 5) != '<?xml')
+				$xml = '<?xml version="1.0" encoding="UTF-8" ?>' . $xml;
+
 			$response->appendBody($xml);
+		}
 	}
 	
 	/**

@@ -32,4 +32,9 @@ $router->addRoute('api_test', new Zend_Controller_Router_Route('api/test',
 	array('controller' => 'api', 'action' => 'test')
 ));
 
+// EditorApiController
+$router->addRoute('api_editor_update', new Zend_Controller_Router_Route('api/editor/update',
+	array('controller' => 'editorApi', 'action' => 'update')
+));
+
 unset($router);
