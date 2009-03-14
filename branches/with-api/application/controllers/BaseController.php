@@ -91,18 +91,16 @@ class BaseController extends Zend_Controller_Action
 			$store->setUp();
 		}
 
-		$prefix = 'PREFIX foaf: <http://xmlns.com/foaf/0.1/> . ';
-
 		$uri = $config->profile->location;
 		$identifier = $this->getIdentifier();
 
 		// setup personal profile document
-		$ask = $prefix .
+		$ask = $this->_queryPrefix .
 			'ASK WHERE {' .
 				'<' . $uri . '> rdf:type foaf:PersonalProfileDocument' .
 			'}';
 		if(!$store->query($ask, 'raw')) {
-			$query = $prefix .
+			$query = $this->_queryPrefix .
 				'INSERT INTO <' . $uri . '> {' .
 					'<' . $uri . '> rdf:type foaf:PersonalProfileDocument .' .
 					'<' . $uri . '> foaf:maker <' . $identifier . '> .' .
@@ -111,40 +109,40 @@ class BaseController extends Zend_Controller_Action
 			$store->query($query);
 		}
 		else {
-			$ask = $prefix .
+			$ask = $this->_queryPrefix .
 				'ASK WHERE {' . 
 					'<' . $uri . '> foaf:maker <' . $identifier . '>' .
 				'}';
 			if(!$store->query($ask, 'raw')) {
 				// delete old triples
-				$query = $prefix . 
+				$query = $this->_queryPrefix . 
 					'DELETE {' . 
 						'<' . $uri . '> foaf:maker ?any .' .
 					'}';
 				$store->query($query);
 				
 				// insert new triple
-				$query = $prefix . 
+				$query = $this->_queryPrefix . 
 					'INSERT INTO <' . $uri . '> {' . 
 						'<' . $uri . '> foaf:maker <' . $identifier . '> .' .
 					'}';
 				$store->query($query);
 			}
 			
-			$ask = $prefix .
+			$ask = $this->_queryPrefix .
 				'ASK WHERE {' . 
 					'<' . $uri . '> foaf:primaryTopic <' . $identifier . '>' .
 				'}';
 			if(!$store->query($ask, 'raw')) {
 				// delete old triples
-				$query = $prefix . 
+				$query = $this->_queryPrefix . 
 					'DELETE {' . 
 						'<' . $uri . '> foaf:primaryTopic ?any .' .
 					'}';
 				$store->query($query);
 				
 				// insert new triple
-				$query = $prefix . 
+				$query = $this->_queryPrefix . 
 					'INSERT INTO <' . $uri . '> {' . 
 						'<' . $uri . '> foaf:primaryTopic <' . $identifier . '> .' .
 					'}';
@@ -153,16 +151,60 @@ class BaseController extends Zend_Controller_Action
 		}
 
 		// setup person
-		$ask = $prefix .
+		$ask = $this->_queryPrefix .
 			'ASK WHERE {' .
 				'<' . $identifier . '> rdf:type foaf:Person' .
 			'}';
 		if(!$store->query($ask, 'raw')) {
-			$query = $prefix .
+			$query = $this->_queryPrefix .
 				'INSERT INTO <' . $uri . '> {' .
 					'<' . $identifier . '> rdf:type foaf:Person .' .
 				'}';
 			$store->query($query);
+		}
+
+		return $store;
+	}
+	
+	/**
+	 * Create a connection to the browser triple store
+	 * and do initialisiation if needed.
+	 * @return ARC2_Store
+	 */
+	protected function getBrowserStore() {
+		$config = $this->getConfig();
+		
+		$store_config = array(
+			// mysql database access
+			'db_host' => $config->database->params->host,
+			'db_name' => $config->database->params->dbname,
+			'db_user' => $config->database->params->username,
+			'db_pwd' => $config->database->params->password,
+
+			// stone_name is used as table prefix
+			'store_name' => $config->arc->store->browser->name,
+		);
+
+		$store = ARC2::getStore($store_config);
+
+		if(!$store->isSetUp()) {
+			$store->setUp();
+		}
+		
+		// prepare browser graph
+		// load diverse ontologies
+		$ask = 
+			'ASK WHERE {' .
+			'?s ?p ?o' .
+			'}';
+		if(!$store->query($ask, 'raw')) {
+			$default_vocabs = array(
+				'http://xmlns.com/foaf/spec/index.rdf',
+				'http://purl.org/vocab/relationship/rel-vocab-20040308.rdf',
+			);
+			foreach($default_vocabs as $vocab) {
+				$store->query('LOAD <' . $vocab . '>');
+			}
 		}
 
 		return $store;

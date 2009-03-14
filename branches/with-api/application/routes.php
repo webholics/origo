@@ -64,4 +64,9 @@ $router->addRoute('api_editor_relationships_delete', new Zend_Controller_Router_
 	array('controller' => 'editorApi', 'action' => 'relationshipsdelete')
 ));
 
+// BrowserApiController
+$router->addRoute('api_browser_profile', new Zend_Controller_Router_Route('api/browser/profile',
+	array('controller' => 'browserApi', 'action' => 'profile')
+));
+
 unset($router);
