@@ -11,8 +11,21 @@ require_once 'library/arc2/ARC2.php';
 
 class BaseController extends Zend_Controller_Action
 {
+	/**
+	 * Singleton variables
+	 */
 	protected static $_config = null;
 	protected static $_cache = null;
+	protected static $_profileStore = null;
+	protected static $_browserStore = null;
+
+	/**
+	 * This prefix will be prepended to all sparql queries.
+	 */
+	protected $_queryPrefix = '
+		PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+		PREFIX rel: <http://purl.org/vocab/relationship/>
+	';
 	
 	/**
 	 * Get global config.
@@ -72,98 +85,102 @@ class BaseController extends Zend_Controller_Action
 	 * @return ARC2_Store
 	 */
 	protected function getProfileStore() {
-		$config = $this->getConfig();
-		
-		$store_config = array(
-			// mysql database access
-			'db_host' => $config->database->params->host,
-			'db_name' => $config->database->params->dbname,
-			'db_user' => $config->database->params->username,
-			'db_pwd' => $config->database->params->password,
-
-			// stone_name is used as table prefix
-			'store_name' => $config->arc->store->profile->name,
-		);
-
-		$store = ARC2::getStore($store_config);
-
-		if(!$store->isSetUp()) {
-			$store->setUp();
-		}
-
-		$uri = $config->profile->location;
-		$identifier = $this->getIdentifier();
-
-		// setup personal profile document
-		$ask = $this->_queryPrefix .
-			'ASK WHERE {' .
-				'<' . $uri . '> rdf:type foaf:PersonalProfileDocument' .
-			'}';
-		if(!$store->query($ask, 'raw')) {
-			$query = $this->_queryPrefix .
-				'INSERT INTO <' . $uri . '> {' .
-					'<' . $uri . '> rdf:type foaf:PersonalProfileDocument .' .
-					'<' . $uri . '> foaf:maker <' . $identifier . '> .' .
-					'<' . $uri . '> foaf:primaryTopic <' . $identifier . '> .' .
-				'}';
-			$store->query($query);
-		}
-		else {
-			$ask = $this->_queryPrefix .
-				'ASK WHERE {' . 
-					'<' . $uri . '> foaf:maker <' . $identifier . '>' .
-				'}';
-			if(!$store->query($ask, 'raw')) {
-				// delete old triples
-				$query = $this->_queryPrefix . 
-					'DELETE {' . 
-						'<' . $uri . '> foaf:maker ?any .' .
-					'}';
-				$store->query($query);
-				
-				// insert new triple
-				$query = $this->_queryPrefix . 
-					'INSERT INTO <' . $uri . '> {' . 
-						'<' . $uri . '> foaf:maker <' . $identifier . '> .' .
-					'}';
-				$store->query($query);
-			}
+		if(is_null(self::$_profileStore)) {
+			$config = $this->getConfig();
 			
+			$store_config = array(
+				// mysql database access
+				'db_host' => $config->database->params->host,
+				'db_name' => $config->database->params->dbname,
+				'db_user' => $config->database->params->username,
+				'db_pwd' => $config->database->params->password,
+
+				// stone_name is used as table prefix
+				'store_name' => $config->arc->store->profile->name,
+			);
+
+			$store = ARC2::getStore($store_config);
+
+			if(!$store->isSetUp()) {
+				$store->setUp();
+			}
+
+			$uri = $config->profile->location;
+			$identifier = $this->getIdentifier();
+
+			// setup personal profile document
 			$ask = $this->_queryPrefix .
-				'ASK WHERE {' . 
-					'<' . $uri . '> foaf:primaryTopic <' . $identifier . '>' .
+				'ASK WHERE {' .
+					'<' . $uri . '> rdf:type foaf:PersonalProfileDocument' .
 				'}';
 			if(!$store->query($ask, 'raw')) {
-				// delete old triples
-				$query = $this->_queryPrefix . 
-					'DELETE {' . 
-						'<' . $uri . '> foaf:primaryTopic ?any .' .
-					'}';
-				$store->query($query);
-				
-				// insert new triple
-				$query = $this->_queryPrefix . 
-					'INSERT INTO <' . $uri . '> {' . 
+				$query = $this->_queryPrefix .
+					'INSERT INTO <' . $uri . '> {' .
+						'<' . $uri . '> rdf:type foaf:PersonalProfileDocument .' .
+						'<' . $uri . '> foaf:maker <' . $identifier . '> .' .
 						'<' . $uri . '> foaf:primaryTopic <' . $identifier . '> .' .
 					'}';
 				$store->query($query);
 			}
-		}
+			else {
+				$ask = $this->_queryPrefix .
+					'ASK WHERE {' . 
+						'<' . $uri . '> foaf:maker <' . $identifier . '>' .
+					'}';
+				if(!$store->query($ask, 'raw')) {
+					// delete old triples
+					$query = $this->_queryPrefix . 
+						'DELETE {' . 
+							'<' . $uri . '> foaf:maker ?any .' .
+						'}';
+					$store->query($query);
+					
+					// insert new triple
+					$query = $this->_queryPrefix . 
+						'INSERT INTO <' . $uri . '> {' . 
+							'<' . $uri . '> foaf:maker <' . $identifier . '> .' .
+						'}';
+					$store->query($query);
+				}
+				
+				$ask = $this->_queryPrefix .
+					'ASK WHERE {' . 
+						'<' . $uri . '> foaf:primaryTopic <' . $identifier . '>' .
+					'}';
+				if(!$store->query($ask, 'raw')) {
+					// delete old triples
+					$query = $this->_queryPrefix . 
+						'DELETE {' . 
+							'<' . $uri . '> foaf:primaryTopic ?any .' .
+						'}';
+					$store->query($query);
+					
+					// insert new triple
+					$query = $this->_queryPrefix . 
+						'INSERT INTO <' . $uri . '> {' . 
+							'<' . $uri . '> foaf:primaryTopic <' . $identifier . '> .' .
+						'}';
+					$store->query($query);
+				}
+			}
 
-		// setup person
-		$ask = $this->_queryPrefix .
-			'ASK WHERE {' .
-				'<' . $identifier . '> rdf:type foaf:Person' .
-			'}';
-		if(!$store->query($ask, 'raw')) {
-			$query = $this->_queryPrefix .
-				'INSERT INTO <' . $uri . '> {' .
-					'<' . $identifier . '> rdf:type foaf:Person .' .
+			// setup person
+			$ask = $this->_queryPrefix .
+				'ASK WHERE {' .
+					'<' . $identifier . '> rdf:type foaf:Person' .
 				'}';
-			$store->query($query);
+			if(!$store->query($ask, 'raw')) {
+				$query = $this->_queryPrefix .
+					'INSERT INTO <' . $uri . '> {' .
+						'<' . $identifier . '> rdf:type foaf:Person .' .
+					'}';
+				$store->query($query);
+			}
+
+			self::$_profileStore = $store;
 		}
 
-		return $store;
+		return self::$_profileStore;
 	}
 	
 	/**
@@ -172,41 +189,45 @@ class BaseController extends Zend_Controller_Action
 	 * @return ARC2_Store
 	 */
 	protected function getBrowserStore() {
-		$config = $this->getConfig();
-		
-		$store_config = array(
-			// mysql database access
-			'db_host' => $config->database->params->host,
-			'db_name' => $config->database->params->dbname,
-			'db_user' => $config->database->params->username,
-			'db_pwd' => $config->database->params->password,
+		if(is_null(self::$_browserStore)) {
+			$config = $this->getConfig();
+			
+			$store_config = array(
+				// mysql database access
+				'db_host' => $config->database->params->host,
+				'db_name' => $config->database->params->dbname,
+				'db_user' => $config->database->params->username,
+				'db_pwd' => $config->database->params->password,
 
-			// stone_name is used as table prefix
-			'store_name' => $config->arc->store->browser->name,
-		);
-
-		$store = ARC2::getStore($store_config);
-
-		if(!$store->isSetUp()) {
-			$store->setUp();
-		}
-		
-		// prepare browser graph
-		// load diverse ontologies
-		$ask = 
-			'ASK WHERE {' .
-			'?s ?p ?o' .
-			'}';
-		if(!$store->query($ask, 'raw')) {
-			$default_vocabs = array(
-				'http://xmlns.com/foaf/spec/index.rdf',
-				'http://purl.org/vocab/relationship/rel-vocab-20040308.rdf',
+				// stone_name is used as table prefix
+				'store_name' => $config->arc->store->browser->name,
 			);
-			foreach($default_vocabs as $vocab) {
-				$store->query('LOAD <' . $vocab . '>');
+
+			$store = ARC2::getStore($store_config);
+
+			if(!$store->isSetUp()) {
+				$store->setUp();
 			}
+			
+			// prepare browser graph
+			// load diverse ontologies
+			$ask = 
+				'ASK WHERE {' .
+				'?s ?p ?o' .
+				'}';
+			if(!$store->query($ask, 'raw')) {
+				$default_vocabs = array(
+					'http://xmlns.com/foaf/spec/index.rdf',
+					'http://purl.org/vocab/relationship/rel-vocab-20040308.rdf',
+				);
+				foreach($default_vocabs as $vocab) {
+					$store->query('LOAD <' . $vocab . '>');
+				}
+			}
+
+			self::$_browserStore = $store;
 		}
 
-		return $store;
+		return self::$_browserStore;
 	}
 }

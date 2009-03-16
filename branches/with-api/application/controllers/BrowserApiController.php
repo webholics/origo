@@ -13,7 +13,40 @@ class BrowserApiController extends ApiController
 	 * Max number of seeAlso properties to resolve and load.
 	 */
 	protected  $_maxSeeAlso = 10;
-	
+
+	public function preDispatch()
+	{
+		return parent::preDispatch();
+	}
+
+	/**
+	 * Clean action.
+	 * Deletes all data stored in browser triple store.
+	 */
+	public function cleanAction()
+	{
+		$xml = '<result>';
+
+		$store = $this->getProfileStore();
+		$store->reset();
+		if($errors = $store->getErrors()) {
+			$xml .= '<error>';
+			for($i = 0; $i < count($errors); $i++) {
+				$xml .= $errors[$i];
+				if($i < count($errors)-1)
+					$xml .= ' ';
+			}
+			$xml .= '</error>';
+		}
+		else {
+			$xml .= 1;
+		}
+
+		$xml .= '</result>';
+
+		$this->outputXml($xml);
+	}
+
 	/**
 	 * Profile action
 	 * Get a profile.
@@ -36,27 +69,7 @@ class BrowserApiController extends ApiController
 				$xml .= '<error>Could not find/load profile.</error>';
 			}
 			else {
-				$xml .= '<profile about="' . $id . '">';
-
-				$store = $this->getBrowserStore();
-				
-				foreach($this->_properties as $key => $value) {
-					$query = $this->_queryPrefix .
-						'SELECT ?val WHERE {' .
-							'<' . $id . '> <' . $value[0] . '> ?val .' .
-						'}';
-					$row = $store->query($query, 'row');
-
-					if(!$store->getErrors() && $row) {
-						// some properties need special attention
-						if($key == 'mbox')
-							$row['val'] = substr($row['val'], 7);
-					
-						$xml .= '<property name="' . $key . '">' . $row['val'] . '</property>';
-					}
-				}
-				
-				$xml .= '</profile>';
+				$xml .= $this->getProfile($id, $store);
 			}
 		}
 		
@@ -140,17 +153,15 @@ class BrowserApiController extends ApiController
 					}
 
 					foreach($rels as $to => $rel) {
-						// filter for bnodes here
-						// we don't want to support bnodes
-						if(substr($to, 0, 2) != '_:') {
-							$xml .= '<relationship to="' . $to . '"';
-							
-							if(isset($row['label']) && !empty($row['label'])) {
-								$xml .= ' label="' . htmlentities($row['label'], ENT_COMPAT, 'UTF-8') . '"';
-							}
-							
-							$xml .= ' type="' . $rel . '"/>';
+						$xml .= '<relationship';
+						
+						if(isset($row['label']) && !empty($row['label'])) {
+							$xml .= ' label="' . htmlentities($row['label'], ENT_COMPAT, 'UTF-8') . '"';
 						}
+
+						$xml .= ' type="' . $rel . '">';
+						$xml .= $this->getProfile($to, $store);
+						$xml .= '</relationship>';
 					}
 				}
 			}

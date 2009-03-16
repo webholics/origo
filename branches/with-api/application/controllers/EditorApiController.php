@@ -12,8 +12,6 @@ class EditorApiController extends ApiController
 	/**
 	 * Get action
 	 * Get the unique triples of the profile.
-	 * Only GET params.
-	 * If no parameter is provided the whole profile will be returned.
 	 */
 	public function getAction()
 	{
@@ -28,26 +26,7 @@ class EditorApiController extends ApiController
 			$params = $this->_properties;
 
 		$xml = '<result>';
-
-		foreach($params as $key => $value) {
-			if(isset($this->_properties[$key])) {
-					
-				$query = $this->_queryPrefix .
-					'SELECT ?val WHERE {' .
-						'<' . $identifier . '> <' . $this->_properties[$key][0] . '> ?val .' .
-					'}';
-				$row = $store->query($query, 'row');
-
-				if(!$store->getErrors() && $row) {
-					// some properties need special attention
-					if($key == 'mbox')
-						$row['val'] = substr($row['val'], 7);
-				
-					$xml .= '<property name="' . $key . '">' . $row['val'] . '</property>';
-				}
-			}
-		}
-
+		$xml .= $this->getProfile($identifier, $store);
 		$xml .= '</result>';
 
 		$this->outputXml($xml);
@@ -67,74 +46,72 @@ class EditorApiController extends ApiController
 
 		$xml = '<result>';
 
-		$updated = false;
+		$deleteQuery = $this->_queryPrefix .
+			'DELETE {';
+		$insertQuery = $this->_queryPrefix .
+			'INSERT INTO <' . $identifier . '> {';
+		$count = 1;
 		foreach($params as $key => $value) {
 			if(isset($this->_properties[$key])) {
 
 				if(empty($value)) {
-					$xml .= '<error>Given value is empty.</error>';
+					$xml .= '<error key="' . $key . '">Given value is empty.</error>';
 				}
 				else {
-					// delete old triple
-					$store->query($this->_queryPrefix .
-						'DELETE {' .
-							'<' . $identifier . '> <' . $this->_properties[$key][0] . '> ?any .' .
-						'}'
-					);
-
-					if($errors = $store->getErrors()) {
-						$xml .= '<error>';
-						for($i = 0; $i < count($errors); $i++) {
-							$xml .= $errors[$i];
-							if($i < count($errors)-1)
-								$xml .= ' ';
-						}
-						$xml .= '</error>';
-					}
-					else {
-						// insert new triple
-						$query = $this->_queryPrefix . 
-							'INSERT INTO <' . $identifier . '> {' .
-								'<' . $identifier . '> ' . $this->_properties[$key][0] . ' ';
-
-						// some properties need special attention
-						if($key == 'mbox') {
-							$value = 'mailto:' . trim($value);
-						}
-						else if($key == 'mbox_sha1sum') {
-							$value = sha1('mailto:' . trim($value));
-						}
-
-						switch($this->_properties[$key][1]) {
-							case 'uri':
-								$query .= '<' . $this->escape($value, 'uri') . '>';
-								break;
-							case 'literal':
-								$query .= '"' . $this->escape($value, 'literal') . '"';
-								break;
-						}
-
-						$query .= ' . }';
+					$deleteQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ?any' . $count . ' .';
+					$insertQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ';
+					$count++;
 						
-						$store->query($query);
-
-						if($errors = $store->getErrors()) {
-							$xml .= '<error>';
-							for($i = 0; $i < count($errors); $i++) {
-								$xml .= $errors[$i];
-								if($i < count($errors)-1)
-									$xml .= ' ';
-							}
-							$xml .= '</error>';
-						}
-						else {
-							$updated = true;
-							$xml .= '<property name="' . $key . '">';
-							$xml .= $value;
-							$xml .= '</property>';
-						}
+					// some properties need special attention
+					if($key == 'mbox') {
+						$value = 'mailto:' . trim($value);
 					}
+					else if($key == 'mbox_sha1sum') {
+						$value = sha1('mailto:' . trim($value));
+					}
+
+					switch($this->_properties[$key][1]) {
+						case 'uri':
+							$insertQuery .= '<' . $this->escape($value, 'uri') . '>';
+							break;
+						case 'literal':
+							$insertQuery .= '"' . $this->escape($value, 'literal') . '"';
+							break;
+					}
+					
+					$insertQuery .= ' .';
 				}
+			}
+		}
+			
+		$deleteQuery .= '}';
+		$insertQuery .= '}';
+		
+		// delete old triples
+		$store->query($deleteQuery);
+		if($errors = $store->getErrors()) {
+			$xml .= '<error>';
+			for($i = 0; $i < count($errors); $i++) {
+				$xml .= $errors[$i];
+				if($i < count($errors)-1)
+					$xml .= ' ';
+			}
+			$xml .= '</error>';
+		}
+		else {
+			// insert new triples
+			$store->query($insertQuery);
+			if($errors = $store->getErrors()) {
+				$xml .= '<error>';
+				for($i = 0; $i < count($errors); $i++) {
+					$xml .= $errors[$i];
+					if($i < count($errors)-1)
+						$xml .= ' ';
+				}
+				$xml .= '</error>';
+			}
+			else {
+				$xml .= $this->getProfile($identifier, $store);
 			}
 		}
 
@@ -143,10 +120,8 @@ class EditorApiController extends ApiController
 		$this->outputXml($xml);
 
 		// clean profile cache
-		if($updated) {
-			$cache = $this->getCache();
-			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
-		}
+		$cache = $this->getCache();
+		$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 	}
 	
 	/**
@@ -163,36 +138,31 @@ class EditorApiController extends ApiController
 
 		$xml = '<result>';
 
-		$updated = false;
+		$deleteQuery = $this->_queryPrefix .
+			'DELETE {';
+		$count = 1;
 		foreach($params as $key => $value) {
 			if(isset($this->_properties[$key])) {
-				// delete triple
-				$result = $store->query($this->_queryPrefix .
-					'DELETE {' .
-						'<' . $identifier . '> <' . $this->_properties[$key][0] . '> ?any .' .
-					'}'
-				);
-
-				$xml .= '<param name="' . $key . '">';
-
-				if($errors = $store->getErrors()) {
-					$xml .= '<error>';
-					for($i = 0; $i < count($errors); $i++) {
-						$xml .= $errors[$i];
-						if($i < count($errors)-1)
-							$xml .= ' ';
-					}
-					$xml .= '</error>';
-				}
-				else {
-					$removed_triples = $result['result']['t_count'];
-					if($removed_triples > 0)
-						$updated = true;
-					$xml .= $removed_triples;
-				}
-
-				$xml .= '</param>';
+				$deleteQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ?any' . $count . ' .';
+				$count++;
 			}
+		}
+			
+		$deleteQuery .= '}';
+		
+		// delete triples
+		$store->query($deleteQuery);
+		if($errors = $store->getErrors()) {
+			$xml .= '<error>';
+			for($i = 0; $i < count($errors); $i++) {
+				$xml .= $errors[$i];
+				if($i < count($errors)-1)
+					$xml .= ' ';
+			}
+			$xml .= '</error>';
+		}
+		else {
+			$xml .= $this->getProfile($identifier, $store);
 		}
 
 		$xml .= '</result>';
@@ -200,10 +170,8 @@ class EditorApiController extends ApiController
 		$this->outputXml($xml);
 
 		// clean profile cache
-		if($updated) {
-			$cache = $this->getCache();
-			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
-		}
+		$cache = $this->getCache();
+		$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 	}
 
 	/**
@@ -248,38 +216,10 @@ class EditorApiController extends ApiController
 		$store = $this->getProfileStore();
 
 		$xml = '<result>';
-		
-		$query = $this->_queryPrefix .
-			'SELECT ?label ?sameas ?seealso WHERE {' .
-				'<' . $identifier . '> owl:sameAs ?sameas . ' .
-				'?sameas rdfs:seeAlso ?seealso .' .
-				'OPTIONAL { ?sameas rdfs:label ?label . }' .
-			'}';
-		$rows = $store->query($query, 'rows');
-		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
-		}
-		else {
-			foreach($rows as $row) {
-				$xml .= '<profile sameas="' . $row['sameas'] . '" seealso="' . $row['seealso'] . '"';
-
-				if(isset($row['label']) && !empty($row['label']))
-					$xml .= '>' . $row['label'] . '</profile>';
-				else
-					$xml .= '/>';
-			}
-		}
-
+		$xml .= $this->getProfiles($identifier, $store);
 		$xml .= '</result>';
 
 		$this->outputXml($xml);
-		
 	}
 
 	/**
@@ -348,11 +288,7 @@ class EditorApiController extends ApiController
 					$xml .= '</error>';
 				}
 				else {
-					$xml .= '<profile sameas="' . $sameas . '" seealso="' . $seealso .'"';
-					if(empty($label)) 
-						$xml .= '/>';
-					else
-						$xml .= '>' . $label . '</profile>';
+					$xml .= $this->getProfiles($identifier, $store);
 
 					// clean profile cache
 					$cache = $this->getCache();
@@ -404,14 +340,12 @@ class EditorApiController extends ApiController
 			}
 			else {
 				if($result['result']['t_count'] > 0) {
-					$xml .= 1;
-					
 					// clean profile cache
 					$cache = $this->getCache();
 					$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 				}
-				else
-					$xml .= 0;
+
+				$xml .= $this->getProfiles($identifier, $store);
 			}
 		}
 
@@ -429,48 +363,7 @@ class EditorApiController extends ApiController
 		$store = $this->getProfileStore();
 
 		$xml = '<result>';
-		
-		$query = $this->_queryPrefix .
-			'SELECT ?p ?name WHERE {' .
-				'<' . $identifier . '> ?p ?name . ' .
-				'FILTER(';
-
-		$first = true;
-		foreach($this->_relationships as $rel) {
-			if($first)
-				$first = false;
-			else
-				$query .= ' || ';
-			$query .= ' ?p = <' . $rel . '> ';
-		}
-		$query .= ') }';
-
-		$rows = $store->query($query, 'rows');
-		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
-		}
-		else {
-			$rels = array();
-			foreach($rows as $row) {
-				if(isset($rels[$row['name']])) 
-					$rels[$row['name']] .= ',';
-				else
-					$rels[$row['name']] = '';
-
-				$rels[$row['name']] .= array_search($row['p'], $this->_relationships);
-			}
-
-			foreach($rels as $to => $rel) {
-				$xml .= '<relationship to="' . $to . '" type="' . $rel . '"/>';
-			}
-		}
-
+		$xml .= $this->getRelationships($identifier, $store);
 		$xml .= '</result>';
 
 		$this->outputXml($xml);
@@ -498,6 +391,7 @@ class EditorApiController extends ApiController
 			$query = $this->_queryPrefix .
 				'DELETE FROM {' .
 					'<' . $identifier . '> ?any1 <' . $to . '> .' .
+					'<' . $to . '> ?any2 ?any3 .' .
 				'}';
 			$store->query($query);
 			if($errors = $store->getErrors()) {
@@ -510,10 +404,15 @@ class EditorApiController extends ApiController
 				$xml .= '</error>';
 			}
 			else {
-				$query = $this->_queryPrefix .
+				// try to load the provided profile
+				$toId = $this->loadUri($to);
+				if($toId)
+					$to = $toId;
+
+				$insertQuery = $this->_queryPrefix .
 					'INSERT INTO <' . $identifier . '> {' .
 						'<' . $identifier . '> foaf:knows <' . $to . '> .';
-
+				
 				// add relationships
 				$rels = 'knows';
 				foreach($params as $key => $value) {
@@ -524,13 +423,49 @@ class EditorApiController extends ApiController
 
 						$rels .= ',' . $key;
 
-						$query .= '<' . $identifier . '> <' . $this->_relationships[$key] . '> <' . $to . '> .';
+						$insertQuery .= '<' . $identifier . '> <' . $this->_relationships[$key] . '> <' . $to . '> .';
+					}
+				}
+
+				// store some basic values in our profile
+				// in order to accelerate browsing
+				$loadProperties = array('name', 'nick', 'img', 'depiction', 'family_name', 'givenname');
+				if($toId) {
+					$browserStore = $this->getBrowserStore();
+					$query = $this->_queryPrefix .
+						'SELECT ?type';
+					foreach($loadProperties as $p)
+						$query .= ' ?' . $p;
+					$query .= ' WHERE {' .
+						'<' . $to . '> rdf:type ?type . ';
+					foreach($loadProperties as $p) {
+						$query .= 'OPTIONAL { <' . $to . '> <' . $this->_properties[$p][0] . '> ?' . $p . ' . } ';
+					}
+					$query .= ' }';
+
+					$row = $browserStore->query($query, 'row');
+					if(!$store->getErrors() && $row) {
+						foreach($loadProperties as $p) {
+							if(isset($row[$p]) && !empty($row[$p])) {
+								$insertQuery .= '<' . $to . '> <' . $this->_properties[$p][0] . '> ';
+								switch($this->_properties[$p][1]) {
+									case 'uri':
+										$insertQuery .= '<' . $this->escape($row[$p], 'uri') . '>';
+										break;
+									case 'literal':
+										$insertQuery .= '"' . $this->escape($row[$p], 'literal') . '"';
+										break;
+								}
+
+								$insertQuery .= ' . ';
+							}
+						}
 					}
 				}
 					
-				$query .= '}';
+				$insertQuery .= '}';
 
-				$store->query($query);
+				$store->query($insertQuery);
 				if($errors = $store->getErrors()) {
 					$xml .= '<error>';
 					for($i = 0; $i < count($errors); $i++) {
@@ -541,7 +476,7 @@ class EditorApiController extends ApiController
 					$xml .= '</error>';
 				}
 				else {
-					$xml .= '<relationship to="' . $to . '" type="' . $rels . '"/>';
+					$xml .= $this->getRelationships($identifier, $store);
 
 					// clean profile cache
 					$cache = $this->getCache();
@@ -576,6 +511,7 @@ class EditorApiController extends ApiController
 			$query = $this->_queryPrefix .
 				'DELETE {' .
 					'<' . $identifier . '> ?any1 <' . $to . '> .' .
+					'<' . $to . '> ?any2 ?any3 .' .
 				'}';
 
 			$result = $store->query($query);
@@ -590,19 +526,74 @@ class EditorApiController extends ApiController
 			}
 			else {
 				if($result['result']['t_count'] > 0) {
-					$xml .= 1;
-
 					// clean profile cache
 					$cache = $this->getCache();
 					$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 				}
-				else
-					$xml .= 0;
+
+				$xml .= $this->getRelationships($identifier, $store);
 			}
 		}
 
 		$xml .= '</result>';
 
 		$this->outputXml($xml);
+	}
+
+	/**
+	 * Get relationships of $id.
+	 *
+	 * @param string $id bnode or uri identifier
+	 * @param ARC2_Store $store The triple store to use
+	 * @return string Relationships as XML.
+	 */
+	protected function getRelationships($id, $store) 
+	{
+		$xml = '';
+
+		$query = $this->_queryPrefix .
+			'SELECT ?to ?p WHERE {' .
+				'<' . $id . '> ?p ?to . ' .
+				'FILTER(';
+
+		$first = true;
+		foreach($this->_relationships as $rel) {
+			if($first)
+				$first = false;
+			else
+				$query .= ' || ';
+			$query .= ' ?p = <' . $rel . '> ';
+		}
+		$query .= ') }';
+		$rows = $store->query($query, 'rows');
+		if($errors = $store->getErrors()) {
+			$xml .= '<error>';
+			for($i = 0; $i < count($errors); $i++) {
+				$xml .= $errors[$i];
+				if($i < count($errors)-1)
+					$xml .= ' ';
+			}
+			$xml .= '</error>';
+		}
+		else {
+			$rels = array();
+			foreach($rows as $row) {
+				if(isset($rels[$row['to']])) 
+					$rels[$row['to']] .= ',';
+				else
+					$rels[$row['to']] = '';
+
+				$rels[$row['to']] .= array_search($row['p'], $this->_relationships);
+			}
+
+			foreach($rels as $to => $rel) {
+				$xml .= '<relationship';
+				$xml .= ' type="' . $rel . '">';
+				$xml .= $this->getProfile($to, $store);
+				$xml .= '</relationship>';
+			}
+		}
+	
+		return $xml;
 	}
 }

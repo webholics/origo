@@ -71,5 +71,8 @@ $router->addRoute('api_browser_profile', new Zend_Controller_Router_Route('api/b
 $router->addRoute('api_browser_relationships', new Zend_Controller_Router_Route('api/browser/relationships',
 	array('controller' => 'browserApi', 'action' => 'relationships')
 ));
+$router->addRoute('api_browser_clean', new Zend_Controller_Router_Route('api/browser/clean',
+	array('controller' => 'browserApi', 'action' => 'clean')
+));
 
 unset($router);
