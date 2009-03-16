@@ -467,17 +467,7 @@ class EditorApiController extends ApiController
 			}
 
 			foreach($rels as $to => $rel) {
-				$xml .= '<relationship to="' . $to . '"';
-				
-				$query2 = $this->_queryPrefix .
-					'SELECT ?seealso WHERE {' .
-						'<' . $to . '> rdfs:seeAlso ?seealso .' .
-					'}';
-				if($row = $store->query($query2, 'row')) {
-					$xml .= ' seealso="' . $row['seealso'] . '"';
-				}
-				
-				$xml .= '>' . $rel . '</relationship>';
+				$xml .= '<relationship to="' . $to . '" type="' . $rel . '"/>';
 			}
 		}
 
@@ -508,7 +498,6 @@ class EditorApiController extends ApiController
 			$query = $this->_queryPrefix .
 				'DELETE FROM {' .
 					'<' . $identifier . '> ?any1 <' . $to . '> .' .
-					'<' . $to . '> ?any2 ?any3 .' .
 				'}';
 			$store->query($query);
 			if($errors = $store->getErrors()) {
@@ -524,9 +513,6 @@ class EditorApiController extends ApiController
 				$query = $this->_queryPrefix .
 					'INSERT INTO <' . $identifier . '> {' .
 						'<' . $identifier . '> foaf:knows <' . $to . '> .';
-
-				if(isset($params['seealso']) && !empty($params['seealso']))
-					$query .= '<' . $to . '> rdfs:seeAlso <' . $this->escape($params['seealso'], 'uri') . '> .';
 
 				// add relationships
 				$rels = 'knows';
@@ -555,12 +541,7 @@ class EditorApiController extends ApiController
 					$xml .= '</error>';
 				}
 				else {
-					$xml .= '<relationship to="' . $to . '"';
-
-					if(isset($params['seealso']) && !empty($params['seealso']))
-						$xml .= ' seealso="' . $params['seealso'] . '"';
-
-					$xml .= '>' . $rels . '</relationship>';
+					$xml .= '<relationship to="' . $to . '" type="' . $rels . '"/>';
 
 					// clean profile cache
 					$cache = $this->getCache();
@@ -595,7 +576,6 @@ class EditorApiController extends ApiController
 			$query = $this->_queryPrefix .
 				'DELETE {' .
 					'<' . $identifier . '> ?any1 <' . $to . '> .' .
-					'<' . $to . '> ?any2 ?any3 .' .
 				'}';
 
 			$result = $store->query($query);
