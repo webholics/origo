@@ -102,7 +102,7 @@ class ApiController extends BaseController
 		$request = $this->getRequest();
 		if($request->getControllerName() != 'api' || $request->getActionName() != 'error') {
 			if(!$this->authenticate()) {
-				$this->_forward('error', null, null, array(
+				$this->_forward('error', 'api', null, array(
 					'http_code' => 401,
 					'code' => 'AuthenticationFailed',
 					'message' => 'Authentication failed! Please check your credentials.'
@@ -261,7 +261,7 @@ class ApiController extends BaseController
 			// check if id is a bnode
 			if(substr($id, 0, 2) == '_:') {
 				// here comes a little hack:
-				// some foaf profiles are only link via rdfs:seeAlso
+				// some foaf profiles are only linked via rdfs:seeAlso
 				// and assume foaf:primaryTopic to be set in the linked profile
 				// therefore we search here for rdfs:seeAlso 
 				// and link to the foaf document itself if found

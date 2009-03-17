@@ -14,11 +14,6 @@ class BrowserApiController extends ApiController
 	 */
 	protected  $_maxSeeAlso = 10;
 
-	public function preDispatch()
-	{
-		return parent::preDispatch();
-	}
-
 	/**
 	 * Clean action.
 	 * Deletes all data stored in browser triple store.
@@ -56,6 +51,8 @@ class BrowserApiController extends ApiController
 	public function profileAction()
 	{
 		$xml = '<result>';
+
+		$store = $this->getBrowserStore();
 
 		$params = $this->getRequest()->getQuery();
 		if(!isset($params['uri']) || empty($params['uri'])) {
