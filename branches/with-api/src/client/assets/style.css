@@ -1,4 +1,10 @@
 /* CSS file */
+@font-face {
+	src:url("../assets/lucida_sans_unicode.ttf");
+	fontFamily:LucidaSansUnicode;
+	advancedAntiAliasing:true;
+}
+
 Application {
 	background-image:Embed("../assets/background.png");
 	background-repeat:repeat;
@@ -9,8 +15,55 @@ Application {
 	border-skin:ClassReference("com.origo.skins.BoxSkin");
 }
 
+.normalText {
+	color:#ebebeb;
+	font-family:LucidaSansUnicode;
+	font-size:12;
+}
 .smallText {
 	color:#4e4e4e;
+	font-family:LucidaSansUnicode;
+	font-size:9;
+}
+
+Form {
+	font-family:LucidaSansUnicode;
+}
+FormHeading {
+	color:#ebebeb;
+	font-family:LucidaSansUnicode;
+	font-size:15;
+	font-weight:normal;
+}
+FormItem {
+	labelStyleName:normalText;
+	indicatorSkin:Embed(source="../assets/required_icon.png");
+	indicatorGap:24;
+}
+TextInput {
+	color:#202020;
+	font-family:LucidaSansUnicode;
+	font-size:12;
+	border-color:#1d66ba;
+	border-thickness:1;
+	border-style:solid;
+	corner-radius:3;
+	padding-left:3;
+	padding-right:3;
+	border-skin:ClassReference("com.origo.skins.TextInputSkin");	
+}
+Button {
+	color:#202020;
 	font-family:Verdana;
-	font-size: 9;
+	font-size:12;
+	skin:ClassReference("com.origo.skins.ButtonSkin");	
+}
+ProgressBar {
+	color:#ebebeb;
+	font-family:LucidaSansUnicode;
+	font-weight:normal;
+	font-size:12;
+	bar-color:#1d66ba;
+	border-color:#202020;
+	track-height:6;
 }

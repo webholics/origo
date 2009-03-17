@@ -5,6 +5,7 @@ package com.origo
     import flash.geom.Matrix;
     import flash.text.*;
     import flash.utils.*;
+    import flash.filters.DropShadowFilter;
     
     import mx.core.BitmapAsset;
     import mx.events.*;
@@ -23,7 +24,7 @@ package com.origo
         private var progressBar:Sprite;
         
         private var timer:Timer;
-        private var fadeOutRate:Number = .02;
+        private var fadeOutRate:Number = .005;
     
         public function Preloader()
         {   
@@ -34,7 +35,14 @@ package com.origo
 			addChild(logo);
 			
 			progressBar = new Sprite();
-			//progressBar.visible = false;
+			progressBar.visible = false;
+			var shadow:DropShadowFilter = new DropShadowFilter();
+			shadow.distance = 3;
+			shadow.angle = 45;
+			shadow.alpha = 0.3;
+			shadow.blurX = 4;
+			shadow.blurY = 4;
+			progressBar.filters = [shadow];
 			addChild(progressBar);
         }
     

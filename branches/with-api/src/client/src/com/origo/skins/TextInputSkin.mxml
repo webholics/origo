@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<degrafa:GraphicBorderSkin xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:degrafa="http://www.degrafa.com/2007">
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.utils.ColorUtil;
+
+            [Bindable] private var awidth : Number = 0;
+            [Bindable] private var aheight : Number = 0;
+
+            override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+            {
+                awidth = unscaledWidth;
+                aheight = unscaledHeight;
+                super.updateDisplayList(unscaledWidth, unscaledHeight);
+            }
+        ]]>
+    </mx:Script>
+
+    <degrafa:fills>
+        <degrafa:LinearGradientFill angle="90" id="fill">
+            <degrafa:GradientStop ratio="0.2" color="#b0b0b0" alpha="0.8"/>
+            <degrafa:GradientStop ratio="0.8" color="#ffffff" alpha="0.8"/>
+        </degrafa:LinearGradientFill>
+    </degrafa:fills>
+
+    <degrafa:geometry>
+        <degrafa:RoundedRectangle fill="{fill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
+    </degrafa:geometry>
+
+	<degrafa:filters>
+		<mx:DropShadowFilter alpha="0.3" angle="45" distance="3" blurX="5" blurY="5"/>
+	</degrafa:filters>
+
+</degrafa:GraphicBorderSkin>
