@@ -1,5 +1,16 @@
 /* CSS file */
-Application{
-    borderSkin: ClassReference("com.external.RepeatedBackground");
-    background-image: Embed("../assets/background.png");
+Application {
+	background-image:Embed("../assets/background.png");
+	background-repeat:repeat;
+	border-skin:ClassReference("com.degrafa.skins.CSSSkin");
+}
+
+.box {
+	border-skin:ClassReference("com.origo.skins.BoxSkin");
+}
+
+.smallText {
+	color:#4e4e4e;
+	font-family:Verdana;
+	font-size: 9;
 }

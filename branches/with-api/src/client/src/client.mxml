@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	preloader="com.origo.Preloader"
 	layout="absolute">
 	
 	<mx:Style source="../assets/style.css" />
+	
+	<mx:Canvas styleName="box" verticalCenter="0" horizontalCenter="0" width="400" height="300">
+		<mx:Image source="@Embed('../assets/logo.png')" horizontalCenter="0" top="30" />
+		
+		<mx:Text text="Copyright © 2009 Mario Volke, All Rights Reserved." styleName="smallText" horizontalCenter="0" bottom="10" />
+	</mx:Canvas>
 
 </mx:Application>
