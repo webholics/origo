@@ -1,11 +1,16 @@
 package com.origo
 {
+	import com.adobe.net.URI;
+	
+	import flash.events.ErrorEvent;
 	import flash.events.EventDispatcher;
 	
-	import mx.rpc.events.FaultEvent;
-	import mx.rpc.events.ResultEvent;
-	import mx.rpc.http.mxml.HTTPService;
-	import mx.utils.Base64Encoder; 
+	import mx.utils.Base64Encoder;
+	
+	import org.httpclient.HttpClient;
+	import org.httpclient.HttpRequest;
+	import org.httpclient.events.*;
+	import org.httpclient.http.Get;
 
 	/**
 	 * ApiConnector
@@ -33,27 +38,23 @@ package com.origo
 		private var _hasAuth:Boolean = false;
 		
 		/**
-		 * The HTTPService to send api requests.
+		 * Authorization header
 		 */
-		private var service:HTTPService; 
-				
-		/**
-		 * Current result event listener for service.
-		 */
-		private var resultEventListener:Function = null;
+		private var authorizationHeader:String = null;
 
 		public function ApiConnector()
 		{
 			if(instance) 
 				throw new Error("ApiConnector and can only be accessed through ApiConnector.getInstance()");
 				
-			service = new HTTPService();
+			/*service = new HTTPService();
 			service.method = "get";
 			service.useProxy = false;
 			service.resultFormat = "e4x";
 			service.showBusyCursor = false;
 			service.requestTimeout = 30;
 			service.addEventListener(FaultEvent.FAULT, serviceFault);
+			*/
 		}
 		
 		public static function getInstance():ApiConnector 
@@ -92,26 +93,25 @@ package com.origo
 			var encoder:Base64Encoder = new Base64Encoder();
 			encoder.insertNewLines = false;
 			encoder.encode(username + ":" + password);
-			service.headers["Authorization"] = "Basic " + encoder.toString();
+			authorizationHeader = "Basic " + encoder.toString();
 			
 			// check credentials via test method provided by the api
-			service.url = apiUrl + "test";
+			/*service.url = apiUrl + "test";
 			service.addEventListener(ResultEvent.RESULT, authenticateResult);
 			resultEventListener = authenticateResult;
-			trace(service.url);
-			service.send();
+			service.send();*/
+			
+			sendRequest(apiUrl + "test", authenticationResult);
 		}
 		
 		/**
 		 * The result event listener for the authenticate method.
 		 * Dispatches error or success event.
 		 * 
-		 * @param ResultEvent event
+		 * @param HttpResponseEvent event
 		 */
-		private function authenticateResult(event:ResultEvent):void
-		{
-			removeResultEventListener();
-			
+		/*private function authenticateResult(event:HttpResponseEvent):void
+		{		
 			if(event.result.code == 200) {
 				_hasAuth = true;
 				
@@ -132,19 +132,42 @@ package com.origo
 					)
 				);
 			}
+		}*/
+		private function authenticationResult(event:HttpDataEvent):void
+		{
+			var result:XML = new XML(event.readUTFBytes());
+			trace(event.readUTFBytes());
+			if(result.code == 200) {
+				_hasAuth = true;
+				
+				dispatchEvent(
+					new ApiConnectorSuccessEvent(
+						ApiConnectorSuccessEvent.SUCCESS_EVENT
+					)
+				);
+			}
+			else {
+				_hasAuth = false;
+				
+				dispatchEvent(
+					new ApiConnectorErrorEvent(
+						ApiConnectorErrorEvent.ERROR_EVENT,
+						result.error_code,
+						result.error_message
+					)
+				);
+			}
 		}
 		
 		/**
-		 * The event handler for FaultEvent from HTTPService.
+		 * The event handler for HttpErrorEvent from HTTPClient.
 		 *
-		 * @param event The FaultEvent result.
+		 * @param ErrorEvent event
 		 */
-		private function serviceFault(event:FaultEvent):void
-		{
-			removeResultEventListener();
-			
-			trace(event.fault.message);
-			
+		private function serviceFault(event:ErrorEvent):void
+		{		
+			trace(event);
+				
 			dispatchEvent(
 				new ApiConnectorErrorEvent(
 					ApiConnectorErrorEvent.ERROR_EVENT,
@@ -155,14 +178,25 @@ package com.origo
 		}
 		
 		/**
-		 * Remove old result event listener
+		 * Send a request to Origo REST API.
 		 */
-		private function removeResultEventListener():void
-		{
-			if(resultEventListener != null) {
-				service.removeEventListener(ResultEvent.RESULT, resultEventListener);
-				resultEventListener = null;
-			}
+		private function sendRequest(url:String, result:Function, params:Array=null):void
+		{			     
+			var request:HttpRequest = new Get();
+			if(authorizationHeader != null)
+				request.addHeader("Authorization", authorizationHeader);
+			if(params != null)
+				request.setFormData(params);
+			
+			var listener:HttpListener = new HttpListener({
+				onData:		result,
+				onError: 	serviceFault
+			});
+      
+			var client:HttpClient = new HttpClient();
+			client.timeout = 5000;
+			client.listener = listener;
+			client.request(new URI(url), request);
 		}
 	}
 }
