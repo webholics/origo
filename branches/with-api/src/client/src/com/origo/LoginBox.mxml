@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="400" styleName="box" horizontalCenter="0" verticalCenter="0">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.core.Application;
+			
+			private function validateForm():Boolean
+			{               
+				var valid:Boolean = true;
+				var vEvent:ValidationResultEvent;
+                
+				vEvent = usernameValidator.validate();
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+					valid = false;
+					username.styleName = "error";
+				}
+				else
+					username.styleName = "";
+				
+				vEvent = passwordValidator.validate();
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+					valid = false;
+					password.styleName = "error";
+				}
+				else
+					password.styleName = "";
+
+				return valid;
+			}
+ 
+			private function authenticate():void
+			{ 
+				currentState = "authenticate";
+				
+				var api:ApiConnector = ApiConnector.getInstance();
+				api.addEventListener(ApiConnectorSuccessEvent.SUCCESS_EVENT, authenticateSuccess);
+				api.addEventListener(ApiConnectorErrorEvent.ERROR_EVENT, authenticateError);
+				api.authenticate(username.text, password.text);
+			}
+			
+			private function authenticateSuccess(event:ApiConnectorSuccessEvent):void
+			{
+				Application.application.currentState = "";
+			}
+			
+			private function authenticateError(event:ApiConnectorErrorEvent):void
+			{
+				currentState = "error";
+				loginFormErrorText.text = event.message;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:states>	
+		<mx:State name="error">
+			<mx:SetProperty target="{this}" name="height" value="430"/>
+			<mx:AddChild relativeTo="{loginFormHeading}" position="after">
+				<mx:Text id="loginFormErrorText" styleName="errorText"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="authenticate">
+			<mx:AddChild>
+				<mx:ProgressBar width="300" horizontalCenter="0" top="200" indeterminate="true" label="Verifying credentials..."/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{loginForm}"/>
+			<mx:SetProperty target="{this}" name="height" value="300"/>
+		</mx:State>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="*" toState="*">
+			<mx:Resize target="{this}"/>
+		</mx:Transition>
+	</mx:transitions>
+	
+	<mx:Image source="@Embed('../assets/logo.png')" horizontalCenter="0" top="30" />
+	
+	<mx:StringValidator id="usernameValidator" source="{username}" property="text" required="true"/>
+	<mx:StringValidator id="passwordValidator" source="{password}" property="text" required="true"/>
+					
+	<mx:Form id="loginForm" defaultButton="{submitButton}" horizontalCenter="0" top="200">
+		<mx:FormHeading id="loginFormHeading" label="Authentication required"/>
+		<mx:FormItem label="Username" required="true">
+			<mx:TextInput id="username"/>
+		</mx:FormItem>
+		<mx:FormItem label="Password" required="true">
+			<mx:TextInput id="password"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:Button label="Login" id="submitButton" click="if(validateForm()) authenticate()"/>
+		</mx:FormItem>
+	</mx:Form>
+					
+	<mx:Text text="Copyright © 2009 Mario Volke, All Rights Reserved." styleName="smallText" horizontalCenter="0" bottom="10" selectable="false" />
+
+</mx:Canvas>

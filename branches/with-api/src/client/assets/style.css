@@ -15,8 +15,17 @@ Application {
 	border-skin:ClassReference("com.origo.skins.BoxSkin");
 }
 
-.normalText {
+.normalText,
+.defaultFormItemLabel {
 	color:#ebebeb;
+	font-family:LucidaSansUnicode;
+	font-size:12;
+}
+.defaultFormItemLabel {
+	text-align:left;	
+}
+.errorText {
+	color:#c52828;
 	font-family:LucidaSansUnicode;
 	font-size:12;
 }
@@ -36,7 +45,7 @@ FormHeading {
 	font-weight:normal;
 }
 FormItem {
-	labelStyleName:normalText;
+	labelStyleName:defaultFormItemLabel;
 	indicatorSkin:Embed(source="../assets/required_icon.png");
 	indicatorGap:24;
 }
@@ -51,6 +60,9 @@ TextInput {
 	padding-left:3;
 	padding-right:3;
 	border-skin:ClassReference("com.origo.skins.TextInputSkin");	
+}
+TextInput.error {
+	border-skin:ClassReference("com.origo.skins.ErrorTextInputSkin");
 }
 Button {
 	color:#202020;

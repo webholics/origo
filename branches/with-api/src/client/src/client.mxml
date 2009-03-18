@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:origo="com.origo.*"
 	preloader="com.origo.Preloader"
 	layout="absolute"
 	creationComplete="init();">
@@ -8,8 +9,14 @@
 	<mx:Style source="../assets/style.css" />
 	<mx:Script>		
 		<![CDATA[
+			import com.origo.*;
+			
 			private function init():void
 			{
+				// set api base url
+				var api:ApiConnector = ApiConnector.getInstance();
+				api.setApiUrl(parameters["api_url"]);
+				
 				// switch to login state
 				currentState = 'login';
 			}
@@ -17,46 +24,16 @@
 	</mx:Script>
 	
 	<mx:states>
-	
 		<mx:State name="login">
 			<mx:AddChild>
-				<mx:Canvas id="welcomeBox" styleName="box" verticalCenter="0" horizontalCenter="0" width="400" height="400">
-					<mx:Image source="@Embed('../assets/logo.png')" horizontalCenter="0" top="30" />
-					
-					<mx:Form id="loginForm" defaultButton="{submitButton}" horizontalCenter="0" top="200">
-						<mx:FormHeading label="Please provide your credentials"/>
-						<mx:FormItem label="Username" required="true">
-							<mx:TextInput id="username"/>
-						</mx:FormItem>
-						<mx:FormItem label="Password" required="true">
-							<mx:TextInput id="password"/>
-						</mx:FormItem>
-						<mx:FormItem>
-							<mx:Button label="Login" id="submitButton" click="currentState='checkCredentials'"/>
-						</mx:FormItem>
-					</mx:Form>
-					
-					<mx:Text text="Copyright © 2009 Mario Volke, All Rights Reserved." styleName="smallText" horizontalCenter="0" bottom="10" selectable="false" />
-				</mx:Canvas>	
+				<origo:LoginBox id="loginBox"/>
 			</mx:AddChild>		
 		</mx:State>
-		
-		<mx:State name="checkCredentials" basedOn="login">
-			<mx:AddChild relativeTo="{welcomeBox}" position="lastChild">
-				<mx:ProgressBar width="300" horizontalCenter="0" top="200" indeterminate="true" label="Verifying credentials..."/>
-			</mx:AddChild>
-			<mx:RemoveChild target="{loginForm}"/>
-			<mx:SetProperty target="{welcomeBox}" name="height" value="300"/>
-		</mx:State>
-		
 	</mx:states>
 	
 	<mx:transitions>
 		<mx:Transition fromState="" toState="login">
-			<mx:Fade target="{welcomeBox}" duration="500" alphaFrom="0" alphaTo="1"/>
-		</mx:Transition>
-		<mx:Transition fromState="login" toState="checkCredentials">
-			<mx:Resize target="{welcomeBox}"/>
+			<mx:Fade target="{loginBox}" duration="500" alphaFrom="0" alphaTo="1"/>
 		</mx:Transition>
 	</mx:transitions>
 
