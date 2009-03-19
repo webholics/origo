@@ -15,7 +15,7 @@ class EditorApiController extends ApiController
 	 */
 	public function getAction()
 	{
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
@@ -34,12 +34,12 @@ class EditorApiController extends ApiController
 	
 	/**
 	 * Update action
-	 * Only GET params.
+	 * Only POST params.
 	 * Update the triples that exist exactly once per profile.
 	 */
 	public function updateAction()
 	{
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 		
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
@@ -126,12 +126,12 @@ class EditorApiController extends ApiController
 	
 	/**
 	 * Delete action
-	 * Only GET params.
+	 * Only POST params.
 	 * Delete triples that exist exactly once per profile.
 	 */
 	public function deleteAction()
 	{
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 		
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
@@ -225,14 +225,14 @@ class EditorApiController extends ApiController
 	/**
 	 * Profiles update action
 	 * Insert or update external profiles.
-	 * Only GET params.
+	 * Only POST params.
 	 * Needs params seealso, sameas.
 	 */
 	public function profilesupdateAction()
 	{
 		$xml = '<result>';
 		
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 		if(!isset($params['seealso']) ||
 			empty($params['seealso']) ||
 			!isset($params['sameas']) ||
@@ -305,14 +305,14 @@ class EditorApiController extends ApiController
 	/**
 	 * Profiles delete action
 	 * Delete external profiles.
-	 * Only GET params.
+	 * Only POST params.
 	 * Needs param: sameas.
 	 */
 	public function profilesdeleteAction()
 	{
 		$xml = '<result>';
 		
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 		if(!isset($params['sameas']) ||
 			empty($params['sameas'])) {
 			
@@ -371,14 +371,14 @@ class EditorApiController extends ApiController
 
 	/**
 	 * Relationships update action
-	 * Only GET params.
+	 * Only POST params.
 	 * Needs param: to.
 	 */
 	public function relationshipsupdateAction()
 	{
 		$xml = '<result>';
 		
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 		if(!isset($params['to']) || empty($params['to'])) {
 			$xml .= '<error>Not all parameters given. This method needs: to</error>';
 		}
@@ -492,14 +492,14 @@ class EditorApiController extends ApiController
 
 	/**
 	 * Relationships delete action
-	 * Only GET params.
+	 * Only POST params.
 	 * Needs param: to.
 	 */
 	public function relationshipsdeleteAction()
 	{
 		$xml = '<result>';
 		
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 		if(!isset($params['to']) || empty($params['to'])) {
 			$xml .= '<error>Not all parameters given. This method needs: to</error>';
 		}

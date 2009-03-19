@@ -103,9 +103,9 @@ class ApiController extends BaseController
 		if($request->getControllerName() != 'api' || $request->getActionName() != 'error') {
 			if(!$this->authenticate()) {
 				$this->_forward('error', 'api', null, array(
-					'http_code' => 401,
+					//'http_code' => 401, Flex/AS§ doesn't support status codes
 					'code' => 'AuthenticationFailed',
-					'message' => 'Authentication failed! Please check your credentials.'
+					'message' => 'Authentication failed!'
 				));
 			}
 		}
@@ -190,39 +190,22 @@ class ApiController extends BaseController
 	
 	/**
 	 * Authentication
+	 * Every api method which needs authentication
+	 * has to provide a key (POST) parameter with value
+	 * md5(username:password)
 	 * 
 	 * @return bool True if user is authenticated, false otherwise.
 	 */
 	protected function authenticate()
 	{
 		$config = $this->getConfig();
-		$auth_config = array(
-			'accept_schemes' 	=> 'basic',
-			'realm' 			=> 'origo api',
-		);
 
-		$adapter = new Zend_Auth_Adapter_Http($auth_config);
-		
-		$basicResolver = new Zend_Auth_Adapter_Http_Resolver_Single(
-			$config->api->auth->username,
-			'origo api',
-			$config->api->auth->password,
-			'basic'
-		);
+		if(empty($config->api->auth->username) && empty($config->api->auth->password))
+			return true;
 
-		$adapter->setBasicResolver($basicResolver);
-
-		$request = $this->getRequest();
-		$response = $this->getResponse();
-
-		assert($request instanceof Zend_Controller_Request_Http);
-		assert($response instanceof Zend_Controller_Response_Http);
-
-		$adapter->setRequest($request);
-		$adapter->setResponse($response);
-
-		$result = $adapter->authenticate();
-		if($result->isValid())
+		$key = $this->getRequest()->getPost('key');
+		$serviceKey = md5($config->api->auth->username . ':' . $config->api->auth->password);
+		if($key && $key == $serviceKey)
 			return true;
 
 		return false;

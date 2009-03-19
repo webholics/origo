@@ -27,6 +27,11 @@ $router->addRoute('profile_html', new Zend_Controller_Router_Route('html',
 	array('controller' => 'profile', 'action' => 'html')
 ));
 
+// ClientController
+$router->addRoute('client', new Zend_Controller_Router_Route('client',
+	array('controller' => 'client', 'action' => 'index')
+));
+
 // ApiController
 $router->addRoute('api_test', new Zend_Controller_Router_Route('api/test',
 	array('controller' => 'api', 'action' => 'test')

@@ -26,8 +26,12 @@ try {
 		$frontController->throwExceptions(false);
 		$frontController->registerPlugin(new Zend_Controller_Plugin_ErrorHandler());
 	}
+
+	$view = new Zend_View();
+	$view->addHelperPath(APPLICATION_PATH . '/../library/MV/View/Helper', 'MV_View_Helper');	
+	Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->setView($view);
 	
-	unset($frontController, $config);
+	unset($frontController, $config, $view);
 } 
 //non-Controller exceptions should be displayed nicely though
 catch (Exception $exception) {

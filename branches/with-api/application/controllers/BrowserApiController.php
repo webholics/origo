@@ -45,7 +45,7 @@ class BrowserApiController extends ApiController
 	/**
 	 * Profile action
 	 * Get a profile.
-	 * Only GET params.
+	 * Only POST params.
 	 * Needs param: uri
 	 */
 	public function profileAction()
@@ -54,7 +54,7 @@ class BrowserApiController extends ApiController
 
 		$store = $this->getBrowserStore();
 
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 		if(!isset($params['uri']) || empty($params['uri'])) {
 			$xml .= '<error>Not all parameters given. This method needs: uri</error>';
 		}
@@ -79,14 +79,14 @@ class BrowserApiController extends ApiController
 	 * Relationships action
 	 * Get relationships limited to the ones provided by GET params
 	 * or all relationships if no params provided.
-	 * Only GET params.
+	 * Only POST params.
 	 * Needs param: uri
 	 */
 	public function relationshipsAction()
 	{
 		$xml = '<result>';
 
-		$params = $this->getRequest()->getQuery();
+		$params = $this->getRequest()->getPost();
 		if(!isset($params['uri']) || empty($params['uri'])) {
 			$xml .= '<error>Not all parameters given. This method needs: uri</error>';
 		}
