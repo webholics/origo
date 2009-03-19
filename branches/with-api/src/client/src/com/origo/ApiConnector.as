@@ -1,16 +1,15 @@
 package com.origo
 {
-	import com.adobe.net.URI;
+	import com.adobe.crypto.MD5;
 	
-	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	
-	import mx.utils.Base64Encoder;
-	
-	import org.httpclient.HttpClient;
-	import org.httpclient.HttpRequest;
-	import org.httpclient.events.*;
-	import org.httpclient.http.Get;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
+	import flash.net.URLRequestMethod;
+	import flash.net.URLVariables;
 
 	/**
 	 * ApiConnector
@@ -18,14 +17,24 @@ package com.origo
 	 * Use this class to communicate with the Origo REST API.
 	 * The class is also used as data model for already received data.
 	 */
-	[Event(name="successEvent", type="ApiConnectorSuccessEvent")]
-	[Event(name="errorEvent", type="ApiConnectorErrorEvent")]
+	[Event(name="successEvent", type="ApiConnectorEvent")]
+	[Event(name="errorEvent", type="ApiConnectorEvent")]
 	public class ApiConnector extends EventDispatcher
 	{
 		/**
 		 * Singleton instance
 		 */
 		private static var instance:ApiConnector = new ApiConnector();
+		
+		/**
+		 * constants used for loaders
+		 */
+        private static const AUTHENTICATE:String = "authenticate";
+        
+        /**
+         * Api url constants
+         */
+        private static const API_TEST:String = "test";
 		
 		/**
 		 * The base url of the REST-API.
@@ -38,23 +47,22 @@ package com.origo
 		private var _hasAuth:Boolean = false;
 		
 		/**
-		 * Authorization header
+		 * Authorization hash to send via key param
 		 */
-		private var authorizationHeader:String = null;
+		private var authHash:String = null;
+		
+		/**
+		 * The prepared loaders for api calls.
+		 */
+		private var loaders:Array;
 
 		public function ApiConnector()
 		{
 			if(instance) 
 				throw new Error("ApiConnector and can only be accessed through ApiConnector.getInstance()");
 				
-			/*service = new HTTPService();
-			service.method = "get";
-			service.useProxy = false;
-			service.resultFormat = "e4x";
-			service.showBusyCursor = false;
-			service.requestTimeout = 30;
-			service.addEventListener(FaultEvent.FAULT, serviceFault);
-			*/
+			loaders = [];
+			this.addLoader(AUTHENTICATE, authenticateHandler);
 		}
 		
 		public static function getInstance():ApiConnector 
@@ -82,76 +90,45 @@ package com.origo
 		
 		/**
 		 * Try to authenticate the user.
-		 * Listen to success and error events!
 		 * 
 		 * @param String username
 		 * @param String password
 		 */
 		public function authenticate(username:String, password:String):void
 		{
-			// construct basic auth header
-			var encoder:Base64Encoder = new Base64Encoder();
-			encoder.insertNewLines = false;
-			encoder.encode(username + ":" + password);
-			authorizationHeader = "Basic " + encoder.toString();
+			// construct auth hash
+			authHash = MD5.hash(username + ":" + password);
+			
+			_hasAuth = false;
 			
 			// check credentials via test method provided by the api
-			/*service.url = apiUrl + "test";
-			service.addEventListener(ResultEvent.RESULT, authenticateResult);
-			resultEventListener = authenticateResult;
-			service.send();*/
-			
-			sendRequest(apiUrl + "test", authenticationResult);
+			sendRequest(AUTHENTICATE, API_TEST);
 		}
 		
 		/**
 		 * The result event listener for the authenticate method.
 		 * Dispatches error or success event.
 		 * 
-		 * @param HttpResponseEvent event
+		 * @param Event event
 		 */
-		/*private function authenticateResult(event:HttpResponseEvent):void
-		{		
-			if(event.result.code == 200) {
-				_hasAuth = true;
-				
-				dispatchEvent(
-					new ApiConnectorSuccessEvent(
-						ApiConnectorSuccessEvent.SUCCESS_EVENT
-					)
-				);
-			}
-			else {
-				_hasAuth = false;
-				
-				dispatchEvent(
-					new ApiConnectorErrorEvent(
-						ApiConnectorErrorEvent.ERROR_EVENT,
-						event.result.error_code,
-						event.result.error_message
-					)
-				);
-			}
-		}*/
-		private function authenticationResult(event:HttpDataEvent):void
+		private function authenticateHandler(event:Event):void
 		{
-			var result:XML = new XML(event.readUTFBytes());
-			trace(event.readUTFBytes());
+			var result:XML = new XML(getLoader(AUTHENTICATE).data);
+			trace(getLoader(AUTHENTICATE).data);
 			if(result.code == 200) {
 				_hasAuth = true;
 				
 				dispatchEvent(
-					new ApiConnectorSuccessEvent(
-						ApiConnectorSuccessEvent.SUCCESS_EVENT
+					new ApiConnectorEvent(
+						ApiConnectorEvent.SUCCESS_EVENT
 					)
 				);
 			}
 			else {
-				_hasAuth = false;
-				
 				dispatchEvent(
-					new ApiConnectorErrorEvent(
-						ApiConnectorErrorEvent.ERROR_EVENT,
+					new ApiConnectorEvent(
+						ApiConnectorEvent.ERROR_EVENT,
+						null,
 						result.error_code,
 						result.error_message
 					)
@@ -160,17 +137,18 @@ package com.origo
 		}
 		
 		/**
-		 * The event handler for HttpErrorEvent from HTTPClient.
+		 * The error event handler.
 		 *
-		 * @param ErrorEvent event
+		 * @param IOErrorEvent event
 		 */
-		private function serviceFault(event:ErrorEvent):void
-		{		
+		private function errorHandler(event:IOErrorEvent):void
+		{
 			trace(event);
-				
+
 			dispatchEvent(
-				new ApiConnectorErrorEvent(
-					ApiConnectorErrorEvent.ERROR_EVENT,
+				new ApiConnectorEvent(
+					ApiConnectorEvent.ERROR_EVENT,
+					null,
 					"HttpError",
 					"Couldn't establish a connection to the server."
 				)
@@ -178,25 +156,44 @@ package com.origo
 		}
 		
 		/**
+		 * Private helper method to add a loader for later use.
+		 */
+		private function addLoader(name:String, completeHandler:Function):void
+		{
+			var loader:URLLoader = new URLLoader();
+			loader.addEventListener(Event.COMPLETE, completeHandler);
+			loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
+			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
+			loaders[name] = loader;
+		}
+		
+		/**
+		 * Private helper method to get a loader by name.
+		 */
+		private function getLoader(name:String):URLLoader
+		{
+			return loaders[name] as URLLoader;
+		}
+		
+		/**
 		 * Send a request to Origo REST API.
 		 */
-		private function sendRequest(url:String, result:Function, params:Array=null):void
-		{			     
-			var request:HttpRequest = new Get();
-			if(authorizationHeader != null)
-				request.addHeader("Authorization", authorizationHeader);
-			if(params != null)
-				request.setFormData(params);
+		private function sendRequest(loaderName:String, url:String, variables:URLVariables=null):void
+		{			     				
+			var urlRequest:URLRequest = new URLRequest(apiUrl + url);
+			urlRequest.method = URLRequestMethod.POST;
 			
-			var listener:HttpListener = new HttpListener({
-				onData:		result,
-				onError: 	serviceFault
-			});
-      
-			var client:HttpClient = new HttpClient();
-			client.timeout = 5000;
-			client.listener = listener;
-			client.request(new URI(url), request);
+			if(variables == null && authHash)
+				variables = new URLVariables();
+			
+			if(authHash)
+				variables.key = authHash;
+			
+			if(variables)
+				urlRequest.data = variables;
+            	
+            var urlLoader:URLLoader = getLoader(loaderName);
+            urlLoader.load(urlRequest);
 		}
 	}
 }

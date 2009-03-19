@@ -10,7 +10,7 @@
 	<mx:Script>		
 		<![CDATA[
 			import com.origo.*;
-			
+
 			private function init():void
 			{
 				// set api base url
@@ -18,8 +18,8 @@
 				api.setApiUrl(parameters["api_url"]);
 				
 				// switch to login state
-				currentState = 'login';
-			}
+				currentState = "login";
+   			}
 		]]>
 	</mx:Script>
 	

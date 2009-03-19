@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="400" styleName="box" horizontalCenter="0" verticalCenter="0">
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="400" height="400" 
+	styleName="box" 
+	horizontalCenter="0" verticalCenter="0"
+	creationComplete="init()">
 
 	<mx:Script>
 		<![CDATA[
 			import mx.events.ValidationResultEvent;
 			import mx.core.Application;
+			
+			private function init():void
+			{
+				usernameValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
+					username.styleName = "error";
+				});
+				usernameValidator.addEventListener(ValidationResultEvent.VALID, function():void {
+					username.styleName = "";
+				});
+				passwordValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
+					password.styleName = "error";
+				});
+				passwordValidator.addEventListener(ValidationResultEvent.VALID, function():void {
+					password.styleName = "";
+				});
+			}
 			
 			private function validateForm():Boolean
 			{               
@@ -12,20 +33,12 @@
 				var vEvent:ValidationResultEvent;
                 
 				vEvent = usernameValidator.validate();
-				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
 					valid = false;
-					username.styleName = "error";
-				}
-				else
-					username.styleName = "";
 				
 				vEvent = passwordValidator.validate();
-				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID) {
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
 					valid = false;
-					password.styleName = "error";
-				}
-				else
-					password.styleName = "";
 
 				return valid;
 			}
@@ -35,18 +48,26 @@
 				currentState = "authenticate";
 				
 				var api:ApiConnector = ApiConnector.getInstance();
-				api.addEventListener(ApiConnectorSuccessEvent.SUCCESS_EVENT, authenticateSuccess);
-				api.addEventListener(ApiConnectorErrorEvent.ERROR_EVENT, authenticateError);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, authenticateError);
 				api.authenticate(username.text, password.text);
 			}
 			
-			private function authenticateSuccess(event:ApiConnectorSuccessEvent):void
+			private function authenticateSuccess(event:ApiConnectorEvent):void
 			{
+				var api:ApiConnector = ApiConnector.getInstance();
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, authenticateError);
+				
 				Application.application.currentState = "";
 			}
 			
-			private function authenticateError(event:ApiConnectorErrorEvent):void
+			private function authenticateError(event:ApiConnectorEvent):void
 			{
+				var api:ApiConnector = ApiConnector.getInstance();
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, authenticateError);
+				
 				currentState = "error";
 				loginFormErrorText.text = event.message;
 			}

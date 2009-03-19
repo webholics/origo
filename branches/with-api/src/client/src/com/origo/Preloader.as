@@ -50,13 +50,28 @@ package com.origo
         {
             // Listen for the relevant events
             preloader.addEventListener(ProgressEvent.PROGRESS, myHandleProgress);   
-
-            preloader.addEventListener(FlexEvent.INIT_PROGRESS, myHandleInitProgress);
             preloader.addEventListener(FlexEvent.INIT_COMPLETE, myHandleInitEnd);
         }
     
         private function myHandleProgress(event:ProgressEvent):void 
         {
+			// draw background
+			var b:BitmapAsset = BitmapAsset(new backgroundClass());
+			var tile:BitmapData = b.bitmapData;       
+			var transform: Matrix = new Matrix();
+
+			graphics.clear();
+			graphics.beginBitmapFill(tile, transform, true);
+			graphics.drawRect(0, 0, stageWidth, stageHeight);
+        	
+        	// set logo position
+			logo.x = (stageWidth - logo.width) / 2;
+			logo.y = (stageHeight - logo.height) / 2;
+			logo.visible = true;
+			
+			// set progress bar position
+			progressBar.visible = true;
+			
         	var progressBarWidth:Number = 300;
         	var progressBarHeight:Number = 3;
         	var posX:Number = (stageWidth - progressBarWidth) / 2;
@@ -75,26 +90,6 @@ package com.origo
 			g.beginFill(0x1a60b0);
 			g.lineStyle(1, 0x153252);
 			g.drawRect(posX, posY, progWidth, progressBarHeight);
-        }
-    
-        private function myHandleInitProgress(event:Event):void 
-        {
-    		// draw background
-			var b:BitmapAsset = BitmapAsset(new backgroundClass());
-			var tile:BitmapData = b.bitmapData;       
-			var transform: Matrix = new Matrix();
-
-			graphics.clear();
-			graphics.beginBitmapFill(tile, transform, true);
-			graphics.drawRect(0, 0, stageWidth, stageHeight);
-        	
-        	// set logo position
-			logo.x = (stageWidth - logo.width) / 2;
-			logo.y = (stageHeight - logo.height) / 2;
-			logo.visible = true;
-			
-			// set progress bar position
-			progressBar.visible = true;
         }
     
         private function myHandleInitEnd(event:Event):void 
