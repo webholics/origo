@@ -51,6 +51,7 @@ class EditorApiController extends ApiController
 		$insertQuery = $this->_queryPrefix .
 			'INSERT INTO <' . $identifier . '> {';
 		$count = 1;
+		$update = false;
 		foreach($params as $key => $value) {
 			if(isset($this->_properties[$key])) {
 
@@ -58,6 +59,8 @@ class EditorApiController extends ApiController
 					$xml .= '<error key="' . $key . '">Given value is empty.</error>';
 				}
 				else {
+					$update = true;
+					
 					$deleteQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ?any' . $count . ' .';
 					$insertQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ';
 					$count++;
@@ -84,23 +87,12 @@ class EditorApiController extends ApiController
 			}
 		}
 			
-		$deleteQuery .= '}';
-		$insertQuery .= '}';
-		
-		// delete old triples
-		$store->query($deleteQuery);
-		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
-		}
-		else {
-			// insert new triples
-			$store->query($insertQuery);
+		if($update) {
+			$deleteQuery .= '}';
+			$insertQuery .= '}';
+			
+			// delete old triples
+			$store->query($deleteQuery);
 			if($errors = $store->getErrors()) {
 				$xml .= '<error>';
 				for($i = 0; $i < count($errors); $i++) {
@@ -111,10 +103,26 @@ class EditorApiController extends ApiController
 				$xml .= '</error>';
 			}
 			else {
-				$xml .= $this->getProfile($identifier, $store);
+				// insert new triples
+				$store->query($insertQuery);
+				if($errors = $store->getErrors()) {
+					$xml .= '<error>';
+					for($i = 0; $i < count($errors); $i++) {
+						$xml .= $errors[$i];
+						if($i < count($errors)-1)
+							$xml .= ' ';
+					}
+					$xml .= '</error>';
+				}
+				else {
+					$xml .= $this->getProfile($identifier, $store);
+				}
 			}
 		}
-
+		else {
+			$xml .= $this->getProfile($identifier, $store);
+		}
+		
 		$xml .= '</result>';
 
 		$this->outputXml($xml);
