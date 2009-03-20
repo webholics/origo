@@ -49,7 +49,7 @@ else {
 	ini_set('display_errors', 0);
 }
 
-if(!is_writable(APPLICATION_PATH . '/../' . $config->cache->dir)) {
+if(!is_writable(APPLICATION_PATH . '/../' . $config->caching->dir)) {
 	die('Origo error: Cache directory is not writable.');
 }
 
