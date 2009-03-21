@@ -11,19 +11,19 @@ $router = Zend_Controller_Front::getInstance()->getRouter(); // returns a rewrit
 $router->removeDefaultRoutes();
 
 // ProfileController
-$router->addRoute('profile', new Zend_Controller_Router_Route('/',
+$router->addRoute('profile', new Zend_Controller_Router_Route('profile',
 	array('controller' => 'profile', 'action' => 'index')
 ));
-$router->addRoute('profile_rdf', new Zend_Controller_Router_Route('rdf',
+$router->addRoute('profile_rdf', new Zend_Controller_Router_Route('profile.rdf',
 	array('controller' => 'profile', 'action' => 'rdf')
 ));
-$router->addRoute('profile_turtle', new Zend_Controller_Router_Route('ttl',
+$router->addRoute('profile_turtle', new Zend_Controller_Router_Route('profile.turtle',
 	array('controller' => 'profile', 'action' => 'turtle')
 ));
-$router->addRoute('profile_json', new Zend_Controller_Router_Route('json',
+$router->addRoute('profile_json', new Zend_Controller_Router_Route('profile.json',
 	array('controller' => 'profile', 'action' => 'json')
 ));
-$router->addRoute('profile_html', new Zend_Controller_Router_Route('html',
+$router->addRoute('profile_html', new Zend_Controller_Router_Route('profile.html',
 	array('controller' => 'profile', 'action' => 'html')
 ));
 
