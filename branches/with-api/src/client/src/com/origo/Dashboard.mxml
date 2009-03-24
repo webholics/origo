@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalCenter="0" verticalCenter="0" verticalGap="10" horizontalAlign="center">
+	<mx:Image source="@Embed('../assets/avatar.png')"/>
+	<mx:Text text="Mario Volke" styleName="dashboardTextBig"/>
+	<mx:Tile verticalGap="20" horizontalGap="20">
+		<mx:Grid>
+			<mx:GridRow width="250" styleName="dashboardHeadline">
+				<mx:GridItem colSpan="2">
+					<mx:Text text="Personal Information" styleName="dashboardHeadline"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem>
+					<mx:Label text="Address:" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:VBox verticalGap="0">
+						<mx:Text text="Riemengasse 44" styleName="normalText"/>	
+						<mx:Text text="88486 Kirchberg" styleName="normalText"/>	
+						<mx:Text text="Germany" styleName="normalText"/>	
+					</mx:VBox>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+		<mx:Grid>
+			<mx:GridRow width="250" styleName="dashboardHeadline">
+				<mx:GridItem colSpan="2">
+					<mx:Text text="Statistics" styleName="dashboardHeadline"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem>
+					<mx:Text text="12" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text text="Relationships" styleName="normalText"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem>
+					<mx:Text text="2" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text text="External Profiles" styleName="normalText"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+	</mx:Tile>
+</mx:VBox>

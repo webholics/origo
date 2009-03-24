@@ -18,32 +18,19 @@
     </mx:Script>
 
     <degrafa:fills>
-        <degrafa:LinearGradientFill angle="90" id="upFill">
-            <degrafa:GradientStop ratio="0.2" color="{ColorUtil.adjustBrightness(0xffffff, -50)}"/>
-            <degrafa:GradientStop ratio="0.8" color="{ColorUtil.adjustBrightness(0xb0b0b0, -50)}"/>
-        </degrafa:LinearGradientFill>
         <degrafa:LinearGradientFill angle="90" id="overFill">
-            <degrafa:GradientStop ratio="0.2" color="#ffffff"/>
-            <degrafa:GradientStop ratio="0.8" color="#b0b0b0"/>
+            <degrafa:GradientStop ratio="0" color="#1e69be"/>
+            <degrafa:GradientStop ratio="1" color="#0b407c"/>
         </degrafa:LinearGradientFill>
         <degrafa:LinearGradientFill angle="90" id="downFill">
-            <degrafa:GradientStop ratio="0.2" color="#b0b0b0"/>
-            <degrafa:GradientStop ratio="0.8" color="#ffffff"/>
+            <degrafa:GradientStop ratio="0" color="{ColorUtil.adjustBrightness(0x1e69be, 50)}"/>
+            <degrafa:GradientStop ratio="1" color="{ColorUtil.adjustBrightness(0x0b407c, 50)}"/>
         </degrafa:LinearGradientFill>
     </degrafa:fills>
 
     <degrafa:geometry>
-        <degrafa:RoundedRectangle state="upSkin" fill="{upFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
         <degrafa:RoundedRectangle state="overSkin" fill="{overFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
         <degrafa:RoundedRectangle state="downSkin" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
-        
-        <degrafa:RoundedRectangle state="selectedUpSkin" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
-        <degrafa:RoundedRectangle state="selectedOverSkin" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
-        <degrafa:RoundedRectangle state="selectedDownSkin" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
     </degrafa:geometry>
-
-	<degrafa:filters>
-		<mx:DropShadowFilter alpha="0.3" angle="45" distance="3" blurX="5" blurY="5"/>
-	</degrafa:filters>
 
 </degrafa:GraphicBorderSkin>

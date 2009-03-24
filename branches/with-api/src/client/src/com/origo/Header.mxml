@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" 
+	verticalGap="0"
+	creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.StateChangeEvent;
+			import mx.core.Application;		
+		
+			private function init():void
+			{
+				Application.application.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGING, navigationStateChange);
+			}
+			
+			private function navigationStateChange(event:StateChangeEvent):void
+			{
+				switch(event.newState) {
+					case "dashboard":
+						navigationDashboard.selected = true;
+						navigationEditor.selected = false;
+						navigationBrowser.selected = false;
+						navigationAbout.selected = false;
+						break;
+					case "editor":
+						navigationDashboard.selected = false;
+						navigationEditor.selected = true;
+						navigationBrowser.selected = false;
+						navigationAbout.selected = false;
+						break;
+					case "browser":
+						navigationDashboard.selected = false;
+						navigationEditor.selected = false;
+						navigationBrowser.selected = true;
+						navigationAbout.selected = false;
+						break;
+					case "about":
+						navigationDashboard.selected = false;
+						navigationEditor.selected = false;
+						navigationBrowser.selected = false;
+						navigationAbout.selected = true;
+						break;
+					default:
+						navigationDashboard.selected = false;
+						navigationEditor.selected = false;
+						navigationBrowser.selected = false;
+						navigationAbout.selected = false;
+						break;
+				}
+			}
+		
+			private function dashboardClick():void
+			{
+				if(Application.application.currentState != "dashboard") {
+					Application.application.currentState = "dashboard";
+				}
+			}
+			
+			private function editorClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+			}
+			
+			private function browserClick():void
+			{
+				if(Application.application.currentState != "browser") {
+					Application.application.currentState = "browser";
+				}
+			}
+			
+			private function aboutClick():void
+			{
+				if(Application.application.currentState != "about") {
+					Application.application.currentState = "about";
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Canvas height="90" width="100%" styleName="box">
+		<mx:Image source="@Embed('../assets/logo_small.png')" top="10" left="10" />
+		<mx:Button id="navigationDashboard" click="dashboardClick()" left="200" bottom="10" width="100" label="Dashboard"/>
+		<mx:Button id="navigationEditor" click="editorClick()" left="310" bottom="10" width="100" label="Editor"/>
+		<mx:Button id="navigationBrowser" click="browserClick()" left="420" bottom="10" width="100" label="Browser"/>
+		<mx:Button id="navigationAbout" click="aboutClick()" right="10" bottom="10" width="100" label="About"/>
+	</mx:Canvas>
+</mx:VBox>

@@ -24,7 +24,7 @@ package com.origo
         private var progressBar:Sprite;
         
         private var timer:Timer;
-        private var fadeOutRate:Number = .005;
+        private var fadeOutRate:Number = .008;
     
         public function Preloader()
         {   

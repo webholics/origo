@@ -114,6 +114,6 @@
 		</mx:FormItem>
 	</mx:Form>
 					
-	<mx:Text text="Copyright © 2009 Mario Volke, All Rights Reserved." styleName="smallText" horizontalCenter="0" bottom="10" selectable="false" />
+	<mx:Text text="Origo v0.1, www.orgio-client.com" styleName="smallText" horizontalCenter="0" bottom="10" selectable="false" />
 
 </mx:Canvas>

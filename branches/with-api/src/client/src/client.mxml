@@ -3,8 +3,8 @@
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:origo="com.origo.*"
 	preloader="com.origo.Preloader"
-	layout="absolute"
-	creationComplete="init();">
+	creationComplete="init();"
+	layout="absolute">
 	
 	<mx:Style source="../assets/style.css" />
 	<mx:Script>		
@@ -18,7 +18,7 @@
 				api.setApiUrl(parameters["api_url"]);
 				
 				// switch to login state
-				currentState = "login";
+				currentState = "dashboard";
    			}
 		]]>
 	</mx:Script>
@@ -29,11 +29,36 @@
 				<origo:LoginBox id="loginBox"/>
 			</mx:AddChild>		
 		</mx:State>
+		<mx:State name="dashboard">
+			<mx:AddChild>
+				<origo:Header id="header" left="10" right="10"/>
+			</mx:AddChild>
+			<mx:AddChild>
+				<mx:Canvas id="mainContainer" left="10" right="10" top="{header.y + header.height + 10}" bottom="10">
+					<origo:Dashboard id="dashboard" width="100%"/>			
+				</mx:Canvas>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="editor" basedOn="dashboard">
+			<mx:RemoveChild target="{dashboard}"/>
+		</mx:State>
+		<mx:State name="browser" basedOn="dashboard">
+			<mx:RemoveChild target="{dashboard}"/>
+		</mx:State>
+		<mx:State name="about" basedOn="dashboard">
+			<mx:RemoveChild target="{dashboard}"/>
+			<mx:AddChild relativeTo="{mainContainer}" position="lastChild">
+				<origo:AboutBox id="aboutBox"/>
+			</mx:AddChild>
+		</mx:State>
 	</mx:states>
 	
 	<mx:transitions>
 		<mx:Transition fromState="" toState="login">
 			<mx:Fade target="{loginBox}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="about">
+			<mx:Fade target="{aboutBox}" duration="500" alphaFrom="0" alphaTo="1"/>
 		</mx:Transition>
 	</mx:transitions>
 
