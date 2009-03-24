@@ -382,7 +382,7 @@ class EditorApiController extends ApiController
 
 		// store some basic values in our profile
 		// in order to accelerate browsing
-		$loadProperties = array('name', 'nick', 'img', 'depiction', 'family_name', 'givenname');
+		$loadProperties = array('name', 'nick', 'img', 'depiction', 'family_name', 'givenname', 'mbox', 'mbox_sha1sum');
 		if($toId) {
 			$browserStore = $this->getBrowserStore();
 			$query = $this->_queryPrefix .
