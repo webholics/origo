@@ -65,6 +65,7 @@ TextInput {
 	corner-radius:3;
 	padding-left:3;
 	padding-right:3;
+	padding-top:3;
 	border-skin:ClassReference("com.origo.skins.TextInputSkin");	
 }
 TextInput.error {
@@ -80,11 +81,11 @@ Button {
 	skin:ClassReference("com.origo.skins.ButtonSkin");	
 }
 LinkButton {
-	color:#ebebeb;
+	color:#1d66ba;
 	textRollOverColor:#ebebeb;
 	textSelectedColor:#ebebeb;
 	font-family:LucidaSansDemibold;
-	font-size:15;
+	font-size:12;
 	skin:ClassReference("com.origo.skins.LinkButtonSkin");	
 }
 ProgressBar {

@@ -11,8 +11,12 @@
 			import mx.events.ValidationResultEvent;
 			import mx.core.Application;
 			
+			private var api:ApiConnector;
+			
 			private function init():void
 			{
+				api = ApiConnector.getInstance();
+				
 				usernameValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
 					username.styleName = "error";
 				});
@@ -46,27 +50,64 @@
 			private function authenticate():void
 			{ 
 				currentState = "authenticate";
+				progressBar.label = "Verifying credentials...";
 				
-				var api:ApiConnector = ApiConnector.getInstance();
 				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
-				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, authenticateError);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
 				api.authenticate(username.text, password.text);
 			}
 			
 			private function authenticateSuccess(event:ApiConnectorEvent):void
 			{
-				var api:ApiConnector = ApiConnector.getInstance();
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
-				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, authenticateError);
-				
-				Application.application.currentState = "";
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, cleanBrowserSuccess);
+
+				progressBar.label = "Cleaning old browser session...";
+				api.browserClean();
+			}
+
+			private function cleanBrowserSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, cleanBrowserSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, getPropertiesSuccess);
+
+				progressBar.label = "Loading properties...";
+				api.editorGet();
 			}
 			
-			private function authenticateError(event:ApiConnectorEvent):void
+			private function getPropertiesSuccess(event:ApiConnectorEvent):void
 			{
-				var api:ApiConnector = ApiConnector.getInstance();
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getPropertiesSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, getRelationshipsSuccess);
+
+				progressBar.label = "Loading relationships...";
+				api.editorRelationshipsGet();
+			}
+			
+			private function getRelationshipsSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getRelationshipsSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, getProfilesSuccess);
+;
+				progressBar.label = "Loading profiles...";
+				api.editorProfilesGet();
+			}
+			
+			private function getProfilesSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getProfilesSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+
+				Application.application.currentState = "dashboard";
+			}
+						
+			private function apiError(event:ApiConnectorEvent):void
+			{
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
-				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, authenticateError);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getPropertiesSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getRelationshipsSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getProfilesSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
 				
 				currentState = "error";
 				loginFormErrorText.text = event.message;
@@ -83,7 +124,7 @@
 		</mx:State>
 		<mx:State name="authenticate">
 			<mx:AddChild>
-				<mx:ProgressBar width="300" horizontalCenter="0" top="200" indeterminate="true" label="Verifying credentials..."/>
+				<mx:ProgressBar id="progressBar" width="300" horizontalCenter="0" top="200" indeterminate="true"/>
 			</mx:AddChild>
 			<mx:RemoveChild target="{loginForm}"/>
 			<mx:SetProperty target="{this}" name="height" value="300"/>
@@ -114,6 +155,6 @@
 		</mx:FormItem>
 	</mx:Form>
 					
-	<mx:Text text="Origo v0.1, www.orgio-client.com" styleName="smallText" horizontalCenter="0" bottom="10" selectable="false" />
+	<mx:Text text="Origo version 0.1, www.orgio-client.com" styleName="smallText" horizontalCenter="0" bottom="10" selectable="false" />
 
 </mx:Canvas>

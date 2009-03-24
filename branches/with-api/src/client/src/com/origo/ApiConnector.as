@@ -25,16 +25,24 @@ package com.origo
 		 * Singleton instance
 		 */
 		private static var instance:ApiConnector = new ApiConnector();
-		
-		/**
-		 * constants used for loaders
-		 */
-        private static const AUTHENTICATE:String = "authenticate";
         
         /**
          * Api url constants
          */
-        private static const API_TEST:String = "test";
+        private static const API_TEST:String 							= "test";
+        private static const API_EDITOR_GET:String 						= "editor/get";
+        private static const API_EDITOR_UPDATE:String 					= "editor/update";
+        private static const API_EDITOR_DELETE:String 					= "editor/delete";
+        private static const API_EDITOR_CLEAN:String 					= "editor/clean";
+        private static const API_EDITOR_PROFILES_GET:String 			= "editor/profiles/get";
+        private static const API_EDITOR_PROFILES_UPDATE:String 			= "editor/profiles/update";
+        private static const API_EDITOR_PROFILES_DELETE:String 			= "editor/profiles/delete";
+        private static const API_EDITOR_RELATIONSHIPS_GET:String 		= "editor/relationships/get";
+        private static const API_EDITOR_RELATIONSHIPS_UPDATE:String 	= "editor/relationships/update";
+        private static const API_EDITOR_RELATIONSHIPS_DELETE:String 	= "editor/relationships/delete";
+        private static const API_BROWSER_PROFILE:String 				= "browser/profile";
+        private static const API_BROWSER_RELATIONSHIPS:String 			= "browser/relationships";
+        private static const API_BROWSER_CLEAN:String 					= "browser/clean";
 		
 		/**
 		 * The base url of the REST-API.
@@ -50,19 +58,11 @@ package com.origo
 		 * Authorization hash to send via key param
 		 */
 		private var authHash:String = null;
-		
-		/**
-		 * The prepared loaders for api calls.
-		 */
-		private var loaders:Array;
 
 		public function ApiConnector()
 		{
 			if(instance) 
-				throw new Error("ApiConnector and can only be accessed through ApiConnector.getInstance()");
-				
-			loaders = [];
-			this.addLoader(AUTHENTICATE, authenticateHandler);
+				throw new Error("ApiConnector can only be accessed through ApiConnector.getInstance()");
 		}
 		
 		public static function getInstance():ApiConnector 
@@ -102,7 +102,47 @@ package com.origo
 			_hasAuth = false;
 			
 			// check credentials via test method provided by the api
-			sendRequest(AUTHENTICATE, API_TEST);
+			sendRequest(API_TEST);
+		}
+		
+		/**
+		 * Get properties of the user.
+		 */
+		public function editorGet():void
+		{
+			sendRequest(API_EDITOR_GET);
+		}	
+			
+		/**
+		 * Get relationships of the user.
+		 */
+		public function editorRelationshipsGet():void
+		{
+			sendRequest(API_EDITOR_RELATIONSHIPS_GET);
+		}
+				
+		/**
+		 * Get profiles of the user.
+		 */
+		public function editorProfilesGet():void
+		{
+			sendRequest(API_EDITOR_PROFILES_GET);
+		}
+			
+		/**
+		 * Clean user profile.
+		 */
+		public function editorClean():void
+		{
+			sendRequest(API_EDITOR_CLEAN);
+		}
+						
+		/**
+		 * Clean browser store.
+		 */
+		public function browserClean():void
+		{
+			sendRequest(API_BROWSER_CLEAN);
 		}
 		
 		/**
@@ -111,20 +151,35 @@ package com.origo
 		 * 
 		 * @param Event event
 		 */
-		private function authenticateHandler(event:Event):void
-		{
-			var result:XML = new XML(getLoader(AUTHENTICATE).data);
-			trace(getLoader(AUTHENTICATE).data);
-			if(result.code == 200) {
+		private function resultHandler(event:Event):void
+		{	
+			var result:XML = new XML(URLLoader(event.target).data);
+
+			if(isGood(result)) {
 				_hasAuth = true;
 				
 				dispatchEvent(
 					new ApiConnectorEvent(
-						ApiConnectorEvent.SUCCESS_EVENT
+						ApiConnectorEvent.SUCCESS_EVENT,
+						result
 					)
 				);
 			}
-			else {
+		}
+		
+		/**
+		 * This method checks if an error occured as is returned with the xml result.
+		 * If so the method dispatches an error event.
+		 * 
+		 * @param XML result
+		 * @return Boolean True if everything is ok, false otherwise.
+		 */
+		private function isGood(result:XML):Boolean
+		{
+			if(result.error_code.length() > 0 && result.error_message.length() > 0) {
+				
+				trace(result);
+				
 				dispatchEvent(
 					new ApiConnectorEvent(
 						ApiConnectorEvent.ERROR_EVENT,
@@ -133,7 +188,11 @@ package com.origo
 						result.error_message
 					)
 				);
+				
+				return false;
 			}
+			
+			return true;
 		}
 		
 		/**
@@ -156,29 +215,9 @@ package com.origo
 		}
 		
 		/**
-		 * Private helper method to add a loader for later use.
-		 */
-		private function addLoader(name:String, completeHandler:Function):void
-		{
-			var loader:URLLoader = new URLLoader();
-			loader.addEventListener(Event.COMPLETE, completeHandler);
-			loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
-			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
-			loaders[name] = loader;
-		}
-		
-		/**
-		 * Private helper method to get a loader by name.
-		 */
-		private function getLoader(name:String):URLLoader
-		{
-			return loaders[name] as URLLoader;
-		}
-		
-		/**
 		 * Send a request to Origo REST API.
 		 */
-		private function sendRequest(loaderName:String, url:String, variables:URLVariables=null):void
+		private function sendRequest(url:String, variables:URLVariables=null):void
 		{			     				
 			var urlRequest:URLRequest = new URLRequest(apiUrl + url);
 			urlRequest.method = URLRequestMethod.POST;
@@ -192,7 +231,10 @@ package com.origo
 			if(variables)
 				urlRequest.data = variables;
             	
-            var urlLoader:URLLoader = getLoader(loaderName);
+            var urlLoader:URLLoader = new URLLoader();
+			urlLoader.addEventListener(Event.COMPLETE, resultHandler);
+			urlLoader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
+			urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
             urlLoader.load(urlRequest);
 		}
 	}
