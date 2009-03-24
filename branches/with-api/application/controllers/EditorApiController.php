@@ -44,8 +44,6 @@ class EditorApiController extends ApiController
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
 
-		$xml = '<result>';
-
 		$deleteQuery = $this->_queryPrefix .
 			'DELETE {';
 		$insertQuery = $this->_queryPrefix .
@@ -56,34 +54,37 @@ class EditorApiController extends ApiController
 			if(isset($this->_properties[$key])) {
 
 				if(empty($value)) {
-					$xml .= '<error key="' . $key . '">Given value is empty.</error>';
+					$this->_forward('error', 'api', null, array(
+						'code' => 'ValidationError',
+						'message' => 'Given value is empty for ' . $key . '.'
+					));
+					return;
 				}
-				else {
-					$update = true;
+				
+				$update = true;
 					
-					$deleteQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ?any' . $count . ' .';
-					$insertQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ';
-					$count++;
-						
-					// some properties need special attention
-					if($key == 'mbox') {
-						$value = 'mailto:' . trim($value);
-					}
-					else if($key == 'mbox_sha1sum') {
-						$value = sha1('mailto:' . trim($value));
-					}
+				$deleteQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ?any' . $count . ' .';
+				$insertQuery .= '<' . $identifier . '> <' . $this->_properties[$key][0] . '> ';
+				$count++;
+					
+				// some properties need special attention
+				if($key == 'mbox') {
+					$value = 'mailto:' . trim($value);
+				}
+				else if($key == 'mbox_sha1sum') {
+					$value = sha1('mailto:' . trim($value));
+				}
 
-					switch($this->_properties[$key][1]) {
-						case 'uri':
-							$insertQuery .= '<' . $this->escape($value, 'uri') . '>';
-							break;
-						case 'literal':
-							$insertQuery .= '"' . $this->escape($value, 'literal') . '"';
-							break;
-					}
-					
-					$insertQuery .= ' .';
+				switch($this->_properties[$key][1]) {
+					case 'uri':
+						$insertQuery .= '<' . $this->escape($value, 'uri') . '>';
+						break;
+					case 'literal':
+						$insertQuery .= '"' . $this->escape($value, 'literal') . '"';
+						break;
 				}
+				
+				$insertQuery .= ' .';
 			}
 		}
 			
@@ -94,38 +95,23 @@ class EditorApiController extends ApiController
 			// delete old triples
 			$store->query($deleteQuery);
 			if($errors = $store->getErrors()) {
-				$xml .= '<error>';
-				for($i = 0; $i < count($errors); $i++) {
-					$xml .= $errors[$i];
-					if($i < count($errors)-1)
-						$xml .= ' ';
-				}
-				$xml .= '</error>';
+				$this->forwardTripleStoreError($errors);
+				return;
 			}
-			else {
-				// insert new triples
-				$store->query($insertQuery);
-				if($errors = $store->getErrors()) {
-					$xml .= '<error>';
-					for($i = 0; $i < count($errors); $i++) {
-						$xml .= $errors[$i];
-						if($i < count($errors)-1)
-							$xml .= ' ';
-					}
-					$xml .= '</error>';
-				}
-				else {
-					$xml .= $this->getProfile($identifier, $store);
-				}
+
+			// insert new triples
+			$store->query($insertQuery);
+			if($errors = $store->getErrors()) {
+				$this->forwardTripleStoreError($errors);
+				return;
 			}
-		}
-		else {
-			$xml .= $this->getProfile($identifier, $store);
 		}
 		
-		$xml .= '</result>';
-
-		$this->outputXml($xml);
+		if(!($profile = $this->getProfile($identifier, $store))) {
+			return;
+		}
+		
+		$this->outputXml('<result>' . $profile . '</result>');
 
 		// clean profile cache
 		$cache = $this->getCache();
@@ -144,8 +130,6 @@ class EditorApiController extends ApiController
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
 
-		$xml = '<result>';
-
 		$deleteQuery = $this->_queryPrefix .
 			'DELETE {';
 		$count = 1;
@@ -161,21 +145,15 @@ class EditorApiController extends ApiController
 		// delete triples
 		$store->query($deleteQuery);
 		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
-		}
-		else {
-			$xml .= $this->getProfile($identifier, $store);
+			$this->forwardTripleStoreError($errors);
+			return;
 		}
 
-		$xml .= '</result>';
+		if(!($profile = $this->getProfile($identifier, $store))) {
+			return;
+		}
 
-		$this->outputXml($xml);
+		$this->outputXml('<result>' . $profile . '</result>');
 
 		// clean profile cache
 		$cache = $this->getCache();
@@ -188,30 +166,18 @@ class EditorApiController extends ApiController
 	 */
 	public function cleanAction()
 	{
-		$xml = '<result>';
-
 		$store = $this->getProfileStore();
 		$store->reset();
 		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
-		}
-		else {
-			$xml .= 1;
-			
-			// clean profile cache
-			$cache = $this->getCache();
-			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
+			$this->forwardTripleStoreError($errors);
+			return;
 		}
 
-		$xml .= '</result>';
+		// clean profile cache
+		$cache = $this->getCache();
+		$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 
-		$this->outputXml($xml);
+		$this->outputXml('<result>1</result>');
 	}
 
 	/**
@@ -223,11 +189,11 @@ class EditorApiController extends ApiController
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
 
-		$xml = '<result>';
-		$xml .= $this->getProfiles($identifier, $store);
-		$xml .= '</result>';
+		if(!($profiles = $this->getProfiles($identifier, $store))) {
+			return;
+		}
 
-		$this->outputXml($xml);
+		$this->outputXml('<result>' . $profiles . '</result>');
 	}
 
 	/**
@@ -238,76 +204,65 @@ class EditorApiController extends ApiController
 	 */
 	public function profilesupdateAction()
 	{
-		$xml = '<result>';
-		
 		$params = $this->getRequest()->getPost();
 		if(!isset($params['seealso']) ||
 			empty($params['seealso']) ||
 			!isset($params['sameas']) ||
 			empty($params['sameas'])) {
 			
-			$xml .= '<error>Not all parameters given. This method needs: seealso, sameas</error>';
-		}
-		else {
-			$identifier = $this->getIdentifier();
-			$store = $this->getProfileStore();
-			$sameas = $this->escape($params['sameas'], 'uri');
-			$seealso = $this->escape($params['seealso'], 'uri');
-
-			// delete old triples
-			$query = $this->_queryPrefix .
-				'DELETE {' .
-					'<' . $identifier . '> owl:sameAs <' . $sameas . '> .' .
-					'<' . $sameas . '> ?any1 ?any2 .' .
-				'}';
-			$result = $store->query($query);
-			if($errors = $store->getErrors()) {
-				$xml .= '<error>';
-				for($i = 0; $i < count($errors); $i++) {
-					$xml .= $errors[$i];
-					if($i < count($errors)-1)
-						$xml .= ' ';
-				}
-				$xml .= '</error>';
-			}
-			else {
-				$query = $this->_queryPrefix .
-					'INSERT INTO <' . $identifier . '> {' .
-						'<' . $identifier . '> owl:sameAs <' . $sameas . '> .' .
-						'<' . $sameas . '> rdfs:seeAlso <' . $seealso . '> .';
-
-				if(isset($params['label']) && !empty($params['label'])) {
-					$label = $params['label'];
-					$query .= '<' . $sameas . '> rdfs:label "' . $this->escape($params['label'], 'literal') . '" . ';
-				}
-				else
-					$label = '';
-					
-				$query .= '}';
-
-				$store->query($query);
-				if($errors = $store->getErrors()) {
-					$xml .= '<error>';
-					for($i = 0; $i < count($errors); $i++) {
-						$xml .= $errors[$i];
-						if($i < count($errors)-1)
-							$xml .= ' ';
-					}
-					$xml .= '</error>';
-				}
-				else {
-					$xml .= $this->getProfiles($identifier, $store);
-
-					// clean profile cache
-					$cache = $this->getCache();
-					$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
-				}
-			}
+			$this->_forward('error', 'api', null, array(
+				'code' => 'RequiredError',
+				'message' => 'Not all parameters given. This method requires: seealso, sameas.'
+			));
+			return;
 		}
 
-		$xml .= '</result>';
+		$identifier = $this->getIdentifier();
+		$store = $this->getProfileStore();
+		$sameas = $this->escape($params['sameas'], 'uri');
+		$seealso = $this->escape($params['seealso'], 'uri');
 
-		$this->outputXml($xml);
+		// delete old triples
+		$query = $this->_queryPrefix .
+			'DELETE {' .
+				'<' . $identifier . '> owl:sameAs <' . $sameas . '> .' .
+				'<' . $sameas . '> ?any1 ?any2 .' .
+			'}';
+		$result = $store->query($query);
+		if($errors = $store->getErrors()) {
+			$this->forwardTripleStoreError($errors);
+			return;
+		}
+
+		$query = $this->_queryPrefix .
+			'INSERT INTO <' . $identifier . '> {' .
+				'<' . $identifier . '> owl:sameAs <' . $sameas . '> .' .
+				'<' . $sameas . '> rdfs:seeAlso <' . $seealso . '> .';
+
+		if(isset($params['label']) && !empty($params['label'])) {
+			$label = $params['label'];
+			$query .= '<' . $sameas . '> rdfs:label "' . $this->escape($params['label'], 'literal') . '" . ';
+		}
+		else
+			$label = '';
+			
+		$query .= '}';
+
+		$store->query($query);
+		if($errors = $store->getErrors()) {
+			$this->forwardTripleStoreError($errors);
+			return;
+		}
+
+		// clean profile cache
+		$cache = $this->getCache();
+		$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
+			
+		if(!($profiles = $this->getProfiles($identifier, $store))) {
+			return;
+		}
+
+		$this->outputXml('<result>' . $profiles . '</result>');
 	}
 
 	/**
@@ -318,48 +273,41 @@ class EditorApiController extends ApiController
 	 */
 	public function profilesdeleteAction()
 	{
-		$xml = '<result>';
-		
 		$params = $this->getRequest()->getPost();
-		if(!isset($params['sameas']) ||
-			empty($params['sameas'])) {
-			
-			$xml .= '<error>Not all parameters given. This method needs: sameas</error>';
-		}
-		else {
-			$identifier = $this->getIdentifier();
-			$store = $this->getProfileStore();
-			$sameas = $this->escape($params['sameas'], 'uri');
-			
-			$query = $this->_queryPrefix .
-				'DELETE {' .
-					'<' . $identifier . '> owl:sameAs <' . $sameas . '> .' .
-					'<' . $sameas . '> ?any1 ?any2 .' .
-				'}';
-			$result = $store->query($query);
-			if($errors = $store->getErrors()) {
-				$xml .= '<error>';
-				for($i = 0; $i < count($errors); $i++) {
-					$xml .= $errors[$i];
-					if($i < count($errors)-1)
-						$xml .= ' ';
-				}
-				$xml .= '</error>';
-			}
-			else {
-				if($result['result']['t_count'] > 0) {
-					// clean profile cache
-					$cache = $this->getCache();
-					$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
-				}
-
-				$xml .= $this->getProfiles($identifier, $store);
-			}
+		if(!isset($params['sameas']) || empty($params['sameas'])) {
+			$this->_forward('error', 'api', null, array(
+				'code' => 'RequiredError',
+				'message' => 'Not all parameters given. This method requires: sameas.'
+			));
+			return;
 		}
 
-		$xml .= '</result>';
+		$identifier = $this->getIdentifier();
+		$store = $this->getProfileStore();
+		$sameas = $this->escape($params['sameas'], 'uri');
+		
+		$query = $this->_queryPrefix .
+			'DELETE {' .
+				'<' . $identifier . '> owl:sameAs <' . $sameas . '> .' .
+				'<' . $sameas . '> ?any1 ?any2 .' .
+			'}';
+		$result = $store->query($query);
+		if($errors = $store->getErrors()) {
+			$this->forwardTripleStoreError($errors);
+			return;
+		}
+		
+		if($result['result']['t_count'] > 0) {
+			// clean profile cache
+			$cache = $this->getCache();
+			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
+		}
 
-		$this->outputXml($xml);
+		if(!($profiles = $this->getProfiles($identifier, $store))) {
+			return;
+		}
+
+		$this->outputXml('<result>' . $profiles . '</result>');
 	}
 
 	/**
@@ -370,11 +318,11 @@ class EditorApiController extends ApiController
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
 
-		$xml = '<result>';
-		$xml .= $this->getRelationships($identifier, $store);
-		$xml .= '</result>';
+		if(!($relationships = $this->getRelationships($identifier, $store))) {
+			return;
+		}
 
-		$this->outputXml($xml);
+		$this->outputXml('<result>' . $xml . '</result>');
 	}
 
 	/**
@@ -384,118 +332,107 @@ class EditorApiController extends ApiController
 	 */
 	public function relationshipsupdateAction()
 	{
-		$xml = '<result>';
-		
 		$params = $this->getRequest()->getPost();
 		if(!isset($params['to']) || empty($params['to'])) {
-			$xml .= '<error>Not all parameters given. This method needs: to</error>';
+			$this->_forward('error', 'api', null, array(
+				'code' => 'RequiredError',
+				'message' => 'Not all parameters given. This method requires: to.'
+			));
+			return;
 		}
-		else {
-			$identifier = $this->getIdentifier();
-			$store = $this->getProfileStore();
-			$to = $this->escape($params['to'], 'uri');
 
-			// delete old triples
+		$identifier = $this->getIdentifier();
+		$store = $this->getProfileStore();
+		$to = $this->escape($params['to'], 'uri');
+
+		// delete old triples
+		$query = $this->_queryPrefix .
+			'DELETE FROM {' .
+				'<' . $identifier . '> ?any1 <' . $to . '> .' .
+				'<' . $to . '> ?any2 ?any3 .' .
+			'}';
+		$store->query($query);
+		if($errors = $store->getErrors()) {
+			$this->forwardTripleStoreError($errors);
+			return;
+		}
+		
+		// try to load the provided profile
+		$toId = $this->loadUri($to);
+		if($toId)
+			$to = $toId;
+
+		$insertQuery = $this->_queryPrefix .
+			'INSERT INTO <' . $identifier . '> {' .
+				'<' . $identifier . '> foaf:knows <' . $to . '> .';
+		
+		// add relationships
+		$rels = 'knows';
+		foreach($params as $key => $value) {
+			if($key != 'knows' && 
+				$key != 'seealso' && 
+				$key != 'to' &&
+				isset($this->_relationships[$key])) {
+
+				$rels .= ',' . $key;
+
+				$insertQuery .= '<' . $identifier . '> <' . $this->_relationships[$key] . '> <' . $to . '> .';
+			}
+		}
+
+		// store some basic values in our profile
+		// in order to accelerate browsing
+		$loadProperties = array('name', 'nick', 'img', 'depiction', 'family_name', 'givenname');
+		if($toId) {
+			$browserStore = $this->getBrowserStore();
 			$query = $this->_queryPrefix .
-				'DELETE FROM {' .
-					'<' . $identifier . '> ?any1 <' . $to . '> .' .
-					'<' . $to . '> ?any2 ?any3 .' .
-				'}';
-			$store->query($query);
-			if($errors = $store->getErrors()) {
-				$xml .= '<error>';
-				for($i = 0; $i < count($errors); $i++) {
-					$xml .= $errors[$i];
-					if($i < count($errors)-1)
-						$xml .= ' ';
-				}
-				$xml .= '</error>';
+				'SELECT ?type';
+			foreach($loadProperties as $p)
+				$query .= ' ?' . $p;
+			$query .= ' WHERE {' .
+				'<' . $to . '> rdf:type ?type . ';
+			foreach($loadProperties as $p) {
+				$query .= 'OPTIONAL { <' . $to . '> <' . $this->_properties[$p][0] . '> ?' . $p . ' . } ';
 			}
-			else {
-				// try to load the provided profile
-				$toId = $this->loadUri($to);
-				if($toId)
-					$to = $toId;
+			$query .= ' }';
 
-				$insertQuery = $this->_queryPrefix .
-					'INSERT INTO <' . $identifier . '> {' .
-						'<' . $identifier . '> foaf:knows <' . $to . '> .';
-				
-				// add relationships
-				$rels = 'knows';
-				foreach($params as $key => $value) {
-					if($key != 'knows' && 
-						$key != 'seealso' && 
-						$key != 'to' &&
-						isset($this->_relationships[$key])) {
-
-						$rels .= ',' . $key;
-
-						$insertQuery .= '<' . $identifier . '> <' . $this->_relationships[$key] . '> <' . $to . '> .';
-					}
-				}
-
-				// store some basic values in our profile
-				// in order to accelerate browsing
-				$loadProperties = array('name', 'nick', 'img', 'depiction', 'family_name', 'givenname');
-				if($toId) {
-					$browserStore = $this->getBrowserStore();
-					$query = $this->_queryPrefix .
-						'SELECT ?type';
-					foreach($loadProperties as $p)
-						$query .= ' ?' . $p;
-					$query .= ' WHERE {' .
-						'<' . $to . '> rdf:type ?type . ';
-					foreach($loadProperties as $p) {
-						$query .= 'OPTIONAL { <' . $to . '> <' . $this->_properties[$p][0] . '> ?' . $p . ' . } ';
-					}
-					$query .= ' }';
-
-					$row = $browserStore->query($query, 'row');
-					if(!$store->getErrors() && $row) {
-						foreach($loadProperties as $p) {
-							if(isset($row[$p]) && !empty($row[$p])) {
-								$insertQuery .= '<' . $to . '> <' . $this->_properties[$p][0] . '> ';
-								switch($this->_properties[$p][1]) {
-									case 'uri':
-										$insertQuery .= '<' . $this->escape($row[$p], 'uri') . '>';
-										break;
-									case 'literal':
-										$insertQuery .= '"' . $this->escape($row[$p], 'literal') . '"';
-										break;
-								}
-
-								$insertQuery .= ' . ';
-							}
+			$row = $browserStore->query($query, 'row');
+			if(!$store->getErrors() && $row) {
+				foreach($loadProperties as $p) {
+					if(isset($row[$p]) && !empty($row[$p])) {
+						$insertQuery .= '<' . $to . '> <' . $this->_properties[$p][0] . '> ';
+						switch($this->_properties[$p][1]) {
+							case 'uri':
+								$insertQuery .= '<' . $this->escape($row[$p], 'uri') . '>';
+								break;
+							case 'literal':
+								$insertQuery .= '"' . $this->escape($row[$p], 'literal') . '"';
+								break;
 						}
-					}
-				}
-					
-				$insertQuery .= '}';
 
-				$store->query($insertQuery);
-				if($errors = $store->getErrors()) {
-					$xml .= '<error>';
-					for($i = 0; $i < count($errors); $i++) {
-						$xml .= $errors[$i];
-						if($i < count($errors)-1)
-							$xml .= ' ';
+						$insertQuery .= ' . ';
 					}
-					$xml .= '</error>';
-				}
-				else {
-					$xml .= $this->getRelationships($identifier, $store);
-
-					// clean profile cache
-					$cache = $this->getCache();
-					$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 				}
 			}
 		}
+			
+		$insertQuery .= '}';
 
-		$xml .= '</result>';
+		$store->query($insertQuery);
+		if($errors = $store->getErrors()) {
+			$this->forwardTripleStoreError($errors);
+			return;
+		}
+		
+		if(!($relationships = $this->getRelationships($identifier, $store))) {
+			return;
+		}
 
-		$this->outputXml($xml);
+		// clean profile cache
+		$cache = $this->getCache();
+		$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
+
+		$this->outputXml('<result>' . $relationships . '</result>');
 	}
 
 	/**
@@ -505,47 +442,42 @@ class EditorApiController extends ApiController
 	 */
 	public function relationshipsdeleteAction()
 	{
-		$xml = '<result>';
-		
 		$params = $this->getRequest()->getPost();
 		if(!isset($params['to']) || empty($params['to'])) {
-			$xml .= '<error>Not all parameters given. This method needs: to</error>';
-		}
-		else {
-			$identifier = $this->getIdentifier();
-			$store = $this->getProfileStore();
-			$to = $this->escape($params['to'], 'uri');
-			
-			$query = $this->_queryPrefix .
-				'DELETE {' .
-					'<' . $identifier . '> ?any1 <' . $to . '> .' .
-					'<' . $to . '> ?any2 ?any3 .' .
-				'}';
-
-			$result = $store->query($query);
-			if($errors = $store->getErrors()) {
-				$xml .= '<error>';
-				for($i = 0; $i < count($errors); $i++) {
-					$xml .= $errors[$i];
-					if($i < count($errors)-1)
-						$xml .= ' ';
-				}
-				$xml .= '</error>';
-			}
-			else {
-				if($result['result']['t_count'] > 0) {
-					// clean profile cache
-					$cache = $this->getCache();
-					$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
-				}
-
-				$xml .= $this->getRelationships($identifier, $store);
-			}
+			$this->_forward('error', 'api', null, array(
+				'code' => 'RequiredError',
+				'message' => 'Not all parameters given. This method requires: to.'
+			));
+			return;
 		}
 
-		$xml .= '</result>';
+		$identifier = $this->getIdentifier();
+		$store = $this->getProfileStore();
+		$to = $this->escape($params['to'], 'uri');
+		
+		$query = $this->_queryPrefix .
+			'DELETE {' .
+				'<' . $identifier . '> ?any1 <' . $to . '> .' .
+				'<' . $to . '> ?any2 ?any3 .' .
+			'}';
 
-		$this->outputXml($xml);
+		$result = $store->query($query);
+		if($errors = $store->getErrors()) {
+			$this->forwardTripleStoreError($errors);
+			return;
+		}
+		
+		if($result['result']['t_count'] > 0) {
+			// clean profile cache
+			$cache = $this->getCache();
+			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
+		}
+
+		if(!($relationships = $this->getRelationships($identifier, $store))) {
+			return;
+		}
+
+		$this->outputXml('<result>' . $relationships . '</result>');
 	}
 
 	/**
@@ -553,7 +485,7 @@ class EditorApiController extends ApiController
 	 *
 	 * @param string $id bnode or uri identifier
 	 * @param ARC2_Store $store The triple store to use
-	 * @return string Relationships as XML.
+	 * @return string|false Relationships as XML or false if an error occured.
 	 */
 	protected function getRelationships($id, $store) 
 	{
@@ -575,31 +507,25 @@ class EditorApiController extends ApiController
 		$query .= ') }';
 		$rows = $store->query($query, 'rows');
 		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
+			$this->forwardTripleStoreError($errors);
+			return false;
 		}
-		else {
-			$rels = array();
-			foreach($rows as $row) {
-				if(isset($rels[$row['to']])) 
-					$rels[$row['to']] .= ',';
-				else
-					$rels[$row['to']] = '';
 
-				$rels[$row['to']] .= array_search($row['p'], $this->_relationships);
-			}
+		$rels = array();
+		foreach($rows as $row) {
+			if(isset($rels[$row['to']])) 
+				$rels[$row['to']] .= ',';
+			else
+				$rels[$row['to']] = '';
 
-			foreach($rels as $to => $rel) {
-				$xml .= '<relationship';
-				$xml .= ' type="' . $rel . '">';
-				$xml .= $this->getProfile($to, $store);
-				$xml .= '</relationship>';
-			}
+			$rels[$row['to']] .= array_search($row['p'], $this->_relationships);
+		}
+
+		foreach($rels as $to => $rel) {
+			$xml .= '<relationship';
+			$xml .= ' type="' . $rel . '">';
+			$xml .= $this->getProfile($to, $store);
+			$xml .= '</relationship>';
 		}
 	
 		return $xml;

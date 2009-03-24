@@ -20,26 +20,14 @@ class BrowserApiController extends ApiController
 	 */
 	public function cleanAction()
 	{
-		$xml = '<result>';
-
 		$store = $this->getProfileStore();
 		$store->reset();
 		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
-		}
-		else {
-			$xml .= 1;
+			$this->forwardTripleStoreError($errors);
+			return;
 		}
 
-		$xml .= '</result>';
-
-		$this->outputXml($xml);
+		$this->outputXml('<result>1</result>');
 	}
 
 	/**
@@ -50,29 +38,27 @@ class BrowserApiController extends ApiController
 	 */
 	public function profileAction()
 	{
-		$xml = '<result>';
-
 		$store = $this->getBrowserStore();
 
 		$params = $this->getRequest()->getPost();
 		if(!isset($params['uri']) || empty($params['uri'])) {
-			$xml .= '<error>Not all parameters given. This method needs: uri</error>';
+			$this->_forward('error', 'api', null, array(
+				'code' => 'RequiredError',
+				'message' => 'Not all parameters given. This method requires: uri.'
+			));
+			return;
 		}
-		else {
-			$uri = $this->escape($params['uri'], 'uri');
-			$id = $this->loadUri($uri);
 
-			if($id === false) {
-				$xml .= '<error>Could not find/load profile.</error>';
-			}
-			else {
-				$xml .= $this->getProfile($id, $store);
-			}
+		$uri = $this->escape($params['uri'], 'uri');
+		if(!($id = $this->loadUri($uri))) {
+			return;
 		}
-		
-		$xml .= '</result>';
 
-		$this->outputXml($xml);
+		if(!($profile = $this->getProfile($id, $store))) {
+			return;
+		}
+
+		$this->outputXml('<result>' . $profile . '</result>');
 	}
 	
 	/**
@@ -84,84 +70,78 @@ class BrowserApiController extends ApiController
 	 */
 	public function relationshipsAction()
 	{
-		$xml = '<result>';
-
 		$params = $this->getRequest()->getPost();
 		if(!isset($params['uri']) || empty($params['uri'])) {
-			$xml .= '<error>Not all parameters given. This method needs: uri</error>';
+			$this->_forward('error', 'api', null, array(
+				'code' => 'RequiredError',
+				'message' => 'Not all parameters given. This method requires: uri.'
+			));
+			return;
 		}
-		else {
-			$uri = $this->escape($params['uri'], 'uri');
-			$id = $this->loadUri($uri);
+		
+		$uri = $this->escape($params['uri'], 'uri');
+		if(!($id = $this->loadUri($uri))) {
+			return;
+		}
 
-			if($id === false) {
-				$xml .= '<error>Could not find/load profile.</error>';
+		$relationships = array();
+		foreach($params as $key => $value) {
+			if($key != 'uri' && isset($this->_relationships[$key]))
+				$relationships[] = $key;
+		}
+		$relationships = array_unique($relationships);
+
+		if(count($relationships) == 0)
+			$relationships[] = 'knows';
+
+		$query = $this->_queryPrefix .
+			'SELECT ?to ?p ?label WHERE {' .
+				'{ <' . $id . '> ?p ?to . }' .
+				' UNION ' .
+				'{ <' . $id . '> owl:sameAs ?sameas . ' .
+				'?sameas ?p ?to . ' .
+				'OPTIONAL { ?sameas rdfs:label ?label . } }' .
+				'FILTER(';
+
+		$first = true;
+		foreach($relationships as $rel) {
+			if($first)
+				$first = false;
+			else
+				$query .= ' || ';
+			$query .= ' ?p = <' . $this->_relationships[$rel] . '> ';
+		}
+		$query .= ') }';
+
+		$store = $this->getBrowserStore();
+		$rows = $store->query($query, 'rows');
+		if($errors = $store->getErrors()) {
+			$this->forwardTripleStoreError($errors);
+			return;
+		}
+		
+		$rels = array();
+		foreach($rows as $row) {
+			if(isset($rels[$row['to']])) 
+				$rels[$row['to']] .= ',';
+			else
+				$rels[$row['to']] = '';
+
+			$rels[$row['to']] .= array_search($row['p'], $this->_relationships);
+		}
+
+		$xml = '<result>';
+
+		foreach($rels as $to => $rel) {
+			$xml .= '<relationship';
+			
+			if(isset($row['label']) && !empty($row['label'])) {
+				$xml .= ' label="' . htmlentities($row['label'], ENT_COMPAT, 'UTF-8') . '"';
 			}
-			else {
-				$relationships = array();
-				foreach($params as $key => $value) {
-					if($key != 'uri' && isset($this->_relationships[$key]))
-						$relationships[] = $key;
-				}
-				$relationships = array_unique($relationships);
 
-				if(count($relationships) == 0)
-					$relationships[] = 'knows';
-
-				$query = $this->_queryPrefix .
-					'SELECT ?to ?p ?label WHERE {' .
-						'{ <' . $id . '> ?p ?to . }' .
-						' UNION ' .
-						'{ <' . $id . '> owl:sameAs ?sameas . ' .
-						'?sameas ?p ?to . ' .
-						'OPTIONAL { ?sameas rdfs:label ?label . } }' .
-						'FILTER(';
-
-				$first = true;
-				foreach($relationships as $rel) {
-					if($first)
-						$first = false;
-					else
-						$query .= ' || ';
-					$query .= ' ?p = <' . $this->_relationships[$rel] . '> ';
-				}
-				$query .= ') }';
-
-				$store = $this->getBrowserStore();
-				$rows = $store->query($query, 'rows');
-				if($errors = $store->getErrors()) {
-					$xml .= '<error>';
-					for($i = 0; $i < count($errors); $i++) {
-						$xml .= $errors[$i];
-						if($i < count($errors)-1)
-							$xml .= ' ';
-					}
-					$xml .= '</error>';
-				}
-				else {
-					$rels = array();
-					foreach($rows as $row) {
-						if(isset($rels[$row['to']])) 
-							$rels[$row['to']] .= ',';
-						else
-							$rels[$row['to']] = '';
-
-						$rels[$row['to']] .= array_search($row['p'], $this->_relationships);
-					}
-
-					foreach($rels as $to => $rel) {
-						$xml .= '<relationship';
-						
-						if(isset($row['label']) && !empty($row['label'])) {
-							$xml .= ' label="' . htmlentities($row['label'], ENT_COMPAT, 'UTF-8') . '"';
-						}
-
-						$xml .= ' type="' . $rel . '">';
-						$xml .= $this->getProfile($to, $store);
-						$xml .= '</relationship>';
-					}
-				}
-			}
+			$xml .= ' type="' . $rel . '">';
+			$xml .= $this->getProfile($to, $store);
+			$xml .= '</relationship>';
 		}
 
 		$xml .= '</result>';

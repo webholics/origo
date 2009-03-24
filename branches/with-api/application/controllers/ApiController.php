@@ -139,10 +139,10 @@ class ApiController extends BaseController
 	public function testAction()
 	{
 		$this->outputXml('
-			<request>
+			<result>
 				<code>200</code>
 				<message>API status: OK</message>
-			</request>
+			</result>
 		');
 	}
 
@@ -217,7 +217,7 @@ class ApiController extends BaseController
 	 *
 	 * @param string $id bnode or uri identifier
 	 * @param ARC2_Store $store The triple store to use
-	 * @return string Profile as XML.
+	 * @return string|false Profile as XML or false if error occured.
 	 */
 	protected function getProfile($id, $store) 
 	{
@@ -230,49 +230,43 @@ class ApiController extends BaseController
 		$rows = $store->query($query, 'rows');
 
 		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
+			$this->forwardTripleStoreError($errors);
+			return false;
 		}
-		else {
-			$xml .= '<profile';
 
-			// check if id is a bnode
-			if(substr($id, 0, 2) == '_:') {
-				// here comes a little hack:
-				// some foaf profiles are only linked via rdfs:seeAlso
-				// and assume foaf:primaryTopic to be set in the linked profile
-				// therefore we search here for rdfs:seeAlso 
-				// and link to the foaf document itself if found
-				foreach($rows as $row) {
-					if($row['key'] == 'http://www.w3.org/2000/01/rdf-schema#seeAlso') {
-						$xml .= ' id="' . $row['val'] . '"';
-						break;
-					}
-				}
-			}
-			else 
-				$xml .= ' id="' . $id . '"';
+		$xml .= '<profile';
 
-			$xml .= '>';
-
+		// check if id is a bnode
+		if(substr($id, 0, 2) == '_:') {
+			// here comes a little hack:
+			// some foaf profiles are only linked via rdfs:seeAlso
+			// and assume foaf:primaryTopic to be set in the linked profile
+			// therefore we search here for rdfs:seeAlso 
+			// and link to the foaf document itself if found
 			foreach($rows as $row) {
-				if(isset($this->_propertyToShortcut[$row['key']])) {
-					$key = $this->_propertyToShortcut[$row['key']];
-					// some properties need special attention
-					if($key == 'mbox')
-						$row['val'] = substr($row['val'], 7);
-			
-					$xml .= '<property name="' . $key . '">' . $row['val'] . '</property>';
+				if($row['key'] == 'http://www.w3.org/2000/01/rdf-schema#seeAlso') {
+					$xml .= ' id="' . $row['val'] . '"';
+					break;
 				}
 			}
-		
-			$xml .= '</profile>';
 		}
+		else 
+			$xml .= ' id="' . $id . '"';
+
+		$xml .= '>';
+
+		foreach($rows as $row) {
+			if(isset($this->_propertyToShortcut[$row['key']])) {
+				$key = $this->_propertyToShortcut[$row['key']];
+				// some properties need special attention
+				if($key == 'mbox')
+					$row['val'] = substr($row['val'], 7);
+		
+				$xml .= '<property name="' . $key . '">' . $row['val'] . '</property>';
+			}
+		}
+	
+		$xml .= '</profile>';
 
 		return $xml;
 	}
@@ -282,7 +276,7 @@ class ApiController extends BaseController
 	 *
 	 * @param string $id bnode or uri identifier
 	 * @param ARC2_Store $store The triple store to use
-	 * @return string Profiles as XML.
+	 * @return string|false Profiles as XML if an error occured.
 	 */
 	protected function getProfiles($id, $store)
 	{
@@ -296,23 +290,17 @@ class ApiController extends BaseController
 			'}';
 		$rows = $store->query($query, 'rows');
 		if($errors = $store->getErrors()) {
-			$xml .= '<error>';
-			for($i = 0; $i < count($errors); $i++) {
-				$xml .= $errors[$i];
-				if($i < count($errors)-1)
-					$xml .= ' ';
-			}
-			$xml .= '</error>';
+			$this->forwardTripleStoreError($errors);
+			return false;
 		}
-		else {
-			foreach($rows as $row) {
-				$xml .= '<profile sameas="' . $row['sameas'] . '" seealso="' . $row['seealso'] . '"';
 
-				if(isset($row['label']) && !empty($row['label']))
-					$xml .= ' label="' . htmlentities($row['label'], ENT_COMPAT, 'UTF-8') . '"';
+		foreach($rows as $row) {
+			$xml .= '<profile sameas="' . $row['sameas'] . '" seealso="' . $row['seealso'] . '"';
 
-				$xml .= '/>';
-			}
+			if(isset($row['label']) && !empty($row['label']))
+				$xml .= ' label="' . htmlentities($row['label'], ENT_COMPAT, 'UTF-8') . '"';
+
+			$xml .= '/>';
 		}
 
 		return $xml;
@@ -342,8 +330,13 @@ class ApiController extends BaseController
 			$query = 'LOAD <' . $uri . '> INTO <' . $uri . '>';
 			$result = $store->query($query);
 
-			if($store->getErrors() || $result['result']['t_count'] == 0)
+			if($store->getErrors() || $result['result']['t_count'] == 0) {
+				$this->_forward('error', 'api', null, array(
+					'code' => 'LoadError',
+					'message' => 'Could not find/load profile.'
+				));
 				return false;
+			}
 
 			$loaded = true;
 		}
@@ -361,8 +354,13 @@ class ApiController extends BaseController
 				'}';
 			$row = $store->query($query, 'row');
 			
-			if($store->getErrors() || !$row)
+			if($store->getErrors() || !$row) {
+				$this->_forward('error', 'api', null, array(
+					'code' => 'LoadError',
+					'message' => 'Could not find/load profile.'
+				));
 				return false;
+			}
 
 			$identifier = $row['person'];
 		}
@@ -440,5 +438,28 @@ class ApiController extends BaseController
 			else if($result['result']['t_count'] == 0)
 				break;
 		}
+	}
+
+	/**
+	 * This is a helper method to forward a triple store error.
+	 *
+	 * @param array $errors
+	 */
+	protected function forwardTripleStoreError($errors)
+	{
+		$first = true;
+		$message = '';
+		foreach($errors as $error) {
+			if($first)
+				$first = false;
+			else
+				$message .= ' ';
+			$message .= $error;
+		}
+
+		$this->_forward('error', 'api', null, array(
+			'code' => 'TripleStoreError',
+			'message' => $message
+		));
 	}
 }
