@@ -54,9 +54,9 @@ class BrowserApiController extends ApiController
 			return;
 		}
 
-		if(!($profile = $this->getProfile($id, $store))) {
+		$profile = $this->getProfile($id, $store);
+		if($profile === false) 
 			return;
-		}
 
 		$this->outputXml('<result>' . $profile . '</result>');
 	}
@@ -133,6 +133,10 @@ class BrowserApiController extends ApiController
 		$xml = '<result>';
 
 		foreach($rels as $to => $rel) {
+			$profile = $this->getProfile($to, $store);
+			if($profile === false)
+				return;
+				
 			$xml .= '<relationship';
 			
 			if(isset($row['label']) && !empty($row['label'])) {
@@ -140,7 +144,7 @@ class BrowserApiController extends ApiController
 			}
 
 			$xml .= ' type="' . $rel . '">';
-			$xml .= $this->getProfile($to, $store);
+			$xml .= $profile;
 			$xml .= '</relationship>';
 		}
 

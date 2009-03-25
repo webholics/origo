@@ -25,11 +25,11 @@ class EditorApiController extends ApiController
 		if(count($params) == 0)
 			$params = $this->_properties;
 
-		$xml = '<result>';
-		$xml .= $this->getProfile($identifier, $store);
-		$xml .= '</result>';
+		$profile = $this->getProfile($identifier, $store);
+		if($profile === false)
+			return;
 
-		$this->outputXml($xml);
+		$this->outputXml('<result>' . $profile . '</result>');
 	}
 	
 	/**
@@ -107,9 +107,9 @@ class EditorApiController extends ApiController
 			}
 		}
 		
-		if(!($profile = $this->getProfile($identifier, $store))) {
+		$profile = $this->getProfile($identifier, $store);
+		if($profile === false)
 			return;
-		}
 		
 		$this->outputXml('<result>' . $profile . '</result>');
 
@@ -149,9 +149,9 @@ class EditorApiController extends ApiController
 			return;
 		}
 
-		if(!($profile = $this->getProfile($identifier, $store))) {
+		$profile = $this->getProfile($identifier, $store);
+		if($profile === false)
 			return;
-		}
 
 		$this->outputXml('<result>' . $profile . '</result>');
 
@@ -189,9 +189,9 @@ class EditorApiController extends ApiController
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
 
-		if(!($profiles = $this->getProfiles($identifier, $store))) {
+		$profiles = $this->getProfiles($identifier, $store);
+		if($profiles === false)
 			return;
-		}
 
 		$this->outputXml('<result>' . $profiles . '</result>');
 	}
@@ -258,9 +258,9 @@ class EditorApiController extends ApiController
 		$cache = $this->getCache();
 		$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 			
-		if(!($profiles = $this->getProfiles($identifier, $store))) {
+		$profiles = $this->getProfiles($identifier, $store);
+		if($profiles === false)
 			return;
-		}
 
 		$this->outputXml('<result>' . $profiles . '</result>');
 	}
@@ -303,9 +303,9 @@ class EditorApiController extends ApiController
 			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 		}
 
-		if(!($profiles = $this->getProfiles($identifier, $store))) {
+		$profiles = $this->getProfiles($identifier, $store);
+		if($profiles === false)
 			return;
-		}
 
 		$this->outputXml('<result>' . $profiles . '</result>');
 	}
@@ -318,11 +318,11 @@ class EditorApiController extends ApiController
 		$identifier = $this->getIdentifier();
 		$store = $this->getProfileStore();
 
-		if(!($relationships = $this->getRelationships($identifier, $store))) {
+		$relationships = $this->getRelationships($identifier, $store);
+		if($relationships === false)
 			return;
-		}
 
-		$this->outputXml('<result>' . $xml . '</result>');
+		$this->outputXml('<result>' . $relationships . '</result>');
 	}
 
 	/**
@@ -424,9 +424,9 @@ class EditorApiController extends ApiController
 			return;
 		}
 		
-		if(!($relationships = $this->getRelationships($identifier, $store))) {
+		$relationships = $this->getRelationships($identifier, $store);
+		if($relationships === false)
 			return;
-		}
 
 		// clean profile cache
 		$cache = $this->getCache();
@@ -473,9 +473,9 @@ class EditorApiController extends ApiController
 			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('profile'));
 		}
 
-		if(!($relationships = $this->getRelationships($identifier, $store))) {
+		$relationships = $this->getRelationships($identifier, $store);
+		if($relationships === false)
 			return;
-		}
 
 		$this->outputXml('<result>' . $relationships . '</result>');
 	}
@@ -522,9 +522,12 @@ class EditorApiController extends ApiController
 		}
 
 		foreach($rels as $to => $rel) {
-			$xml .= '<relationship';
-			$xml .= ' type="' . $rel . '">';
-			$xml .= $this->getProfile($to, $store);
+			$profile = $this->getProfile($to, $store);
+			if($profile === false)
+				return false;
+				
+			$xml .= '<relationship type="' . $rel . '">';
+			$xml .= $profile;
 			$xml .= '</relationship>';
 		}
 	
