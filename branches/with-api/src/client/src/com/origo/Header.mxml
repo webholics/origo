@@ -8,45 +8,68 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.events.StateChangeEvent;
-			import mx.core.Application;		
+			import mx.core.Application;	
+			import mx.binding.utils.ChangeWatcher;
+			import mx.binding.utils.BindingUtils;
+			
+			private var store:ProfileStore;	
 		
 			private function init():void
 			{
 				Application.application.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGING, navigationStateChange);
+				
+				// default fist state is dashboard
+				navigationDashboardButton.selected = true;
+				navigationEditorButton.selected = false;
+				navigationBrowserButton.selected = false;
+				navigationAboutButton.selected = false;
+				
+				store = ProfileStore.getInstance();
+				
+				// listen to updates in profile store
+				BindingUtils.bindSetter(updateWelcome, store, "properties");
+				
+				// call updateWelcome at first manually
+				updateWelcome();
 			}
 			
 			private function navigationStateChange(event:StateChangeEvent):void
 			{
 				switch(event.newState) {
 					case "dashboard":
-						navigationDashboard.selected = true;
-						navigationEditor.selected = false;
-						navigationBrowser.selected = false;
-						navigationAbout.selected = false;
+						navigationDashboardButton.selected = true;
+						navigationEditorButton.selected = false;
+						navigationBrowserButton.selected = false;
+						navigationAboutButton.selected = false;
+						currentState = "";
 						break;
 					case "editor":
-						navigationDashboard.selected = false;
-						navigationEditor.selected = true;
-						navigationBrowser.selected = false;
-						navigationAbout.selected = false;
+						navigationDashboardButton.selected = false;
+						navigationEditorButton.selected = true;
+						navigationBrowserButton.selected = false;
+						navigationAboutButton.selected = false;
+						currentState = "editor";
 						break;
 					case "browser":
-						navigationDashboard.selected = false;
-						navigationEditor.selected = false;
-						navigationBrowser.selected = true;
-						navigationAbout.selected = false;
+						navigationDashboardButton.selected = false;
+						navigationEditorButton.selected = false;
+						navigationBrowserButton.selected = true;
+						navigationAboutButton.selected = false;
+						currentState = "browser";
 						break;
 					case "about":
-						navigationDashboard.selected = false;
-						navigationEditor.selected = false;
-						navigationBrowser.selected = false;
-						navigationAbout.selected = true;
+						navigationDashboardButton.selected = false;
+						navigationEditorButton.selected = false;
+						navigationBrowserButton.selected = false;
+						navigationAboutButton.selected = true;
+						currentState = "";
 						break;
 					default:
-						navigationDashboard.selected = false;
-						navigationEditor.selected = false;
-						navigationBrowser.selected = false;
-						navigationAbout.selected = false;
+						navigationDashboardButton.selected = false;
+						navigationEditorButton.selected = false;
+						navigationBrowserButton.selected = false;
+						navigationAboutButton.selected = false;
+						currentState = "";
 						break;
 				}
 			}
@@ -78,14 +101,59 @@
 					Application.application.currentState = "about";
 				}
 			}
+			
+			private function updateWelcome(value:Object=null):void
+			{
+				if(store.properties.property.(@name == "name").length() > 0)
+					welcomeText.text = "Welcome, " + store.properties.property.(@name == "name")[0];
+				else
+					welcomeText.text = "Welcome, " + store.id;
+			}
 		]]>
 	</mx:Script>
+	
+	<mx:states>
+		<mx:State name="editor">
+			<mx:AddChild position="lastChild">
+				<mx:Canvas id="navigationEditor">
+					<mx:HBox left="190" right="10" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" styleName="lightBox">
+						<mx:Button id="navigationEditorPersonalInformation" click="editorClick()" width="180" label="Personal Information" styleName="lightButton"/>
+						<mx:Button id="navigationEditorExternalProfiles" click="editorClick()" width="180" label="External Profiles" styleName="lightButton"/>
+						<mx:Button id="navigationEditorRelationships" click="editorClick()" width="180" label="Relationships" styleName="lightButton"/>							
+					</mx:HBox>
+				</mx:Canvas>
+			</mx:AddChild>			
+		</mx:State>
+		<mx:State name="browser">
+			<mx:AddChild position="lastChild">
+				<mx:Canvas id="navigationBrowser">
+					<mx:HBox left="190" right="10" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" styleName="lightBox">
+						<mx:Button id="navigationEditorPersonalInformation2" click="editorClick()" width="150" label="Personal Information" styleName="lightButton"/>
+						<mx:Button id="navigationEditorExternalProfiles2" click="editorClick()" width="150" label="External Profiles" styleName="lightButton"/>
+						<mx:Button id="navigationEditorRelationships2" click="editorClick()" width="150" label="Relationships" styleName="lightButton"/>							
+					</mx:HBox>
+				</mx:Canvas>
+			</mx:AddChild>			
+		</mx:State>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="*" toState="editor">
+			<mx:WipeDown target="{navigationEditor}" duration="500"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="browser">
+			<mx:WipeDown target="{navigationBrowser}" duration="500"/>
+		</mx:Transition>
+	</mx:transitions>
 
 	<mx:Canvas height="90" width="100%" styleName="box">
 		<mx:Image source="@Embed('../assets/logo_small.png')" top="10" left="10" />
-		<mx:Button id="navigationDashboard" click="dashboardClick()" left="200" bottom="10" width="100" label="Dashboard"/>
-		<mx:Button id="navigationEditor" click="editorClick()" left="310" bottom="10" width="100" label="Editor"/>
-		<mx:Button id="navigationBrowser" click="browserClick()" left="420" bottom="10" width="100" label="Browser"/>
-		<mx:Button id="navigationAbout" click="aboutClick()" right="10" bottom="10" width="100" label="About"/>
+		<mx:Button id="navigationDashboardButton" click="dashboardClick()" left="200" bottom="10" width="100" label="Dashboard"/>
+		<mx:Button id="navigationEditorButton" click="editorClick()" left="310" bottom="10" width="100" label="Editor"/>
+		<mx:Button id="navigationBrowserButton" click="browserClick()" left="420" bottom="10" width="100" label="Browser"/>
+		<mx:Button id="navigationAboutButton" click="aboutClick()" right="10" bottom="10" width="100" label="About"/>
+		
+		<mx:Text id="welcomeText" right="10" top="10" styleName="normalText" selectable="false"/>
 	</mx:Canvas>
+	
 </mx:VBox>

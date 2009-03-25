@@ -17,19 +17,19 @@ package com.origo
 		 * Unique properties
 		 */
 		[Bindable]
-		private var properties:Array;
+		public var properties:XML;
 		
 		/**
 		 * Relationships
 		 */
 		[Bindable]
-		private var relationships:Array;
+		public var relationships:XML;
 		
 		/**
 		 * External profiles
 		 */
 		[Bindable]
-		private var profiles:Array;
+		public var profiles:XML;
 		
 		public function ProfileStore()
 		{
@@ -37,7 +37,7 @@ package com.origo
 				throw new Error("ProfileStore can only be accessed through ProfileStore.getInstance()");
 		}
 		
-		public static function getInstance():ApiConnector 
+		public static function getInstance():ProfileStore 
 		{
 			return instance;
 		}

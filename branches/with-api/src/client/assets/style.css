@@ -16,9 +16,11 @@ Application {
 	background-repeat:repeat;
 	border-skin:ClassReference("com.degrafa.skins.CSSSkin");
 }
-
 .box {
 	border-skin:ClassReference("com.origo.skins.BoxSkin");
+}
+.lightBox {
+	border-skin:ClassReference("com.origo.skins.LightBoxSkin");
 }
 
 .normalText,
@@ -80,6 +82,15 @@ Button {
 	font-size:12;
 	skin:ClassReference("com.origo.skins.ButtonSkin");	
 }
+Button.lightButton {
+	color:#ebebeb;
+	textRollOverColor:#ebebeb;
+	textSelectedColor:#ebebeb;
+	font-family:LucidaSansDemibold;
+	padding-top:4;
+	font-size:12;
+	skin:ClassReference("com.origo.skins.LightButtonSkin");	
+}
 LinkButton {
 	color:#1d66ba;
 	textRollOverColor:#ebebeb;
@@ -97,10 +108,6 @@ ProgressBar {
 	border-color:#202020;
 	track-height:6;
 }
-
-/**
- * Header
- */
 
 /**
  * Dashboard
@@ -121,4 +128,8 @@ GridRow.dashboardHeadline {
 	border-sides:bottom;
 	border-style:solid;
 	border-width:1;
+}
+Image.userimage {
+	brokenImageSkin:Embed("../assets/avatar.png");	
+	brokenImageBorderSkin:ClassReference(null);
 }

@@ -12,10 +12,12 @@
 			import mx.core.Application;
 			
 			private var api:ApiConnector;
+			private var store:ProfileStore;
 			
 			private function init():void
 			{
 				api = ApiConnector.getInstance();
+				store = ProfileStore.getInstance();
 				
 				usernameValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
 					username.styleName = "error";
@@ -79,6 +81,11 @@
 			{
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getPropertiesSuccess);
 				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, getRelationshipsSuccess);
+				
+				// save properties and identifier into profile store
+				var result:XML = event.data as XML;
+				store.id = result.profile[0].@id;
+				store.properties = result.profile[0];		
 
 				progressBar.label = "Loading relationships...";
 				api.editorRelationshipsGet();
@@ -88,7 +95,11 @@
 			{
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getRelationshipsSuccess);
 				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, getProfilesSuccess);
-;
+
+				// save relationships into profile store
+				var result:XML = event.data as XML;
+				store.relationships = result;
+
 				progressBar.label = "Loading profiles...";
 				api.editorProfilesGet();
 			}
@@ -97,6 +108,10 @@
 			{
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getProfilesSuccess);
 				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+
+				// save external profiles into profile store
+				var result:XML = event.data as XML;
+				store.profiles = result;
 
 				Application.application.currentState = "dashboard";
 			}

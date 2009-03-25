@@ -31,15 +31,19 @@
             <degrafa:GradientStop ratio="0.8" color="#ffffff"/>
         </degrafa:LinearGradientFill>
     </degrafa:fills>
+        
+	<degrafa:strokes>
+    	<degrafa:SolidStroke id="selectedStroke" color="#1d66ba" weight="2"/>
+    </degrafa:strokes>
 
     <degrafa:geometry>
         <degrafa:RoundedRectangle state="upSkin" fill="{upFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
         <degrafa:RoundedRectangle state="overSkin" fill="{overFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
         <degrafa:RoundedRectangle state="downSkin" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
         
-        <degrafa:RoundedRectangle state="selectedUpSkin" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
-        <degrafa:RoundedRectangle state="selectedOverSkin" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
-        <degrafa:RoundedRectangle state="selectedDownSkin" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
+        <degrafa:RoundedRectangle state="selectedUpSkin" stroke="{selectedStroke}" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
+        <degrafa:RoundedRectangle state="selectedOverSkin" stroke="{selectedStroke}" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
+        <degrafa:RoundedRectangle state="selectedDownSkin" stroke="{selectedStroke}" fill="{downFill}" width="{awidth}" height="{aheight}" cornerRadius="3"/>
     </degrafa:geometry>
 
 	<degrafa:filters>
