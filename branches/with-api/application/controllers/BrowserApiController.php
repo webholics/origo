@@ -20,7 +20,7 @@ class BrowserApiController extends ApiController
 	 */
 	public function cleanAction()
 	{
-		$store = $this->getProfileStore();
+		$store = $this->getBrowserStore();
 		$store->reset();
 		if($errors = $store->getErrors()) {
 			$this->forwardTripleStoreError($errors);
