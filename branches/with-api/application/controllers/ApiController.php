@@ -18,6 +18,7 @@ class ApiController extends BaseController
 		'homepage' 				=> array('http://xmlns.com/foaf/0.1/homepage',			'uri'),
 		'mbox' 					=> array('http://xmlns.com/foaf/0.1/mbox', 				'uri'),
 		'mbox_sha1sum' 			=> array('http://xmlns.com/foaf/0.1/mbox_sha1sum', 		'literal'),
+		'phone'		 			=> array('http://xmlns.com/foaf/0.1/phone', 			'uri'),
 		'img' 					=> array('http://xmlns.com/foaf/0.1/img', 				'uri'),
 		'depiction'				=> array('http://xmlns.com/foaf/0.1/depiction', 		'uri'),
 		'family_name' 			=> array('http://xmlns.com/foaf/0.1/family_name', 		'literal'),
@@ -26,6 +27,7 @@ class ApiController extends BaseController
 		'weblog' 				=> array('http://xmlns.com/foaf/0.1/weblog', 			'uri'),
 		'workinfohomepage' 		=> array('http://xmlns.com/foaf/0.1/workInfoHomepage', 	'uri'),
 		'workplacehomepage' 	=> array('http://xmlns.com/foaf/0.1/workplaceHomepage',	'uri'),
+		'schoolhomepage' 		=> array('http://xmlns.com/foaf/0.1/schoolHomepage',	'uri'),
 		'plan' 					=> array('http://xmlns.com/foaf/0.1/plan', 				'uri'),
 		'geekcode' 				=> array('http://xmlns.com/foaf/0.1/geekcode', 			'literal'),
 		'gender' 				=> array('http://xmlns.com/foaf/0.1/gender', 			'literal'),
@@ -261,6 +263,8 @@ class ApiController extends BaseController
 				// some properties need special attention
 				if($key == 'mbox')
 					$row['val'] = substr($row['val'], 7);
+				if($key == 'phone')
+					$row['val'] = substr($row['val'], 4);
 		
 				$xml .= '<property name="' . $key . '">' . $row['val'] . '</property>';
 			}

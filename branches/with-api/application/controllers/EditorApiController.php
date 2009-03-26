@@ -74,6 +74,9 @@ class EditorApiController extends ApiController
 				else if($key == 'mbox_sha1sum') {
 					$value = sha1('mailto:' . trim($value));
 				}
+				if($key == 'phone') {
+					$value = 'tel:' . trim($value);
+				}
 
 				switch($this->_properties[$key][1]) {
 					case 'uri':
