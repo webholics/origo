@@ -16,7 +16,8 @@
 		
 			private function init():void
 			{
-				Application.application.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGING, navigationStateChange);
+				Application.application.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, navigationStateChange);
+				Application.application.editor.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, navigationStateChange);
 				
 				// default fist state is dashboard
 				navigationDashboardButton.selected = true;
@@ -35,7 +36,12 @@
 			
 			private function navigationStateChange(event:StateChangeEvent):void
 			{
-				switch(event.newState) {
+				updateNavigation();
+			}
+			
+			private function updateNavigation():void
+			{
+				switch(Application.application.currentState) {
 					case "dashboard":
 						navigationDashboardButton.selected = true;
 						navigationEditorButton.selected = false;
@@ -49,6 +55,40 @@
 						navigationBrowserButton.selected = false;
 						navigationAboutButton.selected = false;
 						currentState = "editor";
+						
+						switch(Application.application.editor.currentState) {
+							case "personalinformation":
+								navigationEditorPersonalInformation.selected = true;
+								navigationEditorWebsites.selected = false;
+								navigationEditorExternalProfiles.selected = false;
+								navigationEditorRelationships.selected = false;
+								break;
+							case "websites":
+								navigationEditorPersonalInformation.selected = false;
+								navigationEditorWebsites.selected = true;
+								navigationEditorExternalProfiles.selected = false;
+								navigationEditorRelationships.selected = false;
+								break;
+							case "externalprofiles":
+								navigationEditorPersonalInformation.selected = false;
+								navigationEditorWebsites.selected = false;
+								navigationEditorExternalProfiles.selected = true;
+								navigationEditorRelationships.selected = false;
+								break;
+							case "relationships":
+								navigationEditorPersonalInformation.selected = false;
+								navigationEditorWebsites.selected = false;
+								navigationEditorExternalProfiles.selected = false;
+								navigationEditorRelationships.selected = true;
+								break;
+							default:
+								navigationEditorPersonalInformation.selected = false;
+								navigationEditorWebsites.selected = false;
+								navigationEditorExternalProfiles.selected = false;
+								navigationEditorRelationships.selected = false;
+								break;
+						}
+						
 						break;
 					case "browser":
 						navigationDashboardButton.selected = false;
@@ -102,10 +142,54 @@
 				}
 			}
 			
+			private function editorPersonalInformationClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+				if(Application.application.editor.currentState != "personalinformation") {
+					Application.application.editor.currentState = "personalinformation";
+				}
+			}
+			
+			private function editorWebsitesClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+				if(Application.application.editor.currentState != "websites") {
+					Application.application.editor.currentState = "websites";
+				}
+			}
+						
+			private function editorExternalProfilesClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+				if(Application.application.editor.currentState != "externalprofiles") {
+					Application.application.editor.currentState = "externalprofiles";
+				}
+			}
+						
+			private function editorRelationshipsClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+				if(Application.application.editor.currentState != "relationships") {
+					Application.application.editor.currentState = "relationships";
+				}
+			}
+			
 			private function updateWelcome(value:Object=null):void
 			{
 				if(store.properties.property.(@name == "name").length() > 0)
 					welcomeText.text = "Welcome, " + store.properties.property.(@name == "name")[0];
+				else if(store.properties.property.(@name == "givenname").length() > 0)
+					welcomeText.text = "Welcome, " + store.properties.property.(@name == "givenname")[0];
+				else if(store.properties.property.(@name == "nick").length() > 0)
+					welcomeText.text = "Welcome, " + store.properties.property.(@name == "nick")[0];
 				else
 					welcomeText.text = "Welcome, " + store.id;
 			}
@@ -117,9 +201,26 @@
 			<mx:AddChild position="lastChild">
 				<mx:Canvas id="navigationEditor">
 					<mx:HBox left="190" right="10" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" styleName="lightBox">
-						<mx:Button id="navigationEditorPersonalInformation" click="editorClick()" width="180" label="Personal Information" styleName="lightButton"/>
-						<mx:Button id="navigationEditorExternalProfiles" click="editorClick()" width="180" label="External Profiles" styleName="lightButton"/>
-						<mx:Button id="navigationEditorRelationships" click="editorClick()" width="180" label="Relationships" styleName="lightButton"/>							
+						<mx:Button id="navigationEditorPersonalInformation" 
+							click="editorPersonalInformationClick()" 
+							width="150" 
+							label="Personal Information" 
+							styleName="lightButton"/>
+						<mx:Button id="navigationEditorWebsites" 
+							click="editorWebsitesClick()" 
+							width="150" 
+							label="Websites / Accounts" 
+							styleName="lightButton"/>
+						<mx:Button id="navigationEditorExternalProfiles" 
+							click="editorExternalProfilesClick()" 
+							width="150" 
+							label="External Profiles" 
+							styleName="lightButton"/>
+						<mx:Button id="navigationEditorRelationships" 
+							click="editorRelationshipsClick()" 
+							width="150" 
+							label="Relationships" 
+							styleName="lightButton"/>							
 					</mx:HBox>
 				</mx:Canvas>
 			</mx:AddChild>			

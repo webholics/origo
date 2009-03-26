@@ -86,7 +86,8 @@ Button.lightButton {
 	color:#ebebeb;
 	textRollOverColor:#ebebeb;
 	textSelectedColor:#ebebeb;
-	font-family:LucidaSansDemibold;
+	font-family:LucidaSans;
+	font-weight:normal;
 	padding-top:4;
 	font-size:12;
 	skin:ClassReference("com.origo.skins.LightButtonSkin");	
@@ -107,6 +108,10 @@ ProgressBar {
 	bar-color:#1d66ba;
 	border-color:#202020;
 	track-height:6;
+}
+HRule {
+	stroke-width:1;
+	stroke-color:#373737;
 }
 
 /**

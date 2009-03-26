@@ -12,12 +12,19 @@
 	<mx:Script>		
 		<![CDATA[
 			import com.origo.*;
+			
+			// the editor
+			[Bindable]
+			public var editor:Editor;
 
 			private function init():void
 			{
 				// set api base url
 				var api:ApiConnector = ApiConnector.getInstance();
 				api.setApiUrl(parameters["api_url"]);
+				
+				// init editor
+				editor = new Editor();
 				
 				// switch to login state
 				currentState = "login";
@@ -33,16 +40,17 @@
 		</mx:State>
 		<mx:State name="dashboard">
 			<mx:AddChild>
-				<origo:Header id="header" left="10" right="10" minWidth="800"/>
+				<origo:Header id="header" left="10" right="10" minWidth="900"/>
 			</mx:AddChild>
 			<mx:AddChild>
-				<mx:Canvas id="mainContainer" left="10" right="10" top="{header.y + header.height + 10}" bottom="10" minWidth="800"  minHeight="400">
+				<mx:Canvas id="mainContainer" left="10" right="10" top="{header.y + header.height + 10}" bottom="10" minWidth="900"  minHeight="400">
 					<origo:Dashboard id="dashboard" width="100%"/>			
 				</mx:Canvas>
 			</mx:AddChild>
 		</mx:State>
 		<mx:State name="editor" basedOn="dashboard">
 			<mx:RemoveChild target="{dashboard}"/>
+			<mx:AddChild target="{editor}" relativeTo="{mainContainer}" position="lastChild"/>
 		</mx:State>
 		<mx:State name="browser" basedOn="dashboard">
 			<mx:RemoveChild target="{dashboard}"/>
@@ -61,6 +69,9 @@
 		</mx:Transition>
 		<mx:Transition fromState="*" toState="dashboard">
 			<mx:Fade target="{dashboard}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="editor">
+			<mx:Fade target="{editor}" duration="500" alphaFrom="0" alphaTo="1"/>
 		</mx:Transition>
 		<mx:Transition fromState="*" toState="about">
 			<mx:Fade target="{aboutBox}" duration="500" alphaFrom="0" alphaTo="1"/>

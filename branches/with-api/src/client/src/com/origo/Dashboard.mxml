@@ -14,9 +14,6 @@
 			
 			private var store:ProfileStore;
 			
-			[Embed(source="../assets/avatar.png")]
-            private var defaultUserimage:Class;
-			
 			private function init():void
 			{
 				store = ProfileStore.getInstance();
@@ -35,16 +32,20 @@
 				// set name
 				if(store.properties.property.(@name == "name").length() > 0)
 					dashboardName.text = store.properties.property.(@name == "name")[0];
+				else if(store.properties.property.(@name == "givenname").length() > 0)
+					dashboardName.text = store.properties.property.(@name == "givenname")[0];
+				else if(store.properties.property.(@name == "nick").length() > 0)
+					dashboardName.text = store.properties.property.(@name == "nick")[0];
 				else
 					dashboardName.text = store.id;
 					
 				// set userimage
 				if(store.properties.property.(@name == "img").length() > 0)
 					dashboardImage.source = store.properties.property.(@name == "img")[0];
-				else if(store.properties.(@name == "depiction"))
+				else if(store.properties.property.(@name == "depiction") > 0)
 					dashboardImage.source = store.properties.property.(@name == "depiction")[0];
 				else
-					dashboardImage.source = defaultUserimage;
+					dashboardImage.source = "@Embed('../assets/avatar.png')";
 					
 				// set statistics
 				var numPersonalProperties:int = store.properties.property.length();
@@ -131,7 +132,11 @@
 		scaleContent="true" 
 		maintainAspectRatio="true" 
 		styleName="userimage"
-		horizontalAlign="center" verticalAlign="middle"/>
+		horizontalAlign="center" verticalAlign="middle">
+		<mx:filters>
+			<mx:DropShadowFilter alpha="0.3" angle="45" distance="3" blurX="5" blurY="5"/>
+		</mx:filters>
+	</mx:Image>
 		
 	<mx:Text id="dashboardName" styleName="dashboardTextBig"/>
 	<mx:Tile id="dashboardTile" verticalGap="20" horizontalGap="20">

@@ -112,6 +112,36 @@ package com.origo
 		{
 			sendRequest(API_EDITOR_GET);
 		}	
+		
+		/**
+		 * Update properties of the user.
+		 * 
+		 * @param Array properties An assoziative array with key(string)-value(string) pairs.
+		 */
+		public function editorUpdate(properties:Array):void
+		{
+			var variables:URLVariables = new URLVariables();
+			for(var key:String in properties) {
+				variables[key] = properties[key];
+			}
+			
+			sendRequest(API_EDITOR_UPDATE, variables);
+		}
+		
+		/**
+		 * Delete properties of the user.
+		 * 
+		 * @param Array properties An array with the properties to delete as string values.
+		 */
+		public function editorDelete(properties:Array):void
+		{
+			var variables:URLVariables = new URLVariables();
+			for each(var p:String in properties) {
+				variables[p] = "";
+			}
+			
+			sendRequest(API_EDITOR_DELETE, variables);
+		}
 			
 		/**
 		 * Get relationships of the user.
