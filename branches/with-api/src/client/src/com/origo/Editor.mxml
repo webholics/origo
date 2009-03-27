@@ -17,7 +17,9 @@
 			</mx:AddChild>
 		</mx:State>
 		<mx:State name="externalprofiles">
-
+			<mx:AddChild>
+				<editor:ExternalProfiles id="externalProfiles"/>
+			</mx:AddChild>
 		</mx:State>
 		<mx:State name="relationships">
 
@@ -30,6 +32,9 @@
 		</mx:Transition>
 		<mx:Transition fromState="*" toState="websites">
 			<mx:Fade target="{websites}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="externalprofiles">
+			<mx:Fade target="{externalProfiles}" duration="500" alphaFrom="0" alphaTo="1"/>
 		</mx:Transition>
 	</mx:transitions>
 	

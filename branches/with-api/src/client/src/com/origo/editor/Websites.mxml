@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
-	xmlns:mc="nz.co.codec.flex.multicolumnform.*"
 	horizontalCenter="0" verticalCenter="0"
 	defaultButton="{submitButton}"
 	creationComplete="init()">
@@ -194,12 +193,12 @@
 		<mx:State name="save">
 			<mx:RemoveChild target="{websitesForm}"/>
 			<mx:AddChild>
-				<mx:Box 
+				<mx:Box id="progressBar"
 					paddingBottom="10" paddingTop="10" 
 					paddingLeft="10" paddingRight="10"
 					horizontalCenter="0" verticalCenter="0"
 					styleName="box">
-					<mx:ProgressBar id="progressBar" 
+					<mx:ProgressBar 
 						label="Saving websites and accounts..." 
 						width="300"
 						indeterminate="true"/>

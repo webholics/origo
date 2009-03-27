@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
-	xmlns:mc="nz.co.codec.flex.multicolumnform.*"
 	horizontalCenter="0" verticalCenter="0"
 	defaultButton="{submitButton}"
 	creationComplete="init()">

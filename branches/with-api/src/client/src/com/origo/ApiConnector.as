@@ -157,6 +157,38 @@ package com.origo
 		public function editorProfilesGet():void
 		{
 			sendRequest(API_EDITOR_PROFILES_GET);
+		}	
+			
+		/**
+		 * Update external profile of the user.
+		 * 
+		 * @param String sameas
+		 * @param String seealso
+		 * @param String label
+		 */
+		public function editorProfilesUpdate(sameas:String, seealso:String, label:String=null):void
+		{
+			var variables:URLVariables = new URLVariables();
+			variables.sameas = sameas;
+			variables.seealso = seealso;
+			
+			if(label != null && label != "")
+				variables.label = label;
+			
+			sendRequest(API_EDITOR_PROFILES_UPDATE, variables);
+		}
+		
+		/**
+		 * Delete external profile of the user.
+		 * 
+		 * @param string sameas
+		 */
+		public function editorProfilesDelete(sameas:String):void
+		{
+			var variables:URLVariables = new URLVariables();
+			variables.sameas = sameas;
+			
+			sendRequest(API_EDITOR_PROFILES_DELETE, variables);
 		}
 			
 		/**

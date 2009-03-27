@@ -134,7 +134,7 @@
 		<mx:State name="error">
 			<mx:SetProperty target="{this}" name="height" value="430"/>
 			<mx:AddChild relativeTo="{loginFormHeading}" position="after">
-				<mx:Text id="loginFormErrorText" styleName="errorText"/>
+				<mx:Text id="loginFormErrorText" styleName="errorText" width="300"/>
 			</mx:AddChild>
 		</mx:State>
 		<mx:State name="authenticate">

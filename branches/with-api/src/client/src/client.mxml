@@ -12,6 +12,7 @@
 	<mx:Script>		
 		<![CDATA[
 			import com.origo.*;
+			import mx.controls.Alert;
 			
 			// the editor
 			[Bindable]
@@ -28,6 +29,9 @@
 				
 				// switch to login state
 				currentState = "login";
+				
+				// set global alert button width
+				Alert.buttonWidth = 100;
    			}
 		]]>
 	</mx:Script>
