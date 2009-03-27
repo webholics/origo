@@ -290,6 +290,12 @@
 				
 				currentState = "";
 			}
+			
+			private function dataGridKeyDown(event:KeyboardEvent):void
+			{
+    			if(event.keyCode == Keyboard.DELETE)
+    				deleteProfile();
+			}
 		]]>
 	</mx:Script>
 	
@@ -430,7 +436,10 @@
 			left="0" right="0" 
 			top="0" bottom="40" 
 			editable="false" 
-			dataProvider="{profiles}">
+			dataProvider="{profiles}"
+			keyDown="dataGridKeyDown(event)"
+			doubleClick="gotoUpdateForm()"
+			doubleClickEnabled="true">
 			<mx:columns>
 				<mx:DataGridColumn headerText="Label" dataField="label"/>
 				<mx:DataGridColumn headerText="Personal Profile URL" dataField="sameas"/>
