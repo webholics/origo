@@ -392,6 +392,8 @@ class ApiController extends BaseController
 					$store->query($query);
 				}
 			}
+			else
+				$store->errors = array();
 
 			// call inferencing script
 			$this->inference($uri);

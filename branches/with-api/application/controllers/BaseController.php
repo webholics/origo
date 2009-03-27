@@ -223,6 +223,10 @@ class BaseController extends Zend_Controller_Action
 				foreach($default_vocabs as $vocab) {
 					$store->query('LOAD <' . $vocab . '>');
 				}
+
+				// ignore errors
+				if($store->getErrors())
+					$store->errors = array();
 			}
 
 			self::$_browserStore = $store;
