@@ -22,7 +22,9 @@
 			</mx:AddChild>
 		</mx:State>
 		<mx:State name="relationships">
-
+			<mx:AddChild>
+				<editor:Relationships id="relationships"/>
+			</mx:AddChild>
 		</mx:State>
 	</mx:states>
 	
@@ -35,6 +37,9 @@
 		</mx:Transition>
 		<mx:Transition fromState="*" toState="externalprofiles">
 			<mx:Fade target="{externalProfiles}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="relationships">
+			<mx:Fade target="{relationships}" duration="500" alphaFrom="0" alphaTo="1"/>
 		</mx:Transition>
 	</mx:transitions>
 	

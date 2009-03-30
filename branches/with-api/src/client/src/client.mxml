@@ -12,6 +12,7 @@
 	<mx:Script>		
 		<![CDATA[
 			import com.origo.*;
+			import com.origo.editor.*;
 			import mx.controls.Alert;
 			
 			// the editor

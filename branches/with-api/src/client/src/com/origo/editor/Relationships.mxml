@@ -6,6 +6,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import mx.utils.ObjectProxy;
 			import mx.events.ValidationResultEvent;
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
@@ -14,41 +15,21 @@
 			import com.origo.*;
 			
 			private var api:ApiConnector;
-			private var store:ProfileStore;
-			
-			[Bindable] private var profiles:ArrayCollection = new ArrayCollection(); 
+			[Bindable] private var store:ProfileStore;
+			[Bindable] private var relTypes:ArrayCollection;
 			
 			private function init():void
 			{				
 				api = ApiConnector.getInstance();
 				store = ProfileStore.getInstance();
-				
-				updateProfilesTable();
 			}
-			
 			private function initAdd():void
 			{
-				addSameasValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
-					addSameas.styleName = "error";
+				addToValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
+					addTo.styleName = "error";
 				});
-				addSameasValidator.addEventListener(ValidationResultEvent.VALID, function():void {
-					addSameas.styleName = "";
-				});
-				addSeealsoValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
-					addSeealso.styleName = "error";
-				});
-				addSeealsoValidator.addEventListener(ValidationResultEvent.VALID, function():void {
-					addSeealso.styleName = "";
-				});
-			}
-			
-			private function initUpdate():void
-			{
-				updateSeealsoValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
-					updateSeealso.styleName = "error";
-				});
-				updateSeealsoValidator.addEventListener(ValidationResultEvent.VALID, function():void {
-					updateSeealso.styleName = "";
+				addToValidator.addEventListener(ValidationResultEvent.VALID, function():void {
+					addTo.styleName = "";
 				});
 			}
 			
@@ -59,37 +40,32 @@
 				
 				// disable validator here because we want to set "invalid" empty fields as default
 				// but won't show invalid styled text inputs
-				addSameasValidator.enabled = false;
-				addSeealsoValidator.enabled = false;
+				addToValidator.enabled = false;
 				
-				addLabel.text = "";
-				addSameas.text = "";
-				addSeealso.text = "";
+				addTo.text = "";
 				
-				addSameasValidator.enabled = true;
-				addSeealsoValidator.enabled = true;
+				relTypes = new ArrayCollection();
+				for each(var key:String in RelationshipsHelper.types)
+					if(key == "knows")
+						relTypes.addItem({
+							key:		key,
+							label:		RelationshipsHelper.labels[key],
+							selected:	true
+						});
+					else
+						relTypes.addItem({
+							key:		key,
+							label:		RelationshipsHelper.labels[key],
+							selected:	false
+						});
+				
+				addToValidator.enabled = true;
 			}
 			
 			private function enterUpdateState():void
 			{
 				updateFormErrorText.visible = false;
 				updateFormErrorText.includeInLayout = false;
-				updateLabel.text = "";
-				updateSameas.text = "";
-				updateSeealso.text = "";
-			}
-			
-			private function updateProfilesTable():void
-			{
-				profiles.removeAll();
-				
-				for each(var profile:Object in store.profiles.profile) {
-					profiles.addItem({
-						label: 		profile.@label,
-						sameas: 	profile.@sameas,
-						seealso: 	profile.@seealso
-					});
-				}
 			}
 			
 			private function validateAddForm():Boolean
@@ -97,33 +73,32 @@
 				var valid:Boolean = true;
 				var vEvent:ValidationResultEvent;
                 
-				vEvent = addSameasValidator.validate();
-				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
-					valid = false;
-				
-				vEvent = addSeealsoValidator.validate();
+				vEvent = addToValidator.validate();
 				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
 					valid = false;
 
 				return valid;
 			}
 			
-			private function addProfile():void
+			private function addRelationship():void
 			{
 				// trim all inputs
-				addLabel.text = InputHelper.trim(addLabel.text);
-				addSameas.text = InputHelper.trim(addSameas.text);
-				addSeealso.text = InputHelper.trim(addSeealso.text);
+				addTo.text = InputHelper.trim(addTo.text);
 				
 				// validate
 				if(!validateAddForm())
 					return;
 					
 				currentState = "addsave";
-					
+				
+				var types:Array = new Array();
+				for each(var type:Object in relTypes)
+					if(type.selected)
+						types.push(type.key);
+
 				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, addSuccess);
 				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiAddError);
-				api.editorProfilesUpdate(addSameas.text, addSeealso.text, addLabel.text);
+				api.editorRelationshipsUpdate(addTo.text, types);
 			}
 			
 			private function addSuccess(event:ApiConnectorEvent):void
@@ -131,13 +106,11 @@
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, addSuccess);
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiAddError);
 				
-				// save external profiles into profile store
+				// save relationships into profile store
 				var result:XML = event.data as XML;
-				store.profiles = result;
+				store.relationships = result;
 				
 				currentState = "";
-				
-				updateProfilesTable();
 			}
 			
 			private function apiAddError(event:ApiConnectorEvent):void
@@ -153,49 +126,55 @@
 			
 			private function gotoUpdateForm():void
 			{
-				var selected:Object = profilesGrid.selectedItem;
+				var selected:Object = relationshipsList.selectedItem as XML;
 				
 				if(selected == null) {
-					var alert:Alert = Alert.show("Please select a profile you want to edit first.", "No profile selected");
-					alert.width = 300;
+					var alert:Alert = Alert.show("Please select a relationship you want to edit first.", "No relationship selected");
+					alert.width = 350;
 					alert.height = 120;
 					return;
 				}
 				
+				var rels:Array = selected.@type.split(",");
+				relTypes = new ArrayCollection();
+				for each(var key:String in RelationshipsHelper.types)
+					if(key == "knows")
+						relTypes.addItem({
+							key:		key,
+							label:		RelationshipsHelper.labels[key],
+							selected:	true
+						});
+					else {
+						var found:Boolean = false;
+						for each(var rel:String in rels)
+							if(rel == key) {
+								found = true;
+								break;
+							}
+							
+						relTypes.addItem({
+							key:		key,
+							label:		RelationshipsHelper.labels[key],
+							selected:	found
+						});
+					}
+				
 				currentState = "update";
-				
-				updateLabel.text = selected.label;
-				updateSeealso.text = selected.seealso;
-				updateSameas.text = selected.sameas;
-			}
-						
-			private function validateUpdateForm():Boolean
-			{               
-				var valid:Boolean = true;
-				var vEvent:ValidationResultEvent;
-				
-				vEvent = updateSeealsoValidator.validate();
-				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
-					valid = false;
-
-				return valid;
+				updateTo.text = selected.profile.@id;
 			}
 			
-			private function updateProfile():void
+			private function updateRelationship():void
 			{
-				// trim all inputs
-				updateLabel.text = InputHelper.trim(updateLabel.text);
-				updateSeealso.text = InputHelper.trim(updateSeealso.text);
-				
-				// validate
-				if(!validateUpdateForm())
-					return;
-					
 				currentState = "updatesave";
 					
+				var types:Array = new Array();
+				for each(var type:Object in relTypes)
+					if(type.selected)
+						types.push(type.key);
+
 				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
 				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiUpdateError);
-				api.editorProfilesUpdate(updateSameas.text, updateSeealso.text, updateLabel.text);
+				api.editorRelationshipsUpdate(updateTo.text, types);
 			}
 			
 			private function updateSuccess(event:ApiConnectorEvent):void
@@ -203,13 +182,11 @@
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiUpdateError);
 				
-				// save external profiles into profile store
+				// save relationships into profile store
 				var result:XML = event.data as XML;
-				store.profiles = result;
+				store.relationships = result;
 				
 				currentState = "";
-				
-				updateProfilesTable();
 			}
 			
 			private function apiUpdateError(event:ApiConnectorEvent):void
@@ -225,45 +202,45 @@
 			
 			private function showDisabledInfo():void
 			{
-				var alert:Alert = Alert.show("You cannot change your personal profile URL.", "Can't change value");
+				var alert:Alert = Alert.show("You cannot change the personal profile URL.", "Can't change value");
 				alert.width = 300;
 				alert.height = 120;
 			}
 			
-			private function deleteProfile():void
+			private function deleteRelationship():void
 			{
-				var selected:Object = profilesGrid.selectedItem;
+				var selected:Object = relationshipsList.selectedItem;
 				
 				if(selected == null) {
-					var alert:Alert = Alert.show("Please select a profile you want to delete first.", "No profile selected");
-					alert.width = 300;
+					var alert:Alert = Alert.show("Please select a relationship you want to delete first.", "No relationship selected");
+					alert.width = 350;
 					alert.height = 120;
 					return;
 				}
 
 				var alertDelete:Alert = Alert.show(
-					"Are you sure you want to delete the selected profile?", 
-					"Delete profile", 
+					"Are you sure you want to delete the selected relationship?", 
+					"Delete relationship", 
 					Alert.OK | Alert.CANCEL, 
 					null, 
 					alertDeleteListener, 
 					null, 
 					Alert.OK);
-				alertDelete.width = 350;
+				alertDelete.width = 400;
 				alertDelete.height = 120;
 			}
 			
 			private function alertDeleteListener(eventObj:CloseEvent):void {
 				// Check to see if the OK button was pressed.
 				if(eventObj.detail == Alert.OK) {
-					var selected:Object = profilesGrid.selectedItem;
+					var selected:XML = relationshipsList.selectedItem as XML;
 					
 					if(selected != null) {
 						currentState = "delete";
 					
 						api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
 						api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiDeleteError);
-						api.editorProfilesDelete(selected.sameas);
+						api.editorRelationshipsDelete(selected.profile.@id);
 					}
 				}
 			}
@@ -273,13 +250,11 @@
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiDeleteError);
 				
-				// save external profiles into profile store
+				// save relationships into profile store
 				var result:XML = event.data as XML;
-				store.profiles = result;
+				store.relationships = result;
 				
 				currentState = "";
-				
-				updateProfilesTable();
 			}
 			
 			private function apiDeleteError(event:ApiConnectorEvent):void
@@ -290,10 +265,10 @@
 				currentState = "";
 			}
 			
-			private function dataGridKeyDown(event:KeyboardEvent):void
+			private function listKeyDown(event:KeyboardEvent):void
 			{
     			if(event.keyCode == Keyboard.DELETE)
-    				deleteProfile();
+    				deleteRelationship();
 			}
 		]]>
 	</mx:Script>
@@ -301,32 +276,30 @@
 	<mx:states>
 		<mx:State name="add" enterState="enterAddState()">
 			<mx:AddChild>
-				<mx:StringValidator id="addSameasValidator" source="{addSameas}" property="text" required="true"/>
-			</mx:AddChild>
-			<mx:AddChild>
-				<mx:StringValidator id="addSeealsoValidator" source="{addSeealso}" property="text" required="true"/>
+				<mx:StringValidator id="addToValidator" source="{addTo}" property="text" required="true"/>
 			</mx:AddChild>
 			<mx:AddChild>
 				<mx:Form id="addForm" 
 					horizontalCenter="0" verticalCenter="0"
 					defaultButton="{addSubmitButton}" 
 					creationComplete="initAdd()">	
-					<mx:FormHeading id="addFormHeading" label="Add external profile"/>
+					<mx:FormHeading id="addFormHeading" label="Add relationship"/>
 					<mx:Text id="addFormErrorText" styleName="errorText" visible="false" includeInLayout="false"/>
-					<mx:FormItem label="Label">
-						<mx:TextInput id="addLabel" width="200"/>
-					</mx:FormItem>
 					<mx:FormItem label="Personal Profile URL" required="true">
-						<mx:TextInput id="addSameas" width="200"/>
+						<mx:TextInput id="addTo" width="250"/>
 					</mx:FormItem>
-					<mx:FormItem label="Profile FOAF document" required="true">
-						<mx:TextInput id="addSeealso" width="200"/>
-					</mx:FormItem>
+					<mx:FormItem label="Relationship types (me -> url)">
+						<mx:List id="addRelationshipsInput" 
+							width="250" height="300" 
+							dataProvider="{relTypes}" 
+							itemRenderer="com.origo.editor.RelationshipTypesItemRenderer" 
+							selectable="false"/>
+					</mx:FormItem> 
 					<mx:Spacer height="10" width="100%"/>
 					<mx:HRule width="100%"/>
 					<mx:HBox horizontalGap="10" horizontalAlign="right" width="100%">
 						<mx:Button label="Cancel" id="addCancelButton" width="100" click="currentState=''"/>	
-						<mx:Button label="Save" id="addSubmitButton" width="100" click="addProfile()"/>
+						<mx:Button label="Save" id="addSubmitButton" width="100" click="addRelationship()"/>
 					</mx:HBox>
 				</mx:Form>	
 			</mx:AddChild>
@@ -340,7 +313,7 @@
 					horizontalCenter="0" verticalCenter="0"
 					styleName="box">
 					<mx:ProgressBar 
-						label="Adding external profile..." 
+						label="Adding relationship..." 
 						width="300"
 						indeterminate="true"/>
 				</mx:Box>
@@ -349,29 +322,26 @@
 		</mx:State>
 		<mx:State name="update" enterState="enterUpdateState()">
 			<mx:AddChild>
-				<mx:StringValidator id="updateSeealsoValidator" source="{updateSeealso}" property="text" required="true"/>
-			</mx:AddChild>
-			<mx:AddChild>
 				<mx:Form id="updateForm" 
 					horizontalCenter="0" verticalCenter="0"
-					defaultButton="{updateSubmitButton}"
-					creationComplete="initUpdate()">	
-					<mx:FormHeading id="updateFormHeading" label="Edit external profile"/>
+					defaultButton="{updateSubmitButton}">	
+					<mx:FormHeading id="updateFormHeading" label="Edit relationship"/>
 					<mx:Text id="updateFormErrorText" styleName="errorText" visible="false" includeInLayout="false"/>
-					<mx:FormItem label="Label">
-						<mx:TextInput id="updateLabel" width="200"/>
-					</mx:FormItem>
 					<mx:FormItem label="Personal Profile URL" required="true">
-						<mx:TextInput id="updateSameas" width="200" editable="false" styleName="disabled" click="showDisabledInfo()" focusEnabled="false"/>
+						<mx:TextInput id="updateTo" width="250" editable="false" styleName="disabled" click="showDisabledInfo()" focusEnabled="false"/>
 					</mx:FormItem>
-					<mx:FormItem label="Profile FOAF document" required="true">
-						<mx:TextInput id="updateSeealso" width="200"/>
-					</mx:FormItem>
+					<mx:FormItem label="Relationship types (me -> url)">
+						<mx:List id="updateRelationshipsInput" 
+							width="250" height="300" 
+							dataProvider="{relTypes}" 
+							itemRenderer="com.origo.editor.RelationshipTypesItemRenderer" 
+							selectable="false"/>
+					</mx:FormItem> 
 					<mx:Spacer height="10" width="100%"/>
 					<mx:HRule width="100%"/>
 					<mx:HBox horizontalGap="10" horizontalAlign="right" width="100%">
 						<mx:Button label="Cancel" id="updateCancelButton" width="100" click="currentState=''"/>	
-						<mx:Button label="Save" id="updateSubmitButton" width="100" click="updateProfile()"/>
+						<mx:Button label="Save" id="updateSubmitButton" width="100" click="updateRelationship()"/>
 					</mx:HBox>
 				</mx:Form>	
 			</mx:AddChild>
@@ -385,7 +355,7 @@
 					horizontalCenter="0" verticalCenter="0"
 					styleName="box">
 					<mx:ProgressBar 
-						label="Updating external profile..." 
+						label="Updating relationship..." 
 						width="300"
 						indeterminate="true"/>
 				</mx:Box>
@@ -400,7 +370,7 @@
 					horizontalCenter="0" verticalCenter="0"
 					styleName="box">
 					<mx:ProgressBar 
-						label="Deleting external profile..." 
+						label="Deleting relationship..." 
 						width="300"
 						indeterminate="true"/>
 				</mx:Box>
@@ -431,29 +401,23 @@
 	</mx:transitions>
 
 	<mx:Canvas id="tableCanvas" left="0" right="0" top="0" bottom="0">
-		<mx:DataGrid id="profilesGrid" 
+		<mx:TileList id="relationshipsList"
 			left="0" right="0" 
 			top="0" bottom="40" 
-			editable="false" 
-			dataProvider="{profiles}"
-			keyDown="dataGridKeyDown(event)"
+			dataProvider="{store.relationships.relationship}"
+			itemRenderer="com.origo.editor.RelationshipsItemRenderer"
+			keyDown="listKeyDown(event)"
 			doubleClick="gotoUpdateForm()"
-			doubleClickEnabled="true">
-			<mx:columns>
-				<mx:DataGridColumn headerText="Label" dataField="label"/>
-				<mx:DataGridColumn headerText="Personal Profile URL" dataField="sameas"/>
-				<mx:DataGridColumn headerText="Profile FOAF document" dataField="seealso"/>
-			</mx:columns>
-		</mx:DataGrid>
+			doubleClickEnabled="true"/>
 		
-		<mx:Label text="{(profiles.length != 1) ? profiles.length + ' external profiles' : profiles.length + ' external profile'}" 
+		<mx:Label text="{(store.relationships.relationship.length() != 1) ? store.relationships.relationship.length() + ' relationships' : store.relationships.relationship.length() + ' relationship'}" 
 			left="0" bottom="0" 
 			styleName="normalText"/>
 		
 		<mx:HBox right="0" bottom="0">
-			<mx:Button label="Delete selected" click="deleteProfile()"/>
+			<mx:Button label="Delete selected" click="deleteRelationship()"/>
 			<mx:Button label="Edit selected" click="gotoUpdateForm()"/>
-			<mx:Button label="Add profile" click="currentState='add'"/>
+			<mx:Button label="Add relationship" click="currentState='add'"/>
 		</mx:HBox>
 	</mx:Canvas>
 	

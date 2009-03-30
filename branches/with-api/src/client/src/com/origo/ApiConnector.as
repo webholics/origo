@@ -149,6 +149,35 @@ package com.origo
 		public function editorRelationshipsGet():void
 		{
 			sendRequest(API_EDITOR_RELATIONSHIPS_GET);
+		}	
+			
+		/**
+		 * Update a relationship of the user.
+		 * 
+		 * @param Array types An array with the relationship types as values.
+		 */
+		public function editorRelationshipsUpdate(uri:String, types:Array):void
+		{
+			var variables:URLVariables = new URLVariables();
+			variables.to = uri;
+			for each(var type:String in types) {
+				variables[type] = "";
+			}
+			
+			sendRequest(API_EDITOR_RELATIONSHIPS_UPDATE, variables);
+		}
+		
+		/**
+		 * Delete a relationship of the user.
+		 * 
+		 * @param String uri The personal URI of the relationship to delete.
+		 */
+		public function editorRelationshipsDelete(uri:String):void
+		{
+			var variables:URLVariables = new URLVariables();
+			variables.to = uri;
+			
+			sendRequest(API_EDITOR_RELATIONSHIPS_DELETE, variables);
 		}
 				
 		/**

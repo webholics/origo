@@ -14,6 +14,9 @@
 			
 			private var store:ProfileStore;
 			
+			[Embed(source="../assets/avatar.png")]
+            public var avatarCls:Class;
+			
 			private function init():void
 			{
 				store = ProfileStore.getInstance();
@@ -45,7 +48,7 @@
 				else if(store.properties.property.(@name == "depiction") > 0)
 					dashboardImage.source = store.properties.property.(@name == "depiction")[0];
 				else
-					dashboardImage.source = "@Embed('../assets/avatar.png')";
+					dashboardImage.source = avatarCls;
 					
 				// set statistics
 				var numPersonalProperties:int = store.properties.property.length();
@@ -139,9 +142,9 @@
 	</mx:Image>
 		
 	<mx:Text id="dashboardName" styleName="dashboardTextBig"/>
-	<mx:Tile id="dashboardTile" verticalGap="20" horizontalGap="20">
-		<mx:Grid id="personalInformationGrid">
-			<mx:GridRow width="250" styleName="dashboardHeadline">
+	<mx:HBox verticalGap="20" horizontalGap="20" horizontalAlign="center" width="100%">
+		<mx:Grid id="personalInformationGrid" minWidth="300">
+			<mx:GridRow width="100%" styleName="dashboardHeadline">
 				<mx:GridItem colSpan="2">
 					<mx:Text text="Personal Information" styleName="dashboardHeadline"/>
 				</mx:GridItem>
@@ -179,8 +182,8 @@
 				</mx:GridItem>
 			</mx:GridRow>
 		</mx:Grid>
-		<mx:Grid>
-			<mx:GridRow width="250" styleName="dashboardHeadline">
+		<mx:Grid minWidth="300">
+			<mx:GridRow width="100%" styleName="dashboardHeadline">
 				<mx:GridItem colSpan="2">
 					<mx:Text text="Statistics" styleName="dashboardHeadline"/>
 				</mx:GridItem>
@@ -210,5 +213,5 @@
 				</mx:GridItem>
 			</mx:GridRow>
 		</mx:Grid>
-	</mx:Tile>
+	</mx:HBox>
 </mx:VBox>
