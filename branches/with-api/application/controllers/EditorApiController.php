@@ -361,7 +361,7 @@ class EditorApiController extends ApiController
 		}
 		
 		// try to load the provided profile
-		$toId = $this->loadUri($to);
+		$toId = $this->loadUri($to, false);
 		if($toId)
 			$to = $toId;
 

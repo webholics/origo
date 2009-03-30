@@ -10,6 +10,11 @@
 class ApiController extends BaseController
 {
 	/**
+	 * The maximum number of seeAlso references to load per profile.
+	 */
+	protected $_maxSeeAlso = 10;
+	 
+	/**
 	 * Only the properties in this array are allowed to be set via the api
 	 */
 	protected $_properties = array(
@@ -79,7 +84,6 @@ class ApiController extends BaseController
 		'mentorof' => 'http://purl.org/vocab/relationship/mentorOf',	
 		'neighborof' => 'http://purl.org/vocab/relationship/neighborOf',	
 		'parentof' => 'http://purl.org/vocab/relationship/parentOf',	
-		'participant' => 'http://purl.org/vocab/relationship/participant',	
 		'participantin' => 'http://purl.org/vocab/relationship/participantIn',
 		'siblingof' => 'http://purl.org/vocab/relationship/siblingOf',	
 		'spouseof' => 'http://purl.org/vocab/relationship/spouseOf',	
@@ -316,9 +320,10 @@ class ApiController extends BaseController
 	 * The methods checks if profile is already in triple store.
 	 *
 	 * @param string $uri The uri to load.
+	 * @param bool $forwardError Forward to error if true.
 	 * @return string|false Uri pointing to foaf:Person, or false if not found.
 	 */
-	protected function loadUri($uri) 
+	protected function loadUri($uri, $forwardError=true) 
 	{
 		$loaded = false;
 		$store = $this->getBrowserStore();
@@ -335,10 +340,11 @@ class ApiController extends BaseController
 			$result = $store->query($query);
 
 			if($store->getErrors() || $result['result']['t_count'] == 0) {
-				$this->_forward('error', 'api', null, array(
-					'code' => 'LoadError',
-					'message' => 'Could not find/load profile.'
-				));
+				if($forwardError)
+					$this->_forward('error', 'api', null, array(
+						'code' => 'LoadError',
+						'message' => 'Could not find/load profile.'
+					));
 				return false;
 			}
 
@@ -359,10 +365,11 @@ class ApiController extends BaseController
 			$row = $store->query($query, 'row');
 			
 			if($store->getErrors() || !$row) {
-				$this->_forward('error', 'api', null, array(
-					'code' => 'LoadError',
-					'message' => 'Could not find/load profile.'
-				));
+				if($forwardError)
+					$this->_forward('error', 'api', null, array(
+						'code' => 'LoadError',
+						'message' => 'Could not find/load profile.'
+					));
 				return false;
 			}
 
@@ -390,6 +397,8 @@ class ApiController extends BaseController
 				foreach($rows as $row) {
 					$query = 'LOAD <' . $row['seealso'] . '> INTO <' . $uri . '>';
 					$store->query($query);
+					if($store->getErrors())
+						$store->errors = array();
 				}
 			}
 			else
