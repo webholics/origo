@@ -497,6 +497,9 @@ class EditorApiController extends ApiController
 		$query = $this->_queryPrefix .
 			'SELECT ?to ?p WHERE {' .
 				'<' . $id . '> ?p ?to . ' .
+				'OPTIONAL { ?to foaf:family_name ?family_name . }' . 
+				'OPTIONAL { ?to foaf:name ?name}' .
+				'OPTIONAL { ?to foaf:nick ?nick}' .
 				'FILTER(';
 
 		$first = true;
@@ -508,6 +511,7 @@ class EditorApiController extends ApiController
 			$query .= ' ?p = <' . $rel . '> ';
 		}
 		$query .= ') }';
+		$query .= 'ORDER BY ?family_name ?name ?nick ?to';
 		$rows = $store->query($query, 'rows');
 		if($errors = $store->getErrors()) {
 			$this->forwardTripleStoreError($errors);
