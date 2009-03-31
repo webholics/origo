@@ -448,10 +448,91 @@ class ApiController extends BaseController
 					}
 					die($die);
 				}
+				else
+					$store->errors = array();
+					
 				break;
 			}
 			else if($result['result']['t_count'] == 0)
 				break;
+		}
+
+		// foaf:surname to foaf:family_name inferencing
+		// we use this as we only consider foaf:givenname and foaf:family_name inside origo
+		// and unfortunately FOAF is heavily underspecified in case of names
+		$query = $this->_queryPrefix .
+			'INSERT INTO <' . $graph . '> CONSTRUCT {' .
+				'?s foaf:family_name ?o .' .
+			'} WHERE {' .
+				'GRAPH <' . $graph . '> {' .
+					'?s foaf:surname ?o' . 
+				'}' .
+			'}';
+		$store->query($query);
+		if($errors = $store->getErrors()) {
+			if($config->misc->environment == 'development') {
+				$die = '';
+				for($i = 0; $i < count($errors); $i++) {
+					$die .= $errors[$i];
+					if($i < count($errors)-1)
+						$die .= ' ';
+				}
+				die($die);
+			}
+			else
+				$store->errors = array();
+		}
+
+		// foaf:firstName to foaf:givenname inferencing
+		// we use this as we only consider foaf:givenname and foaf:family_name inside origo
+		// and unfortunately FOAF is heavily underspecified in case of names
+		$query = $this->_queryPrefix .
+			'INSERT INTO <' . $graph . '> CONSTRUCT {' .
+				'?s foaf:givenname ?o .' .
+			'} WHERE {' .
+				'GRAPH <' . $graph . '> {' .
+					'?s foaf:firstName ?o' . 
+				'}' .
+			'}';
+		$store->query($query);
+		if($errors = $store->getErrors()) {
+			if($config->misc->environment == 'development') {
+				$die = '';
+				for($i = 0; $i < count($errors); $i++) {
+					$die .= $errors[$i];
+					if($i < count($errors)-1)
+						$die .= ' ';
+				}
+				die($die);
+			}
+			else
+				$store->errors = array();
+		}
+
+		// owl:inverseOf inferencing
+		$query = $this->_queryPrefix .
+			'INSERT INTO <' . $graph . '> CONSTRUCT {' .
+				'?o ?inv ?s .' .
+			'} WHERE {' .
+				'GRAPH <' . $graph . '> {' .
+					'?s ?prop ?o .' .
+				'}' .
+				'?prop owl:inverseOf ?inv .' .
+			'}';
+		$result = $store->query($query);
+		
+		if($errors = $store->getErrors()) {
+			if($config->misc->environment == 'development') {
+				$die = '';
+				for($i = 0; $i < count($errors); $i++) {
+					$die .= $errors[$i];
+					if($i < count($errors)-1)
+						$die .= ' ';
+				}
+				die($die);
+			}
+			else
+				$store->errors = array();
 		}
 	}
 
