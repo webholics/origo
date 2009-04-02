@@ -271,7 +271,7 @@
 			private function deleteSuccess(event:ApiConnectorEvent):void
 			{
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
-				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiDeleteError);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiDeleteError);
 				
 				// save external profiles into profile store
 				var result:XML = event.data as XML;
@@ -285,7 +285,7 @@
 			private function apiDeleteError(event:ApiConnectorEvent):void
 			{
 				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
-				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiDeleteError);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiDeleteError);
 				
 				currentState = "";
 			}
@@ -316,7 +316,7 @@
 					<mx:FormItem label="Label">
 						<mx:TextInput id="addLabel" width="200"/>
 					</mx:FormItem>
-					<mx:FormItem label="Personal Profile URL" required="true">
+					<mx:FormItem label="Personal URI" required="true">
 						<mx:TextInput id="addSameas" width="200"/>
 					</mx:FormItem>
 					<mx:FormItem label="Profile FOAF document" required="true">
@@ -361,7 +361,7 @@
 					<mx:FormItem label="Label">
 						<mx:TextInput id="updateLabel" width="200"/>
 					</mx:FormItem>
-					<mx:FormItem label="Personal Profile URL" required="true">
+					<mx:FormItem label="Personal URI" required="true">
 						<mx:TextInput id="updateSameas" width="200" editable="false" styleName="disabled" click="showDisabledInfo()" focusEnabled="false"/>
 					</mx:FormItem>
 					<mx:FormItem label="Profile FOAF document" required="true">

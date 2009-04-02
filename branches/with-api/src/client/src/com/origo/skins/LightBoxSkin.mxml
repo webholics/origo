@@ -6,12 +6,27 @@
 
             [Bindable] private var awidth : Number = 0;
             [Bindable] private var aheight : Number = 0;
+            
+            // Styles
+            [Bindable] private var _bottomLeftRadius:Number = 3;
+            [Bindable] private var _bottomRightRadius:Number = 3;
+            [Bindable] private var _topLeftRadius:Number = 3;
+            [Bindable] private var _topRightRadius:Number = 3;
 
             override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
             {
                 awidth = unscaledWidth;
                 aheight = unscaledHeight;
                 super.updateDisplayList(unscaledWidth, unscaledHeight);
+
+                if(getStyle("bottomLeftRadius") != undefined)
+                	_bottomLeftRadius = getStyle("bottomLeftRadius");
+                if(getStyle("bottomRightRadius") != undefined)
+                	_bottomRightRadius = getStyle("bottomRightRadius");
+                if(getStyle("topLeftRadius") != undefined)
+                	_topLeftRadius = getStyle("topLeftRadius");
+                if(getStyle("topRightRadius") != undefined)
+                	_topRightRadius = getStyle("topRightRadius");
             }
         ]]>
     </mx:Script>
@@ -24,8 +39,8 @@
         <degrafa:RoundedRectangleComplex 
         	fill="{background}"
         	width="{awidth}" height="{aheight}"
-        	bottomLeftRadius="3" bottomRightRadius="3" 
-        	topLeftRadius="0" topRightRadius="0"/>
+        	bottomLeftRadius="{_bottomLeftRadius}" bottomRightRadius="{_bottomRightRadius}" 
+        	topLeftRadius="{_topLeftRadius}" topRightRadius="{_topRightRadius}"/>
     </degrafa:geometry>
 
 	<degrafa:filters>

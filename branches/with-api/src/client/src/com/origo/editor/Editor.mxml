@@ -5,6 +5,17 @@
 	width="100%" height="100%"
 	currentState="personalinformation">
 	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;	
+			
+			public static function getInstance():Editor
+			{
+				return Application.application.editor;
+			}
+		]]>
+	</mx:Script>
+	
 	<mx:states>
 		<mx:State name="personalinformation">
 			<mx:AddChild>

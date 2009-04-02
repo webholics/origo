@@ -48,6 +48,11 @@ Application {
 	font-family:LucidaSans;
 	font-size:9;
 }
+.smallLightText {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:9;
+}
 
 Form {
 	font-family:LucidaSans;
@@ -106,6 +111,8 @@ Button.normalButton {
 	padding-top:4;
 	font-size:12;
 	skin:ClassReference("com.origo.skins.ButtonSkin");	
+	disabledColor:#202020;
+	disabledSkin:ClassReference("com.origo.skins.DisabledButtonSkin");
 }
 Button.lightButton {
 	color:#ebebeb;
@@ -212,6 +219,16 @@ VScrollBar {
 }
 
 /**
+ * Header
+ */
+ 
+.lightHeaderBox {
+	topLeftRadius:0;
+	topRightRadius:0;
+	border-skin:ClassReference("com.origo.skins.LightBoxSkin");
+}
+
+/**
  * Dashboard
  */
  
@@ -233,5 +250,18 @@ GridRow.dashboardHeadline {
 }
 Image.userimage {
 	brokenImageSkin:Embed("../assets/avatar.png");	
+	brokenImageBorderSkin:ClassReference(null);
+}
+
+/**
+ * Browser
+ */
+LinkButton.normalGraphButton {
+	color:#ebebeb;
+	disabledColor:#ebebeb;
+	disabledSkin:ClassReference(null);
+}
+Image.userimagesmall {
+	brokenImageSkin:Embed("../assets/avatar_small.png");	
 	brokenImageBorderSkin:ClassReference(null);
 }

@@ -285,12 +285,12 @@
 					creationComplete="initAdd()">	
 					<mx:FormHeading id="addFormHeading" label="Add relationship"/>
 					<mx:Text id="addFormErrorText" styleName="errorText" visible="false" includeInLayout="false"/>
-					<mx:FormItem label="Personal Profile URL" required="true">
+					<mx:FormItem label="Personal URI" required="true">
 						<mx:TextInput id="addTo" width="250"/>
 					</mx:FormItem>
 					<mx:FormItem label="Relationship types (me -> url)">
 						<mx:List id="addRelationshipsInput" 
-							width="250" height="300" 
+							width="250" height="250" 
 							dataProvider="{relTypes}" 
 							itemRenderer="com.origo.editor.RelationshipTypesItemRenderer" 
 							selectable="false"/>
@@ -327,12 +327,12 @@
 					defaultButton="{updateSubmitButton}">	
 					<mx:FormHeading id="updateFormHeading" label="Edit relationship"/>
 					<mx:Text id="updateFormErrorText" styleName="errorText" visible="false" includeInLayout="false"/>
-					<mx:FormItem label="Personal Profile URL" required="true">
+					<mx:FormItem label="Personal URI" required="true">
 						<mx:TextInput id="updateTo" width="250" editable="false" styleName="disabled" click="showDisabledInfo()" focusEnabled="false"/>
 					</mx:FormItem>
 					<mx:FormItem label="Relationship types (me -> url)">
 						<mx:List id="updateRelationshipsInput" 
-							width="250" height="300" 
+							width="250" height="250" 
 							dataProvider="{relTypes}" 
 							itemRenderer="com.origo.editor.RelationshipTypesItemRenderer" 
 							selectable="false"/>

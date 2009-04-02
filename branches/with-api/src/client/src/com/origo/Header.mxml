@@ -7,6 +7,8 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.origo.editor.Editor;
+			import com.origo.browser.Browser;
 			import mx.events.StateChangeEvent;
 			import mx.core.Application;	
 			import mx.binding.utils.ChangeWatcher;
@@ -17,7 +19,9 @@
 			private function init():void
 			{
 				Application.application.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, navigationStateChange);
-				Application.application.editor.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, navigationStateChange);
+				
+				var editor:Editor = Editor.getInstance();
+				editor.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, navigationStateChange);
 				
 				// default fist state is dashboard
 				navigationDashboardButton.selected = true;
@@ -200,7 +204,7 @@
 		<mx:State name="editor">
 			<mx:AddChild position="lastChild">
 				<mx:Canvas id="navigationEditor">
-					<mx:HBox left="190" right="10" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" styleName="lightBox">
+					<mx:HBox left="190" right="10" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" styleName="lightHeaderBox">
 						<mx:Button id="navigationEditorPersonalInformation" 
 							click="editorPersonalInformationClick()" 
 							width="150" 
@@ -225,25 +229,12 @@
 				</mx:Canvas>
 			</mx:AddChild>			
 		</mx:State>
-		<mx:State name="browser">
-			<mx:AddChild position="lastChild">
-				<mx:Canvas id="navigationBrowser">
-					<mx:HBox left="190" right="10" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" styleName="lightBox">
-						<mx:Button id="navigationEditorPersonalInformation2" click="editorClick()" width="150" label="Personal Information" styleName="lightButton"/>
-						<mx:Button id="navigationEditorExternalProfiles2" click="editorClick()" width="150" label="External Profiles" styleName="lightButton"/>
-						<mx:Button id="navigationEditorRelationships2" click="editorClick()" width="150" label="Relationships" styleName="lightButton"/>							
-					</mx:HBox>
-				</mx:Canvas>
-			</mx:AddChild>			
-		</mx:State>
+		<mx:State name="browser"/>
 	</mx:states>
 	
 	<mx:transitions>
 		<mx:Transition fromState="*" toState="editor">
 			<mx:WipeDown target="{navigationEditor}" duration="500"/>
-		</mx:Transition>
-		<mx:Transition fromState="*" toState="browser">
-			<mx:WipeDown target="{navigationBrowser}" duration="500"/>
 		</mx:Transition>
 	</mx:transitions>
 

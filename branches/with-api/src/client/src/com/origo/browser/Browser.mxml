@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+	xmlns:sg="com.adobe.flex.extras.controls.springgraph.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:browser="com.origo.browser.*"
+	width="100%" height="100%"
+	creationComplete="init()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.flex.extras.controls.springgraph.Item;
+			import mx.events.ValidationResultEvent;
+			import com.adobe.flex.extras.controls.springgraph.Graph;
+			import com.origo.*;
+			import mx.core.Application;	
+			import mx.controls.Alert;
+			
+			private var store:ProfileStore;	
+			private var api:ApiConnector;
+			
+			/**
+			 * A queue where profiles that has to be loaded are stored.
+			 */
+			private var profileQueue:Array;
+			
+			/**
+			 * The graph
+			 */
+			[Bindable] private var graph:Graph;
+			
+			public static function getInstance():Browser
+			{
+				return Application.application.browser;
+			}
+			
+			private function init():void
+			{
+				profileQueue = new Array();
+				graph = new Graph();
+				
+				store = ProfileStore.getInstance();
+				api = ApiConnector.getInstance();
+				
+				browserTextInputValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
+					browserTextInput.styleName = "error";
+				});
+				browserTextInputValidator.addEventListener(ValidationResultEvent.VALID, function():void {
+					browserTextInput.styleName = "";
+				});
+				
+				// go to home page
+				home();
+			}
+			
+			private function validateBrowserForm():Boolean
+			{               
+				var valid:Boolean = true;
+				var vEvent:ValidationResultEvent;
+                
+				vEvent = browserTextInputValidator.validate();
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
+					valid = false;
+
+				return valid;
+			}
+			
+			/**
+			 * Load and show a Personal URI.
+			 * This method resets the whole graph.
+			 * 
+			 * @param String uri
+			 */
+			public function browse(uri:String):void
+			{
+				browserTextInput.text = uri;
+				
+				// first abort other processes
+				abort();
+				
+				loadProfile(uri);
+			}
+			
+			/**
+			 * Load a profile of a person
+			 */
+			private function loadProfile(uri:String):void
+			{
+				// check if data was already loaded
+				var item:BrowserItem = graph.find(uri) as BrowserItem;
+				if(item && item.loaded) {
+					loadRelationships(uri);
+					return;
+				}
+				
+				progressBox.visible = true;
+				
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileSuccess);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				api.browserProfile(uri);
+			}
+			
+			private function loadProfileSuccess(event:ApiConnectorEvent):void
+			{
+				progressBox.visible = false;
+				
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				
+				var result:XML = event.data as XML;
+				var id:String = result.profile[0].@id;
+				
+				browserTextInput.text = id;
+				
+				var item:BrowserItem = new BrowserItem(id);
+				item.data = result.profile[0];
+				item.loaded = true;
+				graph.add(item);
+				
+				loadRelationships(id);
+			}
+			
+			/**
+			 * Load relationships of a person
+			 */
+			private function loadRelationships(uri:String):void
+			{
+				progressBox.visible = true;
+				
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadRelationshipsSuccess);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				api.browserRelationships(uri);
+			}
+			
+			private function loadRelationshipsSuccess(event:ApiConnectorEvent):void
+			{
+				progressBox.visible = false;
+				
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadRelationshipsSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				
+				// clear old profile queue
+				profileQueue.length = 0;
+				
+				var result:XML = event.data as XML;
+				
+				var from:Item = null;
+				if(result.relationship && result.relationship[0])
+					from = graph.find(result.relationship[0].@from);
+				
+				for each(var rel:Object in result.relationship) {
+					var item:BrowserItem = graph.find(rel.profile[0].@id) as BrowserItem;
+					if(item == null) {
+						item = new BrowserItem(rel.profile[0].@id);
+						item.data = rel.profile[0];
+						graph.add(item);
+					}
+					
+					if(!item.loaded)
+						profileQueue.push(item);
+					
+					if(from && !graph.linked(from, item)) {
+						graph.link(from, item);
+					}
+				}
+				
+				springgraph.currentItem = from;
+				
+				loadProfileQueue();				
+			}
+			
+			/**
+			 * Load profiles of profileQueue
+			 */
+			private function loadProfileQueue():void
+			{
+				if(profileQueue.length == 0)
+					return;
+					
+				var item:BrowserItem = profileQueue.shift();
+				if(!item.loaded) {
+					progressBox.visible = true;
+					api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileQueueSuccess);
+					api.addEventListener(ApiConnectorEvent.ERROR_EVENT, loadProfileQueueError);
+					api.browserProfile(item.id);
+				}
+				else
+					loadProfileQueue();
+			}
+			
+			private function loadProfileQueueSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileQueueSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, loadProfileQueueError);
+				
+				progressBox.visible = false;
+				
+				var result:XML = event.data as XML;
+				var item:BrowserItem = graph.find(result.profile[0].@id) as BrowserItem;
+				if(item) {
+					item.data = result.profile[0];
+					item.loaded = true;
+				}
+				
+				// check if other profiles are in queue and need to be loaded
+				loadProfileQueue();
+			}
+			
+			/**
+			 * This method catches errors while loading the profile queue.
+			 * We ignore the api error and simply load the next item.
+			 */
+			private function loadProfileQueueError(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileQueueSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				
+				progressBox.visible = false;
+				
+				// check if other profiles are in queue and need to be loaded
+				loadProfileQueue();
+			}
+			
+			/**
+			 * This method is called if an api error occures within the browser.
+			 */
+			private function apiError(event:ApiConnectorEvent):void
+			{
+				progressBox.visible = false;
+				
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadRelationshipsSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileQueueSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, loadProfileQueueError);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				
+				var alert:Alert = Alert.show(event.message, "An error occured!");
+				alert.width = 350;
+				alert.height = 150;
+			}
+			
+			/**
+			 * Abort current requests
+			 */
+			private function abort():void
+			{
+				// we have to remove all listeners,
+				// because we don't know what requests are active at the moment
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadRelationshipsSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileQueueSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, loadProfileQueueError);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				
+				progressBox.visible = false;
+				
+				// clear profile queue
+				profileQueue.length = 0;
+			}
+			
+			/**
+			 * Delete History and go to the profile of the origo user
+			 */
+			private function home():void
+			{
+				springgraph.resetHistory();
+				
+				// the browser homepage is the personal uri of the origo user
+				browse(store.id);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="browserTextInputValidator" source="{browserTextInput}" property="text" required="true"/>
+	
+	<sg:Roamer id="springgraph" 
+		bottom="0" top="0" right="0" left="0"
+		dataProvider="{graph}"
+		itemRenderer="com.origo.browser.BrowserItemRenderer"
+		maxDistanceFromCurrent="2"
+		itemLimit="50"
+		autoFit="false"
+		repulsionFactor="{rep.value}"
+		showHistory="true">
+		<sg:addItemEffect>
+			<mx:Fade duration="500"/>
+		</sg:addItemEffect>
+	</sg:Roamer>
+	
+	<mx:HBox horizontalGap="10" bottom="0" top="0" right="0" left="0">
+		
+		<mx:VBox width="100%" verticalGap="10">
+			<mx:HBox 
+				width="100%" 
+				paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" 
+				styleName="lightBox" 
+				defaultButton="{goButton}">
+				<mx:Button id="backButton" 
+					label="&lt;" 
+					width="50" 
+					click="springgraph.back()"
+					enabled="{springgraph.backOK}"/>
+				<mx:Button id="forwardButton" 
+					label="&gt;" 
+					width="50" 
+					click="springgraph.forward()"
+					enabled="{springgraph.forwardOK}"/>
+				<mx:Spacer width="10"/>
+				<mx:Button id="abortButton" label="abort" width="80" click="abort()"/>
+				<mx:Button id="homeButton" label="home" width="80" click="home()"/>
+				<mx:Spacer width="10"/>
+				<mx:TextInput id="browserTextInput" text="" width="270"/>
+				<mx:Button id="goButton" label="Go" width="50" click="if(validateBrowserForm()) browse(browserTextInput.text)"/>						
+			</mx:HBox>
+			
+			<mx:VBox width="200" styleName="lightBox" 
+				verticalGap="2"
+				paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+				<mx:HSlider id="rep" 
+					value="0.35" 
+					minimum="0.05" maximum="1.0" 
+					liveDragging="true" 
+					change="springgraph.refresh();" 
+					width="100%"/>
+				<mx:Label text="item spacing" width="100%" textAlign="center" styleName="smallLightText"/>
+			</mx:VBox>
+			<mx:Box width="200" height="200" styleName="lightBox">
+			</mx:Box>
+		</mx:VBox>
+		
+		<mx:Box width="200" height="100%" styleName="lightBox">
+		</mx:Box>
+		
+	</mx:HBox>
+	
+	<mx:Box id="progressBox"
+		styleName="lightBox"
+		horizontalCenter="0"
+		bottom="0"
+		paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+		visible="false">
+		<mx:showEffect>
+			<mx:Fade duration="500"/>
+		</mx:showEffect>
+		<mx:hideEffect>
+			<mx:Fade duration="500"/>
+		</mx:hideEffect>
+		<mx:ProgressBar id="progressBar"
+			indeterminate="true"
+			label="" labelPlacement="right" labelWidth="0" horizontalGap="0"/>
+	</mx:Box>
+	
+</mx:Canvas>

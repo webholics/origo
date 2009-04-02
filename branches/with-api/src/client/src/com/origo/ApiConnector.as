@@ -58,11 +58,21 @@ package com.origo
 		 * Authorization hash to send via key param
 		 */
 		private var authHash:String = null;
+		
+		/**
+		 * The url loader.
+		 */
+		private var urlLoader:URLLoader;
 
 		public function ApiConnector()
 		{
 			if(instance) 
 				throw new Error("ApiConnector can only be accessed through ApiConnector.getInstance()");
+				
+			urlLoader = new URLLoader();
+			urlLoader.addEventListener(Event.COMPLETE, resultHandler);
+			urlLoader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
+			urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
 		}
 		
 		public static function getInstance():ApiConnector 
@@ -227,6 +237,32 @@ package com.origo
 		{
 			sendRequest(API_EDITOR_CLEAN);
 		}
+		
+		/**
+		 * Get the profile of a user.
+		 * 
+		 * @param String uri The personal URI.
+		 */
+		public function browserProfile(uri:String):void
+		{
+			var variables:URLVariables = new URLVariables();
+			variables.uri = uri;
+			
+			sendRequest(API_BROWSER_PROFILE, variables);
+		}
+		
+		/**
+		 * Get relationships of a user.
+		 * 
+		 * @param String uri The personal URI.
+		 */
+		public function browserRelationships(uri:String):void
+		{
+			var variables:URLVariables = new URLVariables();
+			variables.uri = uri;
+			
+			sendRequest(API_BROWSER_RELATIONSHIPS, variables);
+		}
 						
 		/**
 		 * Clean browser store.
@@ -234,6 +270,14 @@ package com.origo
 		public function browserClean():void
 		{
 			sendRequest(API_BROWSER_CLEAN);
+		}
+		
+		/**
+		 * Close current request.
+		 */
+		public function close():void
+		{
+			urlLoader.close();
 		}
 		
 		/**
@@ -322,10 +366,6 @@ package com.origo
 			if(variables)
 				urlRequest.data = variables;
             	
-            var urlLoader:URLLoader = new URLLoader();
-			urlLoader.addEventListener(Event.COMPLETE, resultHandler);
-			urlLoader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
-			urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
             urlLoader.load(urlRequest);
 		}
 	}
