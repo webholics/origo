@@ -340,8 +340,6 @@ class ApiController extends BaseController
 			$result = $store->query($query);
 
 			if($store->getErrors() || $result['result']['t_count'] == 0) {
-				var_dump($store->getErrors());
-				die();
 				if($forwardError)
 					$this->_forward('error', 'api', null, array(
 						'code' => 'LoadError',
