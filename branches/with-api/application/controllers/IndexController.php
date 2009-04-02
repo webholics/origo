@@ -9,4 +9,13 @@
 
 class IndexController extends Zend_Controller_Action
 {
+	/**
+	 * This action makes a 303 redirect to the profile.
+	 */
+	public function indexAction()
+	{
+		$this->_helper->_redirector
+			->setCode(303)
+			->setGotoRoute(array(), 'profile');
+	}
 }
