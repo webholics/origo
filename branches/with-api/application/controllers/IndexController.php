@@ -14,8 +14,9 @@ class IndexController extends Zend_Controller_Action
 	 */
 	public function indexAction()
 	{
-		$this->_helper->_redirector
+		$this->_helper->Redirector
 			->setCode(303)
+			->setUseAbsoluteUri()
 			->setGotoRoute(array(), 'profile');
 	}
 }

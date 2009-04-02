@@ -114,6 +114,12 @@ class BaseController extends Zend_Controller_Action
 					'<' . $uri . '> rdf:type foaf:PersonalProfileDocument' .
 				'}';
 			if(!$store->query($ask, 'raw')) {
+
+				// first clean the profile store
+				$store->reset();
+				if($errors = $store->getErrors())
+					$store->errors = array();
+				
 				$query = $this->_queryPrefix .
 					'INSERT INTO <' . $uri . '> {' .
 						'<' . $uri . '> rdf:type foaf:PersonalProfileDocument .' .

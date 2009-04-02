@@ -61,6 +61,7 @@ class ProfileController extends BaseController
 		$this->_helper->Redirector
 			->setCode(303)
 			->setPrependBase()
+			->setUseAbsoluteUri()
 			->gotoUrl($uris[$mime_best]);
 	}
 

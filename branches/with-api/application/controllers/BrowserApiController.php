@@ -137,7 +137,7 @@ class BrowserApiController extends ApiController
 			if($profile === false)
 				return;
 				
-			$xml .= '<relationship';
+			$xml .= '<relationship from="' . $id . '"';
 			
 			if(isset($row['label']) && !empty($row['label'])) {
 				$xml .= ' label="' . htmlentities($row['label'], ENT_COMPAT, 'UTF-8') . '"';
