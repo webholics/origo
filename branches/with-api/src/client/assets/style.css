@@ -217,6 +217,27 @@ VScrollBar {
 	themeColor:#1d66ba;
 	borderColor:#3b3b3b;
 }
+HDividedBox {
+   dividerAlpha:0.5;
+}
+Accordion {
+	background-alpha:0;
+	border-thickness:0;
+	border-color:#3b3b3b;
+	
+	themeColor:#1d66ba;
+	textRollOverColor:#ebebeb;
+	textSelectedColor:#ebebeb;
+	
+	headerStyleName:"accordionHeaderStyle";
+	headerColors:#cdcdcd, #7e7e7e;
+}
+.accordionHeaderStyle {
+	color:#202020;
+	font-family:LucidaSans;
+	font-weight:normal;
+	font-size:12;
+}
 
 /**
  * Header
@@ -264,4 +285,10 @@ LinkButton.normalGraphButton {
 Image.userimagesmall {
 	brokenImageSkin:Embed("../assets/avatar_small.png");	
 	brokenImageBorderSkin:ClassReference(null);
+}
+Label.profile {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:12;
+	text-decoration:underline;
 }

@@ -21,12 +21,12 @@
 			/** is this component fully created? */
 			private var created:Boolean = false;
 			
-			private var _data:Item;
+			private var _data:BrowserItem;
 			
 			override public function set data(d:Object):void 
 			{
 				super.data = d;
-				_data = d as Item;
+				_data = d as BrowserItem;
 
 				// Update the view to reflect the new data. 
 				// However, if this component is not yet fully created, then it's not
@@ -44,7 +44,7 @@
 				// listen to change graph events
 				Browser.getInstance().springgraph.addEventListener(Event.CHANGE, refresh);
 				// bind change item data
-				BindingUtils.bindSetter(refresh, _data, "data");
+				BindingUtils.bindSetter(refresh, _data, "properties");
 			}
 			
 			/**
@@ -54,12 +54,12 @@
 			private function refresh(event:Object = null):void
 			{
 				// set name
-				if(_data.data.property.(@name == "name").length() > 0)
-					itemLinkButton.label = _data.data.property.(@name == "name")[0];
-				else if(_data.data.property.(@name == "givenname").length() > 0)
-					itemLinkButton.label = _data.data.property.(@name == "givenname")[0];
-				else if(_data.data.property.(@name == "nick").length() > 0)
-					itemLinkButton.label = _data.data.property.(@name == "nick")[0];
+				if(_data.properties.property.(@name == "name").length() > 0)
+					itemLinkButton.label = _data.properties.property.(@name == "name")[0];
+				else if(_data.properties.property.(@name == "givenname").length() > 0)
+					itemLinkButton.label = _data.properties.property.(@name == "givenname")[0];
+				else if(_data.properties.property.(@name == "nick").length() > 0)
+					itemLinkButton.label = _data.properties.property.(@name == "nick")[0];
 				else
 					itemLinkButton.label = _data.id;
 					
@@ -75,10 +75,10 @@
 					itemImage.styleName = "userimagesmall";
 				}
 				
-				if(_data.data.property.(@name == "img").length() > 0)
-					itemImage.source = _data.data.property.(@name == "img")[0];
-				else if(_data.data.property.(@name == "depiction") > 0)
-					itemImage.source = _data.data.property.(@name == "depiction")[0];
+				if(_data.properties.property.(@name == "img").length() > 0)
+					itemImage.source = _data.properties.property.(@name == "img")[0];
+				else if(_data.properties.property.(@name == "depiction") > 0)
+					itemImage.source = _data.properties.property.(@name == "depiction")[0];
 				else {
 					if(Browser.getInstance().springgraph.currentItem == _data)
 						itemImage.source = avatarCls;

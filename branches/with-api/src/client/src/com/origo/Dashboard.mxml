@@ -190,7 +190,7 @@
 			</mx:GridRow>
 			<mx:GridRow>
 				<mx:GridItem>
-					<mx:Text id="dashboardTextPersonalProperties" text="12" styleName="normalText"/>
+					<mx:Text id="dashboardTextPersonalProperties" styleName="normalText"/>
 				</mx:GridItem>
 				<mx:GridItem>
 					<mx:Text id="dashboardLabelPersonalProperties" styleName="normalText"/>
@@ -198,18 +198,18 @@
 			</mx:GridRow>
 			<mx:GridRow>
 				<mx:GridItem>
-					<mx:Text id="dashboardTextRelationships" text="12" styleName="normalText"/>
+					<mx:Text id="dashboardTextRelationships" styleName="normalText"/>
 				</mx:GridItem>
 				<mx:GridItem>
-					<mx:Text id="dashboardLabelRelationships" text="Relationships" styleName="normalText"/>
+					<mx:Text id="dashboardLabelRelationships" styleName="normalText"/>
 				</mx:GridItem>
 			</mx:GridRow>
 			<mx:GridRow>
 				<mx:GridItem>
-					<mx:Text id="dashboardTextExternalProfiles" text="2" styleName="normalText"/>
+					<mx:Text id="dashboardTextExternalProfiles" styleName="normalText"/>
 				</mx:GridItem>
 				<mx:GridItem>
-					<mx:Text id="dashboardLabelExternalProfiles" text="External Profiles" styleName="normalText"/>
+					<mx:Text id="dashboardLabelExternalProfiles" styleName="normalText"/>
 				</mx:GridItem>
 			</mx:GridRow>
 		</mx:Grid>

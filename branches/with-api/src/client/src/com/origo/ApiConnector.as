@@ -267,9 +267,16 @@ package com.origo
 		/**
 		 * Clean browser store.
 		 */
-		public function browserClean():void
+		public function browserClean(uri:String=null):void
 		{
-			sendRequest(API_BROWSER_CLEAN);
+			if(uri == null)
+				sendRequest(API_BROWSER_CLEAN);
+			else {
+				var variables:URLVariables = new URLVariables();
+				variables.uri = uri;
+			
+				sendRequest(API_BROWSER_CLEAN, variables);
+			}
 		}
 		
 		/**

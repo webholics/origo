@@ -5,9 +5,12 @@ package com.origo.browser
 	public class BrowserItem extends Item
 	{
 		/**
-		 * True if data was fully loaded via browser/profile api method.
+		 * True if properties were fully loaded via browser/profile api method.
 		 */
 		public var loaded:Boolean;
+		
+		[Bindable] public var properties:XML;
+		[Bindable] public var relationships:XML;
 		 
 		public function BrowserItem(id:String=null)
 		{

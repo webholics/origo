@@ -3,7 +3,7 @@
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:origo="com.origo.*"
 	preloader="com.origo.Preloader"
-	creationComplete="init();"
+	creationComplete="init()"
 	layout="absolute"
 	minWidth="0"
 	minHeight="0">
@@ -15,6 +15,8 @@
 			import com.origo.*;
 			import com.origo.editor.*;
 			import mx.controls.Alert;
+			import flash.display.StageDisplayState;
+			import mx.managers.SystemManager;
 			
 			// the header
 			[Bindable] public var header:Header;
@@ -48,6 +50,25 @@
 				// set global alert button width
 				Alert.buttonWidth = 100;
    			}
+
+			/*
+			 * Unfortunately fullscreen mode is useless because key inputs don't work there
+			public function toggleFullScreen():void {
+				try {
+					switch (systemManager.stage.displayState) {
+						case StageDisplayState.FULL_SCREEN:
+							systemManager.stage.displayState = StageDisplayState.NORMAL;
+							break;
+						default:
+							systemManager.stage.displayState = StageDisplayState.FULL_SCREEN;
+							break;
+					}
+				} 
+				catch (err:SecurityError) {
+					// ignore
+				}
+			}
+			*/
 		]]>
 	</mx:Script>
 	
@@ -60,7 +81,7 @@
 		<mx:State name="dashboard">
 			<mx:AddChild target="{header}"/>
 			<mx:AddChild>
-				<mx:Canvas id="mainContainer" left="10" right="10" top="{header.y + header.height + 10}" bottom="10" minWidth="900"  minHeight="400">
+				<mx:Canvas id="mainContainer" left="10" right="10" top="{header.y + header.height + 10}" bottom="10" minWidth="900"  minHeight="350">
 					<origo:Dashboard id="dashboard" width="100%"/>			
 				</mx:Canvas>
 			</mx:AddChild>
