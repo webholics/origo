@@ -16,15 +16,30 @@ class BrowserApiController extends ApiController
 
 	/**
 	 * Clean action.
-	 * Deletes all data stored in browser triple store.
+	 * Deletes all data stored in browser triple store
+	 * or if uri param is set only the data related to uri.
+	 * Only POST params.
+	 * Optional param: uri
 	 */
 	public function cleanAction()
 	{
 		$store = $this->getBrowserStore();
-		$store->reset();
-		if($errors = $store->getErrors()) {
-			$this->forwardTripleStoreError($errors);
-			return;
+
+		$params = $this->getRequest()->getPost();
+		if(!isset($params['uri']) || empty($params['uri'])) {
+			$store->reset();
+			if($errors = $store->getErrors()) {
+				$this->forwardTripleStoreError($errors);
+				return;
+			}
+		}
+		else {
+			$query = 'DELETE { <' . $this->escape($params['uri'], 'uri') . '> ?p ?o . }';
+			$store->query($query);
+			if($errors = $store->getErrors()) {
+				$this->forwardTripleStoreError($errors);
+				return;
+			}
 		}
 
 		$this->outputXml('<result>1</result>');
