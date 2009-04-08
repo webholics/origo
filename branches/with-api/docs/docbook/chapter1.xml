@@ -33,7 +33,7 @@
 			die FOAF-Daten enthalten, können von den verschiedenen sozialen Netzwerken veröffentlich werden.
 			Personen werden über <acronym>URIs</acronym> identifizierbar. Damit wird es möglich
 			Personen über die bisherigen Grenzen sozialer Netzwerke hinweg miteinander zu verbinden.
-			Es entsteht ein großes <emphasis role="strong">verteiltes soziales Netzwerk</emphasis>.
+			Es entsteht ein <emphasis role="strong">semantisches, verteiltes, soziales Netzwerk</emphasis>.
 		</para>
 		<mediaobject>
 			<imageobject role="fo">
@@ -53,9 +53,9 @@
 			Damit ein User die vollständige Kontrolle über seinen persönlichen URI und seine veröffentlichten Daten behält,
 			sollte er die RDF-Daten auf seinen eigenen Webspace oder Webserver laden.
 			Die Verwaltung dieser Daten wird aber schnell unübersichtlich und die XML-Dokumente selbst zu schreiben 
-			kostet Zeit. Das <emphasis>Orgio</emphasis> Paket kann auf dem eigenen Webserver selbst installiert und eingerichtet werden.
-			Der Origo Client schafft dann eine einfach und intuitiv zu bedienende Schnittstelle zum User.
-			Dieser kann seine Daten dadurch auch ohne direkte Kenntnisse über die Semantic Web Technologien vollständig 
+			kostet Zeit. <emphasis>Orgio</emphasis> kann auf dem eigenen Webserver selbst installiert und eingerichtet werden.
+			Der Origo Webclient schafft dann eine einfach und intuitiv zu bedienende Schnittstelle zum User.
+			Dieser kann seine Daten dadurch auch ohne direkte Kenntnisse über die Technologien des Semantic Web 
 			selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
 			Auf bereits bestehende Profile in anderen sozialen Netzwerken kann mit Hilfe von Origo verlinkt werden,
 			sofern die Nutzerdaten auch semantisch verfügbar sind.

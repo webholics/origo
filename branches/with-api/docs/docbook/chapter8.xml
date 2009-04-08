@@ -2,8 +2,147 @@
 <chapter 
 	xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
-	<title>Quellen</title>
-	<para>
-		[Inhalt]
-	</para>
+	<title>Anhang: REST API Dokumentation</title>
+	<sect2>
+		<title>Authentifizierung</title>
+		<para>
+			Alle Methoden, die Authentifizierung benötigen erwarten einen POST Parameter key mit dem Wert md5([username]:[password]).
+		</para>
+	</sect2>
+	<sect2>
+		<title>Fehlermeldungen</title>
+		<para>
+			Falls in einer Methode ein Fehler auftritt, so wird eine Fehlermeldung mit folgender Formatierung ausgegeben:
+		</para>
+		<para>
+			<emphasis>&lt;error&gt;&lt;error_code&gt;[maschinenlesbarer Fehlercode]&lt;/error_code&gt;&lt;error_message&gt;[Fehlernachricht]&lt;/error_message&gt;&lt;/error&gt;</emphasis>
+		</para>
+	</sect2>
+	<sect2>
+		<title>Allgemeine Methoden</title>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="strong">/api/test</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>-</emphasis></para>
+				<para>Beschreibung: Hilfsmethode zum Testen der Login-Daten.</para>
+				<para>Return: <emphasis>&lt;request&gt;&lt;code&gt;200&lt;/code&gt;&lt;message&gt;Api status: OK&lt;/message&gt;&lt;/request&gt;</emphasis> im Erfolgsfall.</para>
+			</listitem>
+		</itemizedlist>
+	</sect2>
+	<sect2>
+		<title>Editor Methoden</title>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/get</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>-</emphasis></para>
+				<para>Beschreibung: Liefert das Profil mit allen einfach vorkommenden Eigenschaften (title, nick, homepage, mbox, mbox_sha1sum, img, depiction, family_name, givenname, name, weblog, workinfohomepage, workplacehomepage, schoolhomepage, plan, geekcode, gender, myersbriggs, openid, icq, msn, aim, yahoo, jabber)</para>
+				<para>Return: Das aktuell gespeicherte Profil mit allen einfach vorkommenden Eigenschaften.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/update</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>title, nick, homepage, mbox, mbox_sha1sum, img, depiction, family_name, givenname, name, weblog, workinfohomepage, workplacehomepage, schoolhomepage, plan, geekcode, gender, myersbriggs, openid, icq, msn, aim, yahoo, jabber</emphasis> (Alle optional)</para>
+				<para>Beschreibung: Aktualisiere oder erzeuge einfach vorkommende Eigenschaften.</para>
+				<para>Return: Das aktualisierte Profil mit allen einfach vorkommenden Eigenschaften.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/delete</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>title, nick, homepage, mbox, mbox_sha1sum, img, depiction, family_name, givenname, name, weblog, workinfohomepage, workplacehomepage, schoolhomepage, plan, geekcode, gender, myersbriggs, openid, icq, msn, aim, yahoo, jabber</emphasis> (Alle optional)</para>
+				<para>Beschreibung: Lösche die über POST Parameter gegebenen Eigenschaften.</para>
+				<para>Return: Das aktualisierte Profil mit allen einfach vorkommenden Eigenschaften.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/clean</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>-</emphasis></para>
+				<para>Beschreibung: Löscht das gesamte Profil mit allen Eigenschaften und Beziehungen.</para>
+				<para>Return: <emphasis>&lt;result&gt;1&lt;/result&gt;</emphasis> im Erfolgsfall.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/profiles/get</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>-</emphasis></para>
+				<para>Beschreibung: Liefert die Verknüpfungen zu externen Profilen.</para>
+				<para>Return: Alle vorhandenen Verknüpfungen zu externen Profilen.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/profiles/update</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>sameas, seealso</emphasis> (Benötigt) <emphasis>label</emphasis> (Optional)</para>
+				<para>Beschreibung: Verknüpft das Profil mit einem externen Profil. Bei gleichbleibendem sameas kann die Verknüpfung auch aktualisiert werden.</para>
+				<para>Return: <emphasis>Alle vorhandenen Verknüpfungen zu externen Profilen.</emphasis></para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/profiles/delete</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>sameas</emphasis> (Benötigt)</para>
+				<para>Beschreibung: Löscht die Verknüpfung zu einem externen Profil.</para>
+				<para>Return: Alle vorhandenen Verknüpfungen zu externen Profilen.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/relationships/get</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>-</emphasis></para>
+				<para>Beschreibung: Liefert die Beziehungen zu anderen Personen.</para>
+				<para>Return: Alle vorhandenen Beziehungen zu anderen Personen.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/relationships/update</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>to</emphasis> (Benötigt) <emphasis>acquaintanceof, ambivalentof, ancestorof, antagonistof, apprenticeto, childof, closefriendof, collaborateswith, colleagueof, descendantof, employedby, employerof, enemyof, engagedto, friendof, grandchildof, grandparentof, hasmet, knowsbyreputation, knowsinpassing, knowsof, lifepartnerof, liveswith, lostcontactwith, mentorof, neighborof, parentof, participant, participantin, siblingof, spouseof, workswith, wouldliketoknow</emphasis> (Optional)</para>
+				<para>Beschreibung: Fügt eine neue Beziehung zu to hinzu. Mit den zusätzlichen Parametern kann die Beziehung näher spezifiziert werden. to kann entweder die dereferenzierbare URI der Person sein oder die URI des foaf:PersonalProfileDocument mit vorhandenem foaf:primaryTopic. Die Methode lädt zudem grundlegende Eigenschaften wie name, nick, image, etc. in das eigene Profile, um beim Browsen schneller Informationen anzeigen zu können. Eine Aktualisierung bei gleichbleibendem to ist möglich.</para>
+				<para>Return: Alle vorhandenen Beziehungen zu anderen Personen.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/editor/relationships/delete</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>to</emphasis> (Benötigt)</para>
+				<para>Beschreibung: Löscht die Beziehung zu einer Person.</para>
+				<para>Return: <emphasis>Alle vorhandenen Beziehungen zu anderen Personen.</emphasis></para>
+			</listitem>
+		</itemizedlist>
+	</sect2>
+	<sect2>
+		<title>Browser Methoden</title>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="strong">/api/browser/profile</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>uri</emphasis> (Benötigt)</para>
+				<para>Beschreibung: Liefert die Eigenschaften einer Person. uri kann entweder die dereferenzierbare URI der Person sein oder die URI des foaf:PersonalProfileDocument mit vorhandenem foaf:primaryTopic.</para>
+				<para>Return: Die einfach vorkommenden Eigenschaften dieser Person.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/browser/relationships</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>uri</emphasis> (Benötigt) <emphasis>acquaintanceof, ambivalentof, ancestorof, antagonistof, apprenticeto, childof, closefriendof, collaborateswith, colleagueof, descendantof, employedby, employerof, enemyof, engagedto, friendof, grandchildof, grandparentof, hasmet, knowsbyreputation, knowsinpassing, knowsof, lifepartnerof, liveswith, lostcontactwith, mentorof, neighborof, parentof, participant, participantin, siblingof, spouseof, workswith, wouldliketoknow</emphasis> (Optional)</para>
+				<para>Beschreibung: Liefert die Beziehungen einer Person. Mit dem zusätzlichen Parametern können die Beziehungen speziell gefiltert werden, ansonsten werden alle zurückgeliefert. uri kann entweder die dereferenzierbare URI der Person sein oder die URI des foaf:PersonalProfileDocument mit vorhandenem foaf:primaryTopic.</para>
+				<para>Return: Die Beziehungen dieser Person.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="strong">/api/browser/clean</emphasis></para>
+				<para>Methode: <emphasis>POST</emphasis></para>
+				<para>Authentifizierung: <emphasis>Ja</emphasis></para>
+				<para>Parameter: <emphasis>uri</emphasis> (Optional)</para>
+				<para>Beschreibung: Löscht alle für den Browser gespeicherten Daten oder falls uri vorhanden nur die mit uri in Verbindung stehenden Daten.</para>
+				<para>Return: <emphasis>&lt;result&gt;1&lt;/result&gt;</emphasis> im Erfolgsfall.</para>
+			</listitem>
+		</itemizedlist>
+	</sect2>
 </chapter>
