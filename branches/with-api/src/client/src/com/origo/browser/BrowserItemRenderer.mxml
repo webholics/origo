@@ -96,6 +96,14 @@
 					itemLinkButton.useHandCursor = false;
 				}
 				
+				// check if item belongs to history
+				if(Browser.getInstance().springgraph.hasBeenCurrentItem(_data)) {
+					itemLinkButton.styleName = "historyGraphButton";
+				}
+				else {
+					itemLinkButton.styleName = "normalGraphButton";
+				}
+				
 				this.validateNow();
 			}
 			
@@ -128,6 +136,6 @@
 		</mx:filters>
 	</mx:Image>
 		
-	<mx:LinkButton id="itemLinkButton" width="140" styleName="normalGraphButton" click="browse()"/>
+	<mx:LinkButton id="itemLinkButton" width="140" click="browse()"/>
 	
 </mx:VBox>

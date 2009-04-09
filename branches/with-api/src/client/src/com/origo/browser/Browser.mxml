@@ -8,6 +8,8 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.messaging.channels.StreamingAMFChannel;
+			import mx.controls.CheckBox;
 			import com.adobe.flex.extras.controls.springgraph.Item;
 			import mx.events.ValidationResultEvent;
 			import com.adobe.flex.extras.controls.springgraph.Graph;
@@ -65,6 +67,21 @@
 				// bind current item
 				BindingUtils.bindSetter(refreshProfile, springgraph, "currentItem");
 				
+				// generate rel checkboxes
+				for each(var type:String in RelationshipsHelper.types) {
+					var cb:CheckBox = new CheckBox();
+					cb.id = type + "Rel";
+					cb.label = RelationshipsHelper.labels[type];
+					cb.styleName = "browserRelationshipType";
+					cb.addEventListener(Event.CHANGE, filterRelTypes);
+					cb.selected = true;
+					
+					if(type != "knows")
+						cb.setStyle("paddingLeft", 10);
+						
+					relBox.addChild(cb);
+				}
+				
 				// go to home page
 				home();
 			}
@@ -87,14 +104,15 @@
 			 * 
 			 * @param String uri
 			 */
-			public function browse(uri:String):void
+			public function browse(uri:String=null):void
 			{
-				browserTextInput.text = uri;
+				if(uri != null)
+					browserTextInput.text = uri;
 				
 				// first abort other processes
 				abort();
 				
-				loadProfile(uri);
+				loadProfile(browserTextInput.text);
 			}
 			
 			/**
@@ -143,9 +161,16 @@
 			{
 				progressBox.visible = true;
 				
+				// filter relationship types
+				var types:Array = new Array();
+				for each(var cb:CheckBox in relBox.getChildren()) {
+					if(cb && cb.selected)
+						types.push(cb.id.substr(0, cb.id.length-3));
+				}
+				
 				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadRelationshipsSuccess);
 				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
-				api.browserRelationships(uri);
+				api.browserRelationships(uri, types);
 			}
 			
 			private function loadRelationshipsSuccess(event:ApiConnectorEvent):void
@@ -165,10 +190,10 @@
 					from.relationships = result;
 					
 					// delete old relationships
-					var oldRels:Object = graph.neighbors(from.id);
-					for each(var oldItem:Object in oldRels) {
-						if(oldItem as Item)
-							graph.unlink(from, oldItem as Item);
+					for(var id:String in graph.neighbors(from.id)) {
+						var oldItem:Item = graph.find(id);
+						if(oldItem)
+							graph.unlink(from, oldItem);
 					}
 				
 					// add current relationships
@@ -187,7 +212,7 @@
 							graph.link(from, item);
 						}
 					}
-					trace(from);
+
 					springgraph.currentItem = from;
 				}
 				
@@ -204,10 +229,15 @@
 					
 				var item:BrowserItem = profileQueue.shift();
 				if(!item.loaded) {
-					progressBox.visible = true;
-					api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileQueueSuccess);
-					api.addEventListener(ApiConnectorEvent.ERROR_EVENT, loadProfileQueueError);
-					api.browserProfile(item.id);
+					if(item.id == "") {
+						item.loaded = true;
+					}
+					else {
+						progressBox.visible = true;
+						api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadProfileQueueSuccess);
+						api.addEventListener(ApiConnectorEvent.ERROR_EVENT, loadProfileQueueError);
+						api.browserProfile(item.id);
+					}
 				}
 				else
 					loadProfileQueue();
@@ -221,11 +251,12 @@
 				progressBox.visible = false;
 				
 				var result:XML = event.data as XML;
-				trace(event.data);
-				var item:BrowserItem = graph.find(result.profile[0].@id) as BrowserItem;
-				if(item) {
-					item.properties = result.profile[0];
-					item.loaded = true;
+				if(result && result.profile && result.profile[0] && result.profile[0].@id) {
+					var item:BrowserItem = graph.find(result.profile[0].@id) as BrowserItem;
+					if(item) {
+						item.properties = result.profile[0];
+						item.loaded = true;
+					}
 				}
 				
 				// check if other profiles are in queue and need to be loaded
@@ -940,6 +971,34 @@
 				
 				currentState = "";
 			}
+			
+			private function filterRelTypes(event:Event):void
+			{
+				var cb:CheckBox = event.currentTarget as CheckBox;
+				if(cb.id == "knowsRel") {
+					if(cb.selected) {
+						// knows is the base relationship of all relationships
+						// therefore we then select all checkboxes
+						for each(var child:Object in relBox.getChildren()) {
+							if(child as CheckBox) {
+								(child as CheckBox).selected = true;
+							}
+						}
+					}
+				}
+				else {
+					// if we deselect a relationship type
+					// then knows can't be selected anymore
+					if(!cb.selected) {
+						var cbKnows:CheckBox = relBox.getChildAt(0) as CheckBox;
+						if(cbKnows) {
+							cbKnows.selected = false;
+						}
+					}
+				}
+				
+				browse();
+			}
 		]]>
 	</mx:Script>
 	
@@ -1015,6 +1074,7 @@
 		bottom="0" top="0" right="0" left="0"
 		dataProvider="{graph}"
 		itemRenderer="com.origo.browser.BrowserItemRenderer"
+		lineColor="#202020"
 		maxDistanceFromCurrent="2"
 		itemLimit="50"
 		autoFit="false"
@@ -1027,7 +1087,7 @@
 	
 	<mx:HDividedBox id="mainDivBox" horizontalGap="10" bottom="0" top="0" right="0" left="0">
 		
-		<mx:VBox width="100%" verticalGap="10" minWidth="800">
+		<mx:VBox width="100%" height="100%" verticalGap="10" minWidth="760">
 			<mx:HBox 
 				width="100%" 
 				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" 
@@ -1063,8 +1123,11 @@
 					width="100%"/>
 				<mx:Label text="item spacing" width="100%" textAlign="center" styleName="smallLightText"/>
 			</mx:VBox>
-			<mx:Box width="200" height="200" styleName="lightBox">
-			</mx:Box>
+			<mx:VBox id="relBox" width="200" height="100%" minHeight="0"
+				styleName="lightBox"
+				verticalGap="2"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			</mx:VBox>
 		</mx:VBox>
 		
 		<mx:VBox width="200" height="100%" verticalGap="5" minWidth="180">

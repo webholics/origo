@@ -255,11 +255,15 @@ package com.origo
 		 * Get relationships of a user.
 		 * 
 		 * @param String uri The personal URI.
+		 * @param Array types Provide an array with relationship types to filter
 		 */
-		public function browserRelationships(uri:String):void
+		public function browserRelationships(uri:String, types:Array=null):void
 		{
 			var variables:URLVariables = new URLVariables();
 			variables.uri = uri;
+			
+			for each(var type:String in types)
+				variables[type] = "";
 			
 			sendRequest(API_BROWSER_RELATIONSHIPS, variables);
 		}

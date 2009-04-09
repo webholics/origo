@@ -17,7 +17,7 @@
 	
 	<mx:Image source="@Embed('../assets/logo.png')" horizontalCenter="0" top="30" />
 	
-	<mx:Text text="Origo version 0.1" styleName="normalText" horizontalCenter="0" bottom="70" selectable="false" />
+	<mx:Text text="Origo version 0.9" styleName="normalText" horizontalCenter="0" bottom="70" selectable="false" />
 	<mx:LinkButton label="www.orgio-client.com" click="gotoOrigoSite()" horizontalCenter="0" bottom="37" />
 	<mx:Text text="Author: Mario Volke" styleName="normalText" horizontalCenter="0" bottom="10" selectable="false" />
 

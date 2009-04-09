@@ -282,6 +282,11 @@ LinkButton.normalGraphButton {
 	disabledColor:#ebebeb;
 	disabledSkin:ClassReference(null);
 }
+LinkButton.historyGraphButton {
+	color:#1d66ba;
+	disabledColor:#1d66ba;
+	disabledSkin:ClassReference(null);
+}
 Image.userimagesmall {
 	brokenImageSkin:Embed("../assets/avatar_small.png");	
 	brokenImageBorderSkin:ClassReference(null);
@@ -291,4 +296,12 @@ Label.profile {
 	font-family:LucidaSans;
 	font-size:12;
 	text-decoration:underline;
+}
+Checkbox.browserRelationshipType {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:12;
+	textSelectedColor:#1d66ba;
+	textRollOverColor:#1d66ba;
+	themeColor:#1d66ba;
 }
