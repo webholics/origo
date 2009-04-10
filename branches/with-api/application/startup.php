@@ -3,8 +3,8 @@
 * Origo - social client
 * startup, initialize php environment and define globals
 *
-* @copyright Copyright (c) 2008-2009 Mario Volke
-* @author    Mario Volke <mario.volke@webholics.de>
+* @copyright (C) 2008-2009 Mario Volke, All right reserved.
+* @author Mario Volke (mario.volke@webholics.de)
 */
 
 // unfortunately ARC2 does not yet support E_STRICT
@@ -20,7 +20,6 @@ set_include_path(
 	APPLICATION_PATH . '/controllers/' . PATH_SEPARATOR .
 	APPLICATION_PATH . '/plugins/' . PATH_SEPARATOR .
 	APPLICATION_PATH . '/../library/' . PATH_SEPARATOR .
-	APPLICATION_PATH . '[path to Zend Framework Library]' . PATH_SEPARATOR .
 	get_include_path()
 );
 

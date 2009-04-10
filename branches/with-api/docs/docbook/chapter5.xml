@@ -4,27 +4,34 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
 	<title>Technische Umsetzung</title>
 	<para>
-		Origo verwendet bevorzugt weit verbreitete Technologien, um auch auf einfachen Webhosting-Packeten
+		Origo verwendet bevorzugt weit verbreitete Webtechnologien, um auch auf einfachen Webhosting-Packeten
 		eingesetzt werden zu können. Origo ist vollständig web- und browserbasiert, d.h. es muss keine 
-		Software auf dem eigenen Computer installiert werden. Origo ist damit auf jedem System sofort nutzbar.
+		Software auf dem eigenen Computer installiert werden. Origo ist damit auf jedem Rechner sofort nutzbar.
 		Das gesamte Packet besteht aus serverseitigen und clientseitigen Teilen.
 	</para>
 	<para>
 		Als serverseitiges Fundament dient ein typischer <acronym>LAMP</acronym> 
 		(Linux, Apache, MySQL, PHP) oder <acronym>MAMP</acronym> (Mac OS, Apache MySQL, PHP) Stack.
 		<link xlink:href="http://arc.semsol.org/">ARC2</link> ist eine Library für PHP5 und stellt die
-		wesentlichen Features für das Semantic Web bereit. Eine <emphasis>Content Negotiation</emphasis> 
-		Implementierung in PHP ist zentraler Bestandteil für die korrekte Weiterleitung des persönlichen 
-		URI anhand des HTTP-Headers. Optional wird für die Authentifizierung eine 
-		<link xlink:href="http://openidenabled.com/php-openid/">PHP OpenID Library</link> eingesetzt.
+		wesentlichen Features für die Arbeit mit semantischen Daten bereit. Dazu gehören unter anderem
+		ein Triple Store und eine SPARQL-Schnittstelle. Eine <emphasis>Content Negotiation</emphasis>-Implementierung 
+		in PHP ist zentraler Bestandteil für die korrekte Weiterleitung des persönlichen 
+		URI anhand des HTTP-Headers. Zudem wird Zend Framework als Basis für die serverseitigen Aufgaben eingesetzt.
 	</para>
 	<para>
-		Auf clientseite kommt neben den Standard-Sprachen <emphasis>(X)HTML</emphasis>, 
+		Auf Clientseite kommt neben den Standard-Sprachen <emphasis>(X)HTML</emphasis>, 
 		<emphasis>JS</emphasis>, <emphasis>RDF/XML</emphasis> eine 
 		<emphasis>Flash/Flex</emphasis>-Anwendung zum Einsatz.
 		Dies schafft eine intuitive Bedienung des Origo Clients, wie es der Nutzer
 		von Desktopanwendungen gewohnt ist. Da das Flash-Plugin bei über 95% aller Browser
 		bereits installiert ist, sollte Origo in der Regel sofort einsetzbar sein.
+	</para>
+	<para>
+		Server und Webclient sind über eine REST-API miteinander verbunden,
+		die es ermöglicht schreibend und lesend auf den Triple Store zuzugreifen. 
+		Die einzelnen Methoden der API sind
+		im Anhang A beschrieben. Durch diese strikte Trennung von Server und Webclient ist es denkbar,
+		dass auch andere Webclients (z.B. auf Basis von HTML/JS) für Origo entwickelt werden.
 	</para>
 	<mediaobject>
 		<imageobject role="fo">

@@ -18,8 +18,8 @@
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
    inkscape:export-filename="/Users/mvolke/Desktop/concept.png"
-   inkscape:export-xdpi="117.06921"
-   inkscape:export-ydpi="117.06921">
+   inkscape:export-xdpi="157.2867"
+   inkscape:export-ydpi="157.2867">
   <defs
      id="defs4">
     <marker
@@ -2101,20 +2101,6 @@
          style="font-size:10.49110699px;fill:#5f5f5f;fill-opacity:1">Content Negotiation</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.08607674px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#5f5f5f;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="267.33524"
-       y="762.03113"
-       id="text4230"
-       inkscape:export-filename="/Users/mvolke/Desktop/docs/images/technologies.png"
-       inkscape:export-xdpi="157.33586"
-       inkscape:export-ydpi="157.33586"><tspan
-         sodipodi:role="line"
-         x="267.33524"
-         y="762.03113"
-         id="tspan4232"
-         style="font-size:10.49110699px;fill:#5f5f5f;fill-opacity:1">OpenID Library</tspan></text>
-    <text
-       xml:space="preserve"
        style="font-size:7.78960085px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#5f5f5f;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="191.37292"
        y="800.08997"
@@ -2155,5 +2141,19 @@
          y="625.49445"
          id="tspan4248"
          style="font-size:17.19700623px;fill:#5f5f5f;fill-opacity:1">RDF/XML</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.08607674px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#5f5f5f;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="262.92368"
+       y="764.5918"
+       id="text2747"
+       inkscape:export-filename="/Users/mvolke/Desktop/docs/images/technologies.png"
+       inkscape:export-xdpi="157.33586"
+       inkscape:export-ydpi="157.33586"><tspan
+         sodipodi:role="line"
+         x="262.92368"
+         y="764.5918"
+         id="tspan2749"
+         style="font-size:10.49110699px;fill:#5f5f5f;fill-opacity:1">Zend Framework</tspan></text>
   </g>
 </svg>

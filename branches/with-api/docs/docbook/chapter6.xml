@@ -3,7 +3,45 @@
 	xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
 	<title>Installation &amp; Konfiguration</title>
-	<para>
-		[Inhalt]
-	</para>
+	<sect1>
+		<title>Vorraussetzungen</title>
+		<itemizedlist>
+			<listitem>Apache + mod_rewrite</listitem>
+			<listitem>PHP >= 5.2.4</listitem>
+			<listitem>MySQL</listitem>
+		</itemizedlist>
+	</sect1>
+	<sect1>
+		<title>Installation</title>
+		<itemizedlist>
+			<listitem>Den Ordner <emphasis>src</emphasis> löschen. Dieser wird für den Produktiveinsatz von Origo nicht benötigt.</listitem>
+			<listitem>Die neueste Version des Zend Framework unter <link xlink:href="http://framework.zend.com">framework.zend.com</link> herunterladen.</listitem>
+			<listitem>Den Ordner <emphasis>library/Zend</emphasis> aus dem Zend Framework nach <emphasis>library/Zend</emphasis> im Origo Verzeichnis kopieren.</listitem>
+			<listitem>Dem <emphasis>cache</emphasis>-Ordner Schreibrechte geben.</listitem>
+			<listitem>Eine MySQL-Datenbank erstellen.</listitem>
+			<listitem>Die Datei <emphasis>config/config.default.ini</emphasis> nach <emphasis>config/config.ini</emphasis> kopieren.</listitem>
+		</itemizedlist>
+	</sect1>
+	<sect1>
+		<title>Konfiguration</title>
+		<para>
+			Zuletzt muss die Konfigurationsdatei unter <emphasis>config/config.ini</emphasis> angepasst werden. Die zuvor erstellte MySQL-Datenbank muss hier eingetragen werden. In der Regel genügt es <emphasis>username</emphasis>, <emphasis>password</emphasis> und <emphasis>dbname</emphasis> anzugeben.
+			Als nächstes muss der URI des Origo-Profils angegeben werden. Unter <emphasis>profile.location</emphasis> sollte deshalb der URL zu Origo + "/profile" angegeben werden (z.B. <emphasis>http://www.example.com/origo/profile</emphasis>).
+		</para>
+		<para>
+			Wie im Kapitel zum persönlichen URI beschrieben, gibt es nun zwei Möglichkeiten diesen URI zu konstruieren. 
+			Den Hash-URI kann man verwenden, indem man unter <emphasis>profile.identifier</emphasis> einen Hash einträgt (z.B. <emphasis>#me</emphasis>). 
+			Der persönliche URI ist dann <emphasis>profile.location</emphasis> + <emphasis>profile.identifier</emphasis>.
+			Die zweite Möglichkeit besteht darin unter einer beliebigen anderen Adresse eine 303-Weiterleitung zu <emphasis>profile.location</emphasis> einzurichten. Diese Adresse wird dann unter <emphasis>profile.identifier</emphasis> eingetragen und wird damit zum persönlichen URI.
+		</para>
+		<para>
+			Unter <emphasis>api.auth.username</emphasis> und <emphasis>api.auth.password</emphasis> sollte für die Authentifizierung im Origo Webclient ein beliebiger Benutzername mit Passwort eingetragen werden.
+		</para>
+		<para>
+			Unter <emphasis>negotiation.html</emphasis> ist es möglich ein HTML-Profil (z.B. die eigene Website) anzugeben, auf die bei einer HTML-Anfrage des persönlichen URI automatisch weitergeleitet wird.
+		</para>
+		<para>
+			Die restlichen Konfigurationsmöglichkeiten sollten im Allgemeinen nicht verändert werden.
+		</para>
+	</sect1>
 </chapter>

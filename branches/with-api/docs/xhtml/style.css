@@ -36,6 +36,13 @@ h1, h2, h3 {
 	clear:both;
 	color:#000;
 }
+h2 {
+	border-bottom:1px dotted #bbb;
+}
+div.sect1 h2 {
+	border:0;
+	font-size:1.3em;
+}
 div.mediaobject[align=right] {
 	float:right;
 }

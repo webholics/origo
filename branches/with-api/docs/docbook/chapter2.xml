@@ -26,95 +26,35 @@
 		</caption>
 	</mediaobject>
 	<para>
-		Das Origo Paket besteht aus mehreren Teilen, die teilweise optional zu verwenden sind:
+		Origo erfüllt im wesentlichen drei Aufgaben. Das Profil des Nutzers zu veröffentlichen, 
+		dem Nutzer zu erlauben sein Profil zu bearbeiten und zuletzt sein soziales Netzwerk über
+		den Browser zu betrachten.
+	</para>
+	<para>
+		Die Bereitstellung der semantischen Daten geschieht nach dem Ansatz <emphasis>Linked Data</emphasis>,
+		wie vom W3C vorgeschlagen wird hierbei <emphasis>Content Negotiation</emphasis> eingesetzt,
+		um je nach Anfrage auf verschiedene Datenformate weiterzuleiten <citation>W3C08</citation>.
+		Origo unterstützt hierbei folgende Mime-Types:
 	</para>
 	<itemizedlist>
-		<listitem>
-			<para><emphasis role="strong">Content Negotiator</emphasis></para>
-			<para>
-				Der Content Negotiator leitet eine HTTP-Anfrage abhängig 
-				vom HTTP-Header entweder auf das RDF-Dokument oder auf ein 
-				festgelegtes HTML-Dokument weiter.
-			</para>
-			<para>
-				Pfad: <emphasis>origo/</emphasis>
-			</para>
-		</listitem>
-		<listitem>
-			<para><emphasis role="strong">RDF Distributor</emphasis></para>
-			<para>
-				Der RDF Distributor generiert die RDF-Daten aus dem sog.
-				Triple Store und liefert diese über einen Caching-Mechanismus aus.
-			</para>
-			<para>
-				Pfad: <emphasis>origo/rdf</emphasis>
-			</para>
-		</listitem>
-		<listitem>
-			<para><emphasis role="strong">Origo Client</emphasis></para>
-			<para>
-				Das Hauptmodul von Origo ist der Client. Er besteht wiederum aus zwei Modulen,
-				die allerdings nur logisch voneinander getrennt sind:
-			</para>
-			<itemizedlist>
-				<listitem>
-					<para><emphasis role="strong">Origo Editor</emphasis></para>
-					<para>
-						Mit dem Origo Editor kann der Nutzer seine persönlichen Daten verwalten 
-						und seinen persönliche URI mit weiteren Profilen verknüpfen.
-					</para>
-				</listitem>
-				<listitem>
-					<para><emphasis role="strong">Origo Browser</emphasis></para>
-					<para>
-						Der Origo Browser erlaubt es dem Nutzer sein soziales Netzwerk 
-						zu durchstöbern und neue Freunde hinzuzufügen. 	
-					</para>
-				</listitem>
-			</itemizedlist>	
-			<para>
-				Der Client bietet verschiedene Authentifizierungsmöglichkeiten und nutzt
-				einen SPARQL-Endpoint, um auf den Triple Store zuzugreifen.
-			</para>
-			<para>
-				Pfad: <emphasis>origo/client/</emphasis>
-			</para>
-		</listitem>
-		<listitem>
-			<para><emphasis role="strong">Konfiguration</emphasis></para>
-			<para>
-				Die Konfiguration von Origo wird über eine zentrale INI-Datei vorgenommen.
-				Der Negotiator wird separat konfiguriert, da sich dieser auch auf einem anderen 
-				Server befinden kann.
-			</para>
-			<para>
-				Pfad: <emphasis>origo/config/</emphasis>
-			</para>
-		</listitem>
-		<listitem>
-			<para><emphasis role="strong">Installer</emphasis> (optional)</para>
-			<para>
-				Die Konfiguration von Origo kann bequem über den Installer vorgenommen werden.
-				Dieser schreibt die benötigten Konfigurationsdateien und unterstützt den User darin,
-				die Zugriffsberechtigungen auf die verschiedenen Ordner richtig zu setzen.
-			</para>
-			<para>
-				Pfad: <emphasis>origo/install/</emphasis>
-			</para>
-		</listitem>
-		<listitem>
-			<para><emphasis role="strong">Identifier</emphasis> (optional)</para>
-			<para>
-				Der Identifier ist eigentlich kein richtiges Modul. Es ist vielmehr eine
-				Vorgehensweise, um über eine 303 Weiterleitung einen beliebigen URI,
-				der sich auch auf einer anderen Domain befinden kann, quasi vorzuschalten.
-				Ein Vorteil dieser Methode ist, dass der persönliche URI beliebig gewählt 
-				werden kann und dieser dadurch kein Hash-URI mehr sein muss.
-				Diese Möglichkeit ist nur für fortgeschrittene Nutzer geeignet.
-			</para>
-			<para>
-				Pfad: <emphasis>origo/optional/identifier/</emphasis>
-			</para>
-		</listitem>
+		<listitem><emphasis>text/html</emphasis> Kann von Origo direkt generiert werden oder auf eine andere Website weiterleiten.</listitem>
+		<listitem><emphasis>application/rdf+xml</emphasis> Die Standard-Serialisierung von RDF-Daten.</listitem>
+		<listitem><emphasis>application/turtle</emphasis></listitem>
+		<listitem><emphasis>application/json</emphasis></listitem>
 	</itemizedlist>
+	<para>
+		Die ausgelieferten Daten werden gecached, dadurch können schnelle Zugriffszeiten realisiert werden.
+	</para>
+	<para>
+		Der Triple Store speichert sämtliche Profile, sowohl das des Nutzers selbst, als auch Profile, die vom Origo Browser geladen werden.
+		Der Zugriff auf den Triple Store erfolgt mit Hilfe von SPARQL. Für die vom Browser geladenen Daten werden zusätzlich einfache
+		Schlussfolgerungsmechanismen eingesetzt (<emphasis>owl:inverseOf-Inferencing</emphasis>, <emphasis>rdfs:subProbertyOf-Inferencing</emphasis>).
+		Dadurch können implizit gegebene Informationen über den Browser explizit dargestellt werden.
+	</para>
+	<para>
+		Der Origo Webclient ist die Verbindung des Systems zum Nutzer. Er besteht aus einem Editor und einem Browser.
+		Mit dem Editor kann der Nutzer seine persönlichen Daten verwalten, seinen persönlichen URI mit weiteren Profilen verknüpfen und
+		Beziehungen zu anderen Personen erstellen.
+		Der Browser erlaubt es dem Nutzer sein soziales Netzwerk auf intuitive Art und Weise zu durchstöbern. 	
+	</para>
 </chapter>

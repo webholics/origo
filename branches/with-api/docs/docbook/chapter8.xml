@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<chapter 
+<appendix 
 	xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
-	<title>Anhang: REST API Dokumentation</title>
-	<sect2>
+	<title>REST API Dokumentation</title>
+	<sect1>
 		<title>Authentifizierung</title>
 		<para>
 			Alle Methoden, die Authentifizierung benötigen erwarten einen POST Parameter key mit dem Wert md5([username]:[password]).
 		</para>
-	</sect2>
-	<sect2>
+	</sect1>
+	<sect1>
 		<title>Fehlermeldungen</title>
 		<para>
 			Falls in einer Methode ein Fehler auftritt, so wird eine Fehlermeldung mit folgender Formatierung ausgegeben:
@@ -17,8 +17,8 @@
 		<para>
 			<emphasis>&lt;error&gt;&lt;error_code&gt;[maschinenlesbarer Fehlercode]&lt;/error_code&gt;&lt;error_message&gt;[Fehlernachricht]&lt;/error_message&gt;&lt;/error&gt;</emphasis>
 		</para>
-	</sect2>
-	<sect2>
+	</sect1>
+	<sect1>
 		<title>Allgemeine Methoden</title>
 		<itemizedlist>
 			<listitem>
@@ -30,8 +30,8 @@
 				<para>Return: <emphasis>&lt;request&gt;&lt;code&gt;200&lt;/code&gt;&lt;message&gt;Api status: OK&lt;/message&gt;&lt;/request&gt;</emphasis> im Erfolgsfall.</para>
 			</listitem>
 		</itemizedlist>
-	</sect2>
-	<sect2>
+	</sect1>
+	<sect1>
 		<title>Editor Methoden</title>
 		<itemizedlist>
 			<listitem>
@@ -115,8 +115,8 @@
 				<para>Return: <emphasis>Alle vorhandenen Beziehungen zu anderen Personen.</emphasis></para>
 			</listitem>
 		</itemizedlist>
-	</sect2>
-	<sect2>
+	</sect1>
+	<sect1>
 		<title>Browser Methoden</title>
 		<itemizedlist>
 			<listitem>
@@ -144,5 +144,5 @@
 				<para>Return: <emphasis>&lt;result&gt;1&lt;/result&gt;</emphasis> im Erfolgsfall.</para>
 			</listitem>
 		</itemizedlist>
-	</sect2>
-</chapter>
+	</sect1>
+</appendix>

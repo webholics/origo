@@ -14,7 +14,14 @@ Readme
 2) Installation
 ------------------------------------------------------------
 
-- TODO: write installation
+- Delete the src dir, you don't need it for production use of Origo
+- Download the latest Version of Zend Framework from http://framework.zend.com/
+- Copy the folder ZendFramework/library/Zend to OrigoLocation/library/Zend
+- Give write permissions to cache dir
+- Set up a MySQL database
+- Copy config/config.default.ini to config/config.ini
+- Edit config/config.ini (read comments there)
+- Start editing your profile and browsing your social network with Origo!
 
 3) License (MIT license)
 ------------------------------------------------------------

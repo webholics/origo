@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<chapter 
+<bibliography
 	xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink"> 
-	<title>Quellen</title>
-	<para>
-		[Inhalt]
-	</para>
-</chapter>
+	<biblioentry id="bib.AP08">
+		<abbrev id="bib.AP08.abbrev">AP08</abbrev>
+		<title><ulink url="http://apassant.net/blog/2008/01/12/one-foaf-fits-all/">One FOAF fits all</ulink></title>
+		<author><surname>Passant</surname><firstname>Alexandre</firstname></author>
+		<pubdate>12.01.2008</pubdate>
+	</biblioentry>
+	<biblioentry id="bib.W3C08">
+		<abbrev id="bib.W3C08.abbrev">W3C08</abbrev>
+		<title><ulink url="http://www.w3.org/TR/2008/NOTE-cooluris-20080331/">Cool URIs for the Semantic Web</ulink></title>
+		<publishername>W3C Interest Group</publishername>
+		<authorgroup>
+			<author><firstname>Leo</firstname><surname>Sauermann</surname></author>
+			<author><firstname>Richard</firstname><surname>Cyganiak</surname></author>
+		</authorgroup>
+		<pubdate>31.03.2008</pubdate>
+	</biblioentry>
+</bibliography>
