@@ -10,6 +10,8 @@
 		<emphasis>foaf:knows</emphasis>, einer Eigenschaft aus der FOAF-Ontologie auf den URI dieser 
 		Person verlinkt. Eine solche Verlinkung lässt sich unabhängig davon erstellen, ob diese 
 		Person ebenfalls Origo einsetzt oder nicht.
+	</para>
+	<para>
 		Mit Hilfe der RELATIONSHIP-Ontologie ist es zudem möglich die Beziehungen zwischen zwei Personen
 		genauer zu spezifizieren. In dieser Ontologie sind beispielsweise beziehungen wie <emphasis>rel:childOf</emphasis> oder
 		<emphasis>rel:friendOf</emphasis> definiert.
