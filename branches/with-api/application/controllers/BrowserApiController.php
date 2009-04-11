@@ -107,7 +107,7 @@ class BrowserApiController extends ApiController
 		$relationships = array_unique($relationships);
 
 		if(count($relationships) == 0)
-			$relationships[] = 'knows';
+			$relationships = array_keys($this->_relationships);
 
 		$query = $this->_queryPrefix .
 			'SELECT ?to ?p ?label WHERE {' .
