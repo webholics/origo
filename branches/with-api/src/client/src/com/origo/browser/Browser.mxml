@@ -73,7 +73,7 @@
 					cb.id = type + "Rel";
 					cb.label = RelationshipsHelper.labels[type];
 					cb.styleName = "browserRelationshipType";
-					cb.addEventListener(Event.CHANGE, filterRelTypes);
+					cb.addEventListener(Event.CHANGE, relCheckBoxChange);
 					cb.selected = true;
 					
 					if(type != "knows")
@@ -161,16 +161,9 @@
 			{
 				progressBox.visible = true;
 				
-				// filter relationship types
-				var types:Array = new Array();
-				for each(var cb:CheckBox in relBox.getChildren()) {
-					if(cb && cb.selected)
-						types.push(cb.id.substr(0, cb.id.length-3));
-				}
-				
 				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, loadRelationshipsSuccess);
 				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
-				api.browserRelationships(uri, types);
+				api.browserRelationships(uri);
 			}
 			
 			private function loadRelationshipsSuccess(event:ApiConnectorEvent):void
@@ -190,13 +183,13 @@
 					from.relationships = result;
 					
 					// delete old relationships
-					for(var id:String in graph.neighbors(from.id)) {
+					/*for(var id:String in graph.neighbors(from.id)) {
 						var oldItem:Item = graph.find(id);
 						if(oldItem)
 							graph.unlink(from, oldItem);
-					}
+					}*/
 				
-					// add current relationships
+					// add relationships
 					for each(var rel:Object in result.relationship) {
 						var item:BrowserItem = graph.find(rel.profile[0].@id) as BrowserItem;
 						if(item == null) {
@@ -213,6 +206,7 @@
 						}
 					}
 
+					//filterRelationships(from);
 					springgraph.currentItem = from;
 				}
 				
@@ -331,9 +325,9 @@
 			/**
 			 * Load properties from current item into profile viewer.
 			 */
-			private function refreshProfile(item:Item):void
+			private function refreshProfile(event:Object):void
 			{
-				var i:BrowserItem = item as BrowserItem;
+				var i:BrowserItem = springgraph.currentItem as BrowserItem;
 				
 				if(!i) {
 					profileName.visible = false;
@@ -447,6 +441,9 @@
 					return;
 				}
 				
+				// filter relationships
+				filterRelationships(i);
+				
 				// set add or delete relationship button
 				if(i.id != ProfileStore.getInstance().id) {
 					var found:Boolean = false;
@@ -491,7 +488,7 @@
 				// set userimage				
 				if(i.properties.property.(@name == "img").length() > 0)
 					profileImage.source = i.properties.property.(@name == "img")[0];
-				else if(i.properties.property.(@name == "depiction") > 0)
+				else if(i.properties.property.(@name == "depiction").length() > 0)
 					profileImage.source = i.properties.property.(@name == "depiction")[0];
 				else
 					profileImage.source = avatarCls;
@@ -972,16 +969,25 @@
 				currentState = "";
 			}
 			
-			private function filterRelTypes(event:Event):void
+			private function relCheckBoxChange(event:Event):void
 			{
 				var cb:CheckBox = event.currentTarget as CheckBox;
 				if(cb.id == "knowsRel") {
+					var child:Object;
 					if(cb.selected) {
 						// knows is the base relationship of all relationships
 						// therefore we then select all checkboxes
-						for each(var child:Object in relBox.getChildren()) {
+						for each(child in relBox.getChildren()) {
 							if(child as CheckBox) {
 								(child as CheckBox).selected = true;
+							}
+						}
+					}
+					else {
+						// for usability reasons we deselect everything here
+						for each(child in relBox.getChildren()) {
+							if(child as CheckBox) {
+								(child as CheckBox).selected = false;
 							}
 						}
 					}
@@ -997,7 +1003,51 @@
 					}
 				}
 				
-				browse();
+				if(springgraph.currentItem)
+					filterRelationships(springgraph.currentItem as BrowserItem);
+			}
+			
+			private function filterRelationships(item:BrowserItem):void {
+				// filter relationship types
+				var types:Array = new Array();
+				for each(var cb:CheckBox in relBox.getChildren()) {
+					if(cb)
+						types[cb.id.substr(0, cb.id.length-3)] = cb.selected;
+				}
+
+				springgraph.resetShowHide();
+				
+				var neighbors:Object = graph.neighbors(item.id);
+				for(var neighborId:String in neighbors) {
+					if(graph.hasNode(neighborId)) {
+						var nitem:BrowserItem = graph.find(neighborId) as BrowserItem;
+						
+						if(!springgraph.hasBeenCurrentItem(nitem)) {
+							if(item.relationships && item.relationships.relationship.profile.(hasOwnProperty('@id') && @id == nitem.id).length() > 0) {
+								var node:XML = item.relationships.relationship.profile.(hasOwnProperty('@id') && @id == nitem.id)[0];
+								var nodeTypes:Array = node.parent().@type.split(",");
+								
+								var itemVisible:Boolean = false;
+								for each(var nodeType:String in nodeTypes) {
+									if(types[nodeType]) {
+										itemVisible = true;
+										break;
+									}
+								}
+							
+								if(!itemVisible)
+									springgraph.hideItem(nitem);
+							}
+							else
+								springgraph.hideItem(nitem);
+						}
+					}
+				}
+				
+				if(springgraph.itemLimit == 50)
+					springgraph.itemLimit--;
+				else	
+					springgraph.itemLimit++;
 			}
 		]]>
 	</mx:Script>
@@ -1079,7 +1129,8 @@
 		itemLimit="50"
 		autoFit="false"
 		repulsionFactor="{rep.value}"
-		showHistory="true">
+		showHistory="true"
+		tidyHistory="true">
 		<sg:addItemEffect>
 			<mx:Fade duration="500"/>
 		</sg:addItemEffect>
@@ -1144,7 +1195,7 @@
 						</mx:filters>
 					</mx:Image>
 				</mx:Canvas>
-				<mx:Label id="profileName" width="100%" textAlign="center" styleName="normalText"/>
+				<mx:Label id="profileName" width="100%" minWidth="0" textAlign="center" styleName="normalText"/>
 				<mx:Accordion width="100%" height="100%" minHeight="0"
 					creationPolicy="all" 
 					paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5">

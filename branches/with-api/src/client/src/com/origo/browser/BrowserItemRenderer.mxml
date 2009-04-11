@@ -74,10 +74,10 @@
 					itemImage.maxHeight = 50;
 					itemImage.styleName = "userimagesmall";
 				}
-				
+
 				if(_data.properties.property.(@name == "img").length() > 0)
 					itemImage.source = _data.properties.property.(@name == "img")[0];
-				else if(_data.properties.property.(@name == "depiction") > 0)
+				else if(_data.properties.property.(@name == "depiction").length() > 0)
 					itemImage.source = _data.properties.property.(@name == "depiction")[0];
 				else {
 					if(Browser.getInstance().springgraph.currentItem == _data)
@@ -136,6 +136,6 @@
 		</mx:filters>
 	</mx:Image>
 		
-	<mx:LinkButton id="itemLinkButton" width="140" click="browse()"/>
+	<mx:LinkButton id="itemLinkButton" styleName="normalGraphButton" width="140" click="browse()"/>
 	
 </mx:VBox>

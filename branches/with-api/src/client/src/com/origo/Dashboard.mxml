@@ -45,7 +45,7 @@
 				// set userimage
 				if(store.properties.property.(@name == "img").length() > 0)
 					dashboardImage.source = store.properties.property.(@name == "img")[0];
-				else if(store.properties.property.(@name == "depiction") > 0)
+				else if(store.properties.property.(@name == "depiction").length() > 0)
 					dashboardImage.source = store.properties.property.(@name == "depiction")[0];
 				else
 					dashboardImage.source = avatarCls;
