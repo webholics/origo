@@ -34,12 +34,6 @@ if(!is_file(APPLICATION_PATH . '/../config/config.ini'))
 $config = new Zend_Config_Ini(APPLICATION_PATH . '/../config/config.ini');
 $registry->config = $config;
 
-//$dbAdapter = Zend_Db::factory($config->database);
-//Zend_Db_Table_Abstract::setDefaultAdapter($dbAdapter);
-//$registry->dbAdapter = $dbAdapter;
-
-//date_default_timezone_set($config->timezone);
-
 // should be disabled on public servers
 if($config->misc->environment == 'development') {
 	ini_set('display_errors', 1);
@@ -51,5 +45,23 @@ else {
 if(!is_writable(APPLICATION_PATH . '/../' . $config->caching->dir)) {
 	die('Origo error: Cache directory is not writable.');
 }
+
+/****************************************
+	BEGIN DEMO CODE
+*****************************************/
+
+$demo_reset_file = APPLICATION_PATH . '/../' . $config->caching->dir . '/DEMO_CLEAR';
+// reset time in seconds (15 min = 60 * 15 sec)
+$demo_reset_time = 15*60;
+if(!is_file($demo_reset_file) || filemtime($demo_reset_file) < time() - $demo_reset_time) {
+	touch($demo_reset_file);
+	
+	$dbAdapter = Zend_Db::factory($config->database);
+	$dbAdapter->getConnection()->exec(file_get_contents(APPLICATION_PATH . '/../sql/origo_demo.sql'));
+}
+
+/****************************************
+	END DEMO CODE
+*****************************************/
 
 unset($config, $registry, $dbAdapter);

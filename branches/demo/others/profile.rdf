@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:rel="http://purl.org/vocab/relationship/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+	<foaf:PersonalProfileDocument rdf:about="http://www.origo-client.com/demo/others/profile.rdf"/>
+	
+	<foaf:Person rdf:ID="ah">
+		<foaf:name>Alan Hughes</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/ah.jpg"/>
+		<foaf:mbox rdf:resource="mailto:ah@example.com"/>
+		<foaf:jabberID>ah@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:wouldLikeToKnow rdf:resource="#bw"/>
+		<foaf:knows rdf:resource="#ch"/>
+		<rel:friendOf rdf:resource="#dk"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="bw">
+		<foaf:name>Barbara Wright</foaf:name>
+		<foaf:gender>female</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/bw.jpg"/>
+		<foaf:mbox rdf:resource="mailto:bw@example.com"/>
+		<foaf:jabberID>bw@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="ch">
+		<foaf:name>Cal Hudson</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/ch.jpg"/>
+		<foaf:mbox rdf:resource="mailto:ch@example.com"/>
+		<foaf:jabberID>ch@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:wouldLikeToKnow rdf:resource="#dk"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="dk">
+		<foaf:name>Don Keller</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/dk.jpg"/>
+		<foaf:mbox rdf:resource="mailto:dk@example.com"/>
+		<foaf:jabberID>dk@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<foaf:knows rdf:resource="#ea"/>
+		<rel:friendOf rdf:resource="#fs"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="ea">
+		<foaf:name>Elizabeth Anson</foaf:name>
+		<foaf:gender>female</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/ea.jpg"/>
+		<foaf:mbox rdf:resource="mailto:ea@example.com"/>
+		<foaf:jabberID>ea@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="fs">
+		<foaf:name>Frank Simmons</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/fs.jpg"/>
+		<foaf:mbox rdf:resource="mailto:fs@example.com"/>
+		<foaf:jabberID>fs@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:friendOf rdf:resource="#gc"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="gc">
+		<foaf:name>Guinevere Corey</foaf:name>
+		<foaf:gender>female</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/gc.jpg"/>
+		<foaf:mbox rdf:resource="mailto:gc@example.com"/>
+		<foaf:jabberID>gc@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:wouldLikeToKnow rdf:resource="#hs"/>
+		<rel:friendOf rdf:resource="#is"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="hs">
+		<foaf:name>Henry van Statten</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/hs.jpg"/>
+		<foaf:mbox rdf:resource="mailto:hs@example.com"/>
+		<foaf:jabberID>hs@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="is">
+		<foaf:name>Ida Scott</foaf:name>
+		<foaf:gender>female</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/is.jpg"/>
+		<foaf:mbox rdf:resource="mailto:is@example.com"/>
+		<foaf:jabberID>is@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:friendOf rdf:resource="#ja"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="ja">
+		<foaf:name>Jeremy Aster</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/ja.jpg"/>
+		<foaf:mbox rdf:resource="mailto:ja@example.com"/>
+		<foaf:jabberID>ja@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:friendOf rdf:resource="#kw"/>
+		<rel:friendOf rdf:resource="#lz"/>
+		<rel:friendOf rdf:resource="#mw"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="kw">
+		<foaf:name>Kristine Walsh</foaf:name>
+		<foaf:gender>female</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/kw.jpg"/>
+		<foaf:mbox rdf:resource="mailto:kw@example.com"/>
+		<foaf:jabberID>kw@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:wouldLikeToKnow rdf:resource="#lz"/>
+		<rel:friendOf rdf:resource="#mw"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="lz">
+		<foaf:name>Lewis Zimmerman</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/lz.jpg"/>
+		<foaf:mbox rdf:resource="mailto:lz@example.com"/>
+		<foaf:jabberID>lz@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="mw">
+		<foaf:name>Mace Windu</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/mw.jpg"/>
+		<foaf:mbox rdf:resource="mailto:mw@example.com"/>
+		<foaf:jabberID>mw@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:friendOf rdf:resource="#nh"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="nh">
+		<foaf:name>Nancy Hedford</foaf:name>
+		<foaf:gender>female</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/nh.jpg"/>
+		<foaf:mbox rdf:resource="mailto:nh@example.com"/>
+		<foaf:jabberID>nh@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:friendOf rdf:resource="#os"/>
+		<foaf:knows rdf:resource="#pw"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="os">
+		<foaf:name>Orin Scannell</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/os.jpg"/>
+		<foaf:mbox rdf:resource="mailto:os@example.com"/>
+		<foaf:jabberID>os@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="pw">
+		<foaf:name>Peter Warmsly</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/pw.jpg"/>
+		<foaf:mbox rdf:resource="mailto:pw@example.com"/>
+		<foaf:jabberID>pw@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<foaf:knows rdf:resource="#rb"/>
+		<foaf:knows rdf:resource="#st"/>
+		<foaf:knows rdf:resource="#tf"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="rb">
+		<foaf:name>Rayna Butler</foaf:name>
+		<foaf:gender>female</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/rb.jpg"/>
+		<foaf:mbox rdf:resource="mailto:rb@example.com"/>
+		<foaf:jabberID>rb@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:friendOf rdf:resource="#st"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="st">
+		<foaf:name>Simon Tarses</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/st.jpg"/>
+		<foaf:mbox rdf:resource="mailto:st@example.com"/>
+		<foaf:jabberID>st@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:wouldLikeToKnow rdf:resource="#tf"/>
+		<foaf:knows rdf:resource="#ut"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="tf">
+		<foaf:name>Tory Foster</foaf:name>
+		<foaf:gender>female</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/tf.jpg"/>
+		<foaf:mbox rdf:resource="mailto:tf@example.com"/>
+		<foaf:jabberID>tf@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<rel:friendOf rdf:resource="#ut"/>
+	</foaf:Person>
+
+	<foaf:Person rdf:ID="ut">
+		<foaf:name>Ulric Tagge</foaf:name>
+		<foaf:gender>male</foaf:gender>
+		<foaf:depiction rdf:resource="http://www.origo-client.com/demo/others/ut.jpg"/>
+		<foaf:mbox rdf:resource="mailto:ut@example.com"/>
+		<foaf:jabberID>ut@jabber.org</foaf:jabberID>
+		<foaf:homepage rdf:resource="http://www.example.com"/>
+		<foaf:knows rdf:resource="#st"/>
+		<rel:friendOf rdf:resource="#pw"/>
+	</foaf:Person>
+	
+</rdf:RDF>
