@@ -34,12 +34,6 @@ if(!is_file(APPLICATION_PATH . '/../config/config.ini'))
 $config = new Zend_Config_Ini(APPLICATION_PATH . '/../config/config.ini');
 $registry->config = $config;
 
-//$dbAdapter = Zend_Db::factory($config->database);
-//Zend_Db_Table_Abstract::setDefaultAdapter($dbAdapter);
-//$registry->dbAdapter = $dbAdapter;
-
-//date_default_timezone_set($config->timezone);
-
 // should be disabled on public servers
 if($config->misc->environment == 'development') {
 	ini_set('display_errors', 1);
@@ -52,4 +46,4 @@ if(!is_writable(APPLICATION_PATH . '/../' . $config->caching->dir)) {
 	die('Origo error: Cache directory is not writable.');
 }
 
-unset($config, $registry, $dbAdapter);
+unset($config, $registry);
