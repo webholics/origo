@@ -1,3 +1,10 @@
+/**
+ * Origo - social client
+ *
+ * @copyright Copyright (c) 2008-2009 Mario Volke
+ * @author    Mario Volke <mario.volke@webholics.de>
+ */
+
 package com.origo
 {
 	import flash.events.Event;

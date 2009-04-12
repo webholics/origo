@@ -1,3 +1,10 @@
+/**
+ * Origo - social client
+ *
+ * @copyright Copyright (c) 2008-2009 Mario Volke
+ * @author    Mario Volke <mario.volke@webholics.de>
+ */
+
 package com.origo.browser
 {
 	import com.adobe.flex.extras.controls.springgraph.Item;
