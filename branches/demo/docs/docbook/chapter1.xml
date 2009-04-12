@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter 
+	xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink"> 
+	<title>Motivation &amp; Vision</title>
+	<sect1>
+		<title>Motivation</title>
+		<para>
+			Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
+			bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
+			entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
+			untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
+			zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
+			zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
+			Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
+		</para>
+	</sect1>
+	<sect1>
+		<title>Vision</title>
+		<para>
+			Das sog. <emphasis>Semantic Web</emphasis>, welches durch mehrere Sprachen und 
+			Standards vom <acronym><link xlink:href="http://www.w3c.org">W3C</link></acronym>
+			definiert wird, stellt den nötigen Rahmen bereit, um offene Schnittstellen über 
+			Ontologien zu erstellen und damit die Datensilos heutiger sozialer Netzwerke 
+			aufzubrechen. Durch die <emphasis>Friend of a Friend</emphasis> (<acronym>FOAF</acronym>) 
+			Ontologie ist eine solche Schnittstelle um Personen im Semantic Web zu beschreiben bereits 
+			vorhanden. Mit dieser Ontologie ist es nicht nur möglich sich selbst über verschiedenste
+			Metadaten zu beschreiben, zusätzlich lassen sich Verbindungen und Beziehungen zwischen 
+			Personen darstellen.
+		</para>
+		<para>
+			Die Daten werden in der Regel in <acronym>RDF/XML</acronym> serialisiert. Solche RDF-Dokumente,
+			die FOAF-Daten enthalten, können von den verschiedenen sozialen Netzwerken veröffentlich werden.
+			Personen werden über <acronym>URIs</acronym> identifizierbar. Damit wird es möglich
+			Personen über die bisherigen Grenzen sozialer Netzwerke hinweg miteinander zu verbinden.
+			Es entsteht ein <emphasis role="strong">semantisches, verteiltes, soziales Netzwerk</emphasis>.
+		</para>
+		<mediaobject>
+			<imageobject role="fo">
+				<imagedata align="right" format="SVG" fileref="../images/socialnetwork.svg"/>
+			</imageobject>
+			<imageobject role="html">
+				<imagedata align="right" format="PNG" fileref="../images/socialnetwork.png"/>
+			</imageobject>
+			<textobject>
+				<phrase>Ein verteiltes soziales Netzwerk</phrase>
+			</textobject>
+			<caption>
+				<para>Ein verteiltes soziales Netzwerk</para>
+			</caption>
+		</mediaobject>
+		<para>
+			Damit ein User die vollständige Kontrolle über seinen persönlichen URI und seine veröffentlichten Daten behält,
+			sollte er die RDF-Daten auf seinen eigenen Webspace oder Webserver laden.
+			Die Verwaltung dieser Daten wird aber schnell unübersichtlich und die XML-Dokumente selbst zu schreiben 
+			kostet Zeit. <emphasis>Orgio</emphasis> kann auf dem eigenen Webserver selbst installiert und eingerichtet werden.
+			Der Origo Webclient schafft dann eine einfach und intuitiv zu bedienende Schnittstelle zum User.
+			Dieser kann seine Daten dadurch auch ohne direkte Kenntnisse über die Technologien des Semantic Web 
+			selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
+			Auf bereits bestehende Profile in anderen sozialen Netzwerken kann mit Hilfe von Origo verlinkt werden,
+			sofern die Nutzerdaten auch semantisch verfügbar sind.
+		</para>
+	</sect1>
+</chapter>

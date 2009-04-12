@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" 
+	verticalGap="0"
+	creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import com.origo.editor.Editor;
+			import com.origo.browser.Browser;
+			import mx.events.StateChangeEvent;
+			import mx.core.Application;	
+			import mx.binding.utils.ChangeWatcher;
+			import mx.binding.utils.BindingUtils;
+			
+			private var store:ProfileStore;	
+		
+			private function init():void
+			{
+				Application.application.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, navigationStateChange);
+				
+				var editor:Editor = Editor.getInstance();
+				editor.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, navigationStateChange);
+				
+				// default fist state is dashboard
+				navigationDashboardButton.selected = true;
+				navigationEditorButton.selected = false;
+				navigationBrowserButton.selected = false;
+				navigationAboutButton.selected = false;
+				
+				store = ProfileStore.getInstance();
+				
+				// listen to updates in profile store
+				BindingUtils.bindSetter(updateWelcome, store, "properties");
+				
+				// call updateWelcome at first manually
+				updateWelcome();
+			}
+			
+			private function navigationStateChange(event:StateChangeEvent):void
+			{
+				updateNavigation();
+			}
+			
+			private function updateNavigation():void
+			{
+				switch(Application.application.currentState) {
+					case "dashboard":
+						navigationDashboardButton.selected = true;
+						navigationEditorButton.selected = false;
+						navigationBrowserButton.selected = false;
+						navigationAboutButton.selected = false;
+						currentState = "";
+						break;
+					case "editor":
+						navigationDashboardButton.selected = false;
+						navigationEditorButton.selected = true;
+						navigationBrowserButton.selected = false;
+						navigationAboutButton.selected = false;
+						currentState = "editor";
+						
+						switch(Application.application.editor.currentState) {
+							case "personalinformation":
+								navigationEditorPersonalInformation.selected = true;
+								navigationEditorWebsites.selected = false;
+								navigationEditorExternalProfiles.selected = false;
+								navigationEditorRelationships.selected = false;
+								break;
+							case "websites":
+								navigationEditorPersonalInformation.selected = false;
+								navigationEditorWebsites.selected = true;
+								navigationEditorExternalProfiles.selected = false;
+								navigationEditorRelationships.selected = false;
+								break;
+							case "externalprofiles":
+								navigationEditorPersonalInformation.selected = false;
+								navigationEditorWebsites.selected = false;
+								navigationEditorExternalProfiles.selected = true;
+								navigationEditorRelationships.selected = false;
+								break;
+							case "relationships":
+								navigationEditorPersonalInformation.selected = false;
+								navigationEditorWebsites.selected = false;
+								navigationEditorExternalProfiles.selected = false;
+								navigationEditorRelationships.selected = true;
+								break;
+							default:
+								navigationEditorPersonalInformation.selected = false;
+								navigationEditorWebsites.selected = false;
+								navigationEditorExternalProfiles.selected = false;
+								navigationEditorRelationships.selected = false;
+								break;
+						}
+						
+						break;
+					case "browser":
+						navigationDashboardButton.selected = false;
+						navigationEditorButton.selected = false;
+						navigationBrowserButton.selected = true;
+						navigationAboutButton.selected = false;
+						currentState = "browser";
+						break;
+					case "about":
+						navigationDashboardButton.selected = false;
+						navigationEditorButton.selected = false;
+						navigationBrowserButton.selected = false;
+						navigationAboutButton.selected = true;
+						currentState = "";
+						break;
+					default:
+						navigationDashboardButton.selected = false;
+						navigationEditorButton.selected = false;
+						navigationBrowserButton.selected = false;
+						navigationAboutButton.selected = false;
+						currentState = "";
+						break;
+				}
+			}
+		
+			private function dashboardClick():void
+			{
+				if(Application.application.currentState != "dashboard") {
+					Application.application.currentState = "dashboard";
+				}
+			}
+			
+			private function editorClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+			}
+			
+			private function browserClick():void
+			{
+				if(Application.application.currentState != "browser") {
+					Application.application.currentState = "browser";
+				}
+			}
+			
+			private function aboutClick():void
+			{
+				if(Application.application.currentState != "about") {
+					Application.application.currentState = "about";
+				}
+			}
+			
+			private function editorPersonalInformationClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+				if(Application.application.editor.currentState != "personalinformation") {
+					Application.application.editor.currentState = "personalinformation";
+				}
+			}
+			
+			private function editorWebsitesClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+				if(Application.application.editor.currentState != "websites") {
+					Application.application.editor.currentState = "websites";
+				}
+			}
+						
+			private function editorExternalProfilesClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+				if(Application.application.editor.currentState != "externalprofiles") {
+					Application.application.editor.currentState = "externalprofiles";
+				}
+			}
+						
+			private function editorRelationshipsClick():void
+			{
+				if(Application.application.currentState != "editor") {
+					Application.application.currentState = "editor";
+				}
+				if(Application.application.editor.currentState != "relationships") {
+					Application.application.editor.currentState = "relationships";
+				}
+			}
+			
+			private function updateWelcome(value:Object=null):void
+			{
+				if(store.properties.property.(@name == "name").length() > 0)
+					welcomeText.text = "Welcome, " + store.properties.property.(@name == "name")[0];
+				else if(store.properties.property.(@name == "givenname").length() > 0)
+					welcomeText.text = "Welcome, " + store.properties.property.(@name == "givenname")[0];
+				else if(store.properties.property.(@name == "nick").length() > 0)
+					welcomeText.text = "Welcome, " + store.properties.property.(@name == "nick")[0];
+				else
+					welcomeText.text = "Welcome, " + store.id;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:states>
+		<mx:State name="editor">
+			<mx:AddChild position="lastChild">
+				<mx:Canvas id="navigationEditor">
+					<mx:HBox left="190" right="10" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" styleName="lightHeaderBox">
+						<mx:Button id="navigationEditorPersonalInformation" 
+							click="editorPersonalInformationClick()" 
+							width="150" 
+							label="Personal Information" 
+							styleName="lightButton"/>
+						<mx:Button id="navigationEditorWebsites" 
+							click="editorWebsitesClick()" 
+							width="150" 
+							label="Websites / Accounts" 
+							styleName="lightButton"/>
+						<mx:Button id="navigationEditorExternalProfiles" 
+							click="editorExternalProfilesClick()" 
+							width="150" 
+							label="External Profiles" 
+							styleName="lightButton"/>
+						<mx:Button id="navigationEditorRelationships" 
+							click="editorRelationshipsClick()" 
+							width="150" 
+							label="Relationships" 
+							styleName="lightButton"/>							
+					</mx:HBox>
+				</mx:Canvas>
+			</mx:AddChild>			
+		</mx:State>
+		<mx:State name="browser"/>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="*" toState="editor">
+			<mx:WipeDown target="{navigationEditor}" duration="500"/>
+		</mx:Transition>
+	</mx:transitions>
+
+	<mx:Canvas height="90" width="100%" styleName="box">
+		<mx:Image source="@Embed('../assets/logo_small.png')" top="10" left="10" />
+		<mx:Button id="navigationDashboardButton" click="dashboardClick()" left="200" bottom="10" width="100" label="Dashboard"/>
+		<mx:Button id="navigationEditorButton" click="editorClick()" left="310" bottom="10" width="100" label="Editor"/>
+		<mx:Button id="navigationBrowserButton" click="browserClick()" left="420" bottom="10" width="100" label="Browser"/>
+		<mx:Button id="navigationAboutButton" click="aboutClick()" right="10" bottom="10" width="100" label="About"/>
+		
+		<mx:Text id="welcomeText" right="10" top="10" styleName="normalText" selectable="false"/>
+	</mx:Canvas>
+	
+</mx:VBox>

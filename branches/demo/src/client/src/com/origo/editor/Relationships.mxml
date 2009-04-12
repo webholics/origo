@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.ObjectProxy;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.core.Application;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import com.origo.*;
+			
+			private var api:ApiConnector;
+			[Bindable] private var store:ProfileStore;
+			[Bindable] private var relTypes:ArrayCollection;
+			
+			private function init():void
+			{				
+				api = ApiConnector.getInstance();
+				store = ProfileStore.getInstance();
+			}
+			private function initAdd():void
+			{
+				addToValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
+					addTo.styleName = "error";
+				});
+				addToValidator.addEventListener(ValidationResultEvent.VALID, function():void {
+					addTo.styleName = "";
+				});
+			}
+			
+			private function enterAddState():void
+			{
+				addFormErrorText.visible = false;
+				addFormErrorText.includeInLayout = false;
+				
+				// disable validator here because we want to set "invalid" empty fields as default
+				// but won't show invalid styled text inputs
+				addToValidator.enabled = false;
+				
+				addTo.text = "";
+				
+				relTypes = new ArrayCollection();
+				for each(var key:String in RelationshipsHelper.types)
+					if(key == "knows")
+						relTypes.addItem({
+							key:		key,
+							label:		RelationshipsHelper.labels[key],
+							selected:	true
+						});
+					else
+						relTypes.addItem({
+							key:		key,
+							label:		RelationshipsHelper.labels[key],
+							selected:	false
+						});
+				
+				addToValidator.enabled = true;
+			}
+			
+			private function enterUpdateState():void
+			{
+				updateFormErrorText.visible = false;
+				updateFormErrorText.includeInLayout = false;
+			}
+			
+			private function validateAddForm():Boolean
+			{               
+				var valid:Boolean = true;
+				var vEvent:ValidationResultEvent;
+                
+				vEvent = addToValidator.validate();
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
+					valid = false;
+
+				return valid;
+			}
+			
+			private function addRelationship():void
+			{
+				// trim all inputs
+				addTo.text = InputHelper.trim(addTo.text);
+				
+				// validate
+				if(!validateAddForm())
+					return;
+					
+				currentState = "addsave";
+				
+				var types:Array = new Array();
+				for each(var type:Object in relTypes)
+					if(type.selected)
+						types.push(type.key);
+
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, addSuccess);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiAddError);
+				api.editorRelationshipsUpdate(addTo.text, types);
+			}
+			
+			private function addSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, addSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiAddError);
+				
+				// save relationships into profile store
+				var result:XML = event.data as XML;
+				store.relationships = result;
+				
+				currentState = "";
+			}
+			
+			private function apiAddError(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, addSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiAddError);
+				
+				currentState = "add";
+				addFormErrorText.text = event.message;
+				addFormErrorText.visible = true;
+				addFormErrorText.includeInLayout = true;
+			}
+			
+			private function gotoUpdateForm():void
+			{
+				var selected:Object = relationshipsList.selectedItem as XML;
+				
+				if(selected == null) {
+					var alert:Alert = Alert.show("Please select a relationship you want to edit first.", "No relationship selected");
+					alert.width = 350;
+					alert.height = 120;
+					return;
+				}
+				
+				var rels:Array = selected.@type.split(",");
+				relTypes = new ArrayCollection();
+				for each(var key:String in RelationshipsHelper.types)
+					if(key == "knows")
+						relTypes.addItem({
+							key:		key,
+							label:		RelationshipsHelper.labels[key],
+							selected:	true
+						});
+					else {
+						var found:Boolean = false;
+						for each(var rel:String in rels)
+							if(rel == key) {
+								found = true;
+								break;
+							}
+							
+						relTypes.addItem({
+							key:		key,
+							label:		RelationshipsHelper.labels[key],
+							selected:	found
+						});
+					}
+				
+				currentState = "update";
+				updateTo.text = selected.profile.@id;
+			}
+			
+			private function updateRelationship():void
+			{
+				currentState = "updatesave";
+					
+				var types:Array = new Array();
+				for each(var type:Object in relTypes)
+					if(type.selected)
+						types.push(type.key);
+
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiUpdateError);
+				api.editorRelationshipsUpdate(updateTo.text, types);
+			}
+			
+			private function updateSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiUpdateError);
+				
+				// save relationships into profile store
+				var result:XML = event.data as XML;
+				store.relationships = result;
+				
+				currentState = "";
+			}
+			
+			private function apiUpdateError(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiUpdateError);
+				
+				currentState = "update";
+				updateFormErrorText.text = event.message;
+				updateFormErrorText.visible = true;
+				updateFormErrorText.includeInLayout = true;
+			}
+			
+			private function showDisabledInfo():void
+			{
+				var alert:Alert = Alert.show("You cannot change the personal profile URL.", "Can't change value");
+				alert.width = 300;
+				alert.height = 120;
+			}
+			
+			private function deleteRelationship():void
+			{
+				var selected:Object = relationshipsList.selectedItem;
+				
+				if(selected == null) {
+					var alert:Alert = Alert.show("Please select a relationship you want to delete first.", "No relationship selected");
+					alert.width = 350;
+					alert.height = 120;
+					return;
+				}
+
+				var alertDelete:Alert = Alert.show(
+					"Are you sure you want to delete the selected relationship?", 
+					"Delete relationship", 
+					Alert.OK | Alert.CANCEL, 
+					null, 
+					alertDeleteListener, 
+					null, 
+					Alert.OK);
+				alertDelete.width = 400;
+				alertDelete.height = 120;
+			}
+			
+			private function alertDeleteListener(eventObj:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if(eventObj.detail == Alert.OK) {
+					var selected:XML = relationshipsList.selectedItem as XML;
+					
+					if(selected != null) {
+						currentState = "delete";
+					
+						api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+						api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiDeleteError);
+						api.editorRelationshipsDelete(selected.profile.@id);
+					}
+				}
+			}
+			
+			private function deleteSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiDeleteError);
+				
+				// save relationships into profile store
+				var result:XML = event.data as XML;
+				store.relationships = result;
+				
+				currentState = "";
+			}
+			
+			private function apiDeleteError(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiDeleteError);
+				
+				currentState = "";
+			}
+			
+			private function listKeyDown(event:KeyboardEvent):void
+			{
+    			if(event.keyCode == Keyboard.DELETE)
+    				deleteRelationship();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:states>
+		<mx:State name="add" enterState="enterAddState()">
+			<mx:AddChild>
+				<mx:StringValidator id="addToValidator" source="{addTo}" property="text" required="true"/>
+			</mx:AddChild>
+			<mx:AddChild>
+				<mx:Form id="addForm" 
+					horizontalCenter="0" verticalCenter="0"
+					defaultButton="{addSubmitButton}" 
+					creationComplete="initAdd()">	
+					<mx:FormHeading id="addFormHeading" label="Add relationship"/>
+					<mx:Text id="addFormErrorText" styleName="errorText" visible="false" includeInLayout="false"/>
+					<mx:FormItem label="Personal URI" required="true">
+						<mx:TextInput id="addTo" width="250"/>
+					</mx:FormItem>
+					<mx:FormItem label="Relationship types (me -> url)">
+						<mx:List id="addRelationshipsInput" 
+							width="250" height="250" 
+							dataProvider="{relTypes}" 
+							itemRenderer="com.origo.editor.RelationshipTypesItemRenderer" 
+							selectable="false"/>
+					</mx:FormItem> 
+					<mx:Spacer height="10" width="100%"/>
+					<mx:HRule width="100%"/>
+					<mx:HBox horizontalGap="10" horizontalAlign="right" width="100%">
+						<mx:Button label="Cancel" id="addCancelButton" width="100" click="currentState=''"/>	
+						<mx:Button label="Save" id="addSubmitButton" width="100" click="addRelationship()"/>
+					</mx:HBox>
+				</mx:Form>	
+			</mx:AddChild>
+			<mx:RemoveChild target="{tableCanvas}"/>
+		</mx:State>
+		<mx:State name="addsave">
+			<mx:AddChild>
+				<mx:Box id="addProgressBar"
+					paddingBottom="10" paddingTop="10" 
+					paddingLeft="10" paddingRight="10"
+					horizontalCenter="0" verticalCenter="0"
+					styleName="box">
+					<mx:ProgressBar 
+						label="Adding relationship..." 
+						width="300"
+						indeterminate="true"/>
+				</mx:Box>
+			</mx:AddChild>
+			<mx:RemoveChild target="{tableCanvas}"/>
+		</mx:State>
+		<mx:State name="update" enterState="enterUpdateState()">
+			<mx:AddChild>
+				<mx:Form id="updateForm" 
+					horizontalCenter="0" verticalCenter="0"
+					defaultButton="{updateSubmitButton}">	
+					<mx:FormHeading id="updateFormHeading" label="Edit relationship"/>
+					<mx:Text id="updateFormErrorText" styleName="errorText" visible="false" includeInLayout="false"/>
+					<mx:FormItem label="Personal URI" required="true">
+						<mx:TextInput id="updateTo" width="250" editable="false" styleName="disabled" click="showDisabledInfo()" focusEnabled="false"/>
+					</mx:FormItem>
+					<mx:FormItem label="Relationship types (me -> url)">
+						<mx:List id="updateRelationshipsInput" 
+							width="250" height="250" 
+							dataProvider="{relTypes}" 
+							itemRenderer="com.origo.editor.RelationshipTypesItemRenderer" 
+							selectable="false"/>
+					</mx:FormItem> 
+					<mx:Spacer height="10" width="100%"/>
+					<mx:HRule width="100%"/>
+					<mx:HBox horizontalGap="10" horizontalAlign="right" width="100%">
+						<mx:Button label="Cancel" id="updateCancelButton" width="100" click="currentState=''"/>	
+						<mx:Button label="Save" id="updateSubmitButton" width="100" click="updateRelationship()"/>
+					</mx:HBox>
+				</mx:Form>	
+			</mx:AddChild>
+			<mx:RemoveChild target="{tableCanvas}"/>
+		</mx:State>
+		<mx:State name="updatesave">
+			<mx:AddChild>
+				<mx:Box id="updateProgressBar"
+					paddingBottom="10" paddingTop="10" 
+					paddingLeft="10" paddingRight="10"
+					horizontalCenter="0" verticalCenter="0"
+					styleName="box">
+					<mx:ProgressBar 
+						label="Updating relationship..." 
+						width="300"
+						indeterminate="true"/>
+				</mx:Box>
+			</mx:AddChild>
+			<mx:RemoveChild target="{tableCanvas}"/>
+		</mx:State>
+		<mx:State name="delete">
+			<mx:AddChild>
+				<mx:Box id="deleteProgressBar"
+					paddingBottom="10" paddingTop="10" 
+					paddingLeft="10" paddingRight="10"
+					horizontalCenter="0" verticalCenter="0"
+					styleName="box">
+					<mx:ProgressBar 
+						label="Deleting relationship..." 
+						width="300"
+						indeterminate="true"/>
+				</mx:Box>
+			</mx:AddChild>
+			<mx:RemoveChild target="{tableCanvas}"/>
+		</mx:State>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="*" toState="add">
+			<mx:Fade target="{addForm}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="addsave">
+			<mx:Fade target="{addProgressBar}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="update">
+			<mx:Fade target="{updateForm}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="updatesave">
+			<mx:Fade target="{updateProgressBar}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="">
+			<mx:Fade target="{tableCanvas}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="*" toState="delete">
+			<mx:Fade target="{deleteProgressBar}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+	</mx:transitions>
+
+	<mx:Canvas id="tableCanvas" left="0" right="0" top="0" bottom="0">
+		<mx:TileList id="relationshipsList"
+			left="0" right="0" 
+			top="0" bottom="40" 
+			dataProvider="{store.relationships.relationship}"
+			itemRenderer="com.origo.editor.RelationshipsItemRenderer"
+			keyDown="listKeyDown(event)"
+			doubleClick="gotoUpdateForm()"
+			doubleClickEnabled="true"/>
+		
+		<mx:Label text="{(store.relationships.relationship.length() != 1) ? store.relationships.relationship.length() + ' relationships' : store.relationships.relationship.length() + ' relationship'}" 
+			left="0" bottom="0" 
+			styleName="normalText"/>
+		
+		<mx:HBox right="0" bottom="0">
+			<mx:Button label="Delete selected" click="deleteRelationship()"/>
+			<mx:Button label="Edit selected" click="gotoUpdateForm()"/>
+			<mx:Button label="Add relationship" click="currentState='add'"/>
+		</mx:HBox>
+	</mx:Canvas>
+	
+</mx:Canvas>

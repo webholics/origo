@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preface 
+	xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink"> 
+	<title>Vorwort</title>
+	<mediaobject id="logo">
+		<imageobject role="fo">
+			<imagedata format="SVG" fileref="../images/logo.svg"/>
+		</imageobject>
+		<imageobject role="html">
+			<imagedata format="PNG" fileref="../images/logo.png"/>
+		</imageobject>
+		<textobject>
+			<phrase>Origo Logo</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		Diese Dokumentation entstand parallel zur Konzeptions- und 
+		Entwicklungsphase. Ziel dieses Dokuments ist es, dem Leser 
+		zum einen aufzuzeigen, welche Problemstellungen mit <emphasis>Origo</emphasis> 
+		gelöst werden können und zum anderen werden die Konzepte und 
+		Module von <emphasis>Origo</emphasis> vorgestellt, um die angesprochenen Probleme 
+		zu lösen.
+	</para>
+</preface>
