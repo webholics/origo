@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="400" height="300" 
+	styleName="box" 
+	horizontalCenter="0" verticalCenter="0">
+	
+	<mx:Script>
+		<![CDATA[
+			private function gotoOrigoSite():void
+			{
+				var url:URLRequest = new URLRequest("http://www.origo-client.com"); 
+				navigateToURL(url, "_blank");
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="@Embed('../assets/logo.png')" horizontalCenter="0" top="30" />
+	
+	<mx:Text text="Origo version 0.9" styleName="normalText" horizontalCenter="0" bottom="70" selectable="false" />
+	<mx:LinkButton label="www.orgio-client.com" click="gotoOrigoSite()" horizontalCenter="0" bottom="37" />
+	<mx:Text text="Author: Mario Volke" styleName="normalText" horizontalCenter="0" bottom="10" selectable="false" />
+
+</mx:Canvas>

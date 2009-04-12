@@ -1,0 +1,55 @@
+<?php
+	$flashVars = 'api_url=' . urlencode($this->baseUrl('/api/'));
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>Origo - social client</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />
+
+		<meta name="robots" content="noindex, nofollow" />
+		<meta name="keywords" content="origo, social client, foaf, semantic web, social network" />
+
+		<meta name="description" content="Origo - social client - helps you in managing your social identity within the semantic web." />
+		<meta name="copyright" content="copyright(c) 2009<?php if(date('Y') > 2009): echo '-' . date('Y'); endif; ?> Mario Volke. All right reserved." />
+		<meta name="author" content="Mario Volke" />
+		<meta name="dc.creator" content="Mario Volke" />
+		<meta name="language" content="en" />
+		<meta name="date" content="<?= date('c') ?>" />
+
+		<style type="text/css" media="screen">
+			html, body, #content	{ height:100%; }
+			body					{ margin:0; padding:0; overflow:hidden; }
+		</style>
+		<script type="text/javascript" src="<?= $this->baseUrl('/public/js/swfobject.js') ?>"></script>
+		<script type="text/javascript">
+			swfobject.registerObject("client", "9.0.124", "<?= $this->baseUrl('/public/swf/expressInstall.swf') ?>");
+		</script>
+	</head>
+	<body>
+		<div id="content">
+			<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%" id="client" name="client">
+				<param name="movie" value="/public/swf/client.swf" />
+				<param name="menu" value="false" />
+				<param name="quality" value="high" />
+				<param name="allowscriptaccess" value="sameDomain" />
+				<param name="flashvars" value="<?= $flashVars ?>" />
+				<!--[if !IE]>-->
+				<object type="application/x-shockwave-flash" data="<?= $this->baseUrl('/public/swf/client.swf') ?>" width="100%" height="100%">
+					<param name="menu" value="false" />
+					<param name="quality" value="high" />
+					<param name="allowscriptaccess" value="sameDomain" />
+					<param name="flashvars" value="<?= $flashVars ?>" />
+				<!--<![endif]-->
+					<a href="http://www.adobe.com/go/getflashplayer">
+						<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+					</a>
+				<!--[if !IE]>-->
+				</object>
+				<!--<![endif]-->
+			</object>
+		</div>
+	</body>
+</html>

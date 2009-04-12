@@ -1,0 +1,307 @@
+/* CSS file */
+@font-face {
+	src:url("../assets/lsans.ttf");
+	font-family:LucidaSans;
+	advancedAntiAliasing:true;
+}
+@font-face {
+	src:url("../assets/lsansd.ttf");
+	font-family:LucidaSansDemibold;
+	advancedAntiAliasing:true;
+	font-weight:bold;
+}
+
+Application {
+	background-image:Embed("../assets/background.png");
+	background-repeat:repeat;
+	border-skin:ClassReference("com.degrafa.skins.CSSSkin");
+}
+.box {
+	border-skin:ClassReference("com.origo.skins.BoxSkin");
+}
+.lightBox {
+	border-skin:ClassReference("com.origo.skins.LightBoxSkin");
+}
+
+.normalText,
+.defaultFormItemLabel {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:12;
+}
+.headingText {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:15;
+	font-weight:normal;
+}
+.defaultFormItemLabel {
+	text-align:left;	
+}
+.errorText {
+	color:#c52828;
+	font-family:LucidaSans;
+	font-size:12;
+}
+.smallText {
+	color:#4e4e4e;
+	font-family:LucidaSans;
+	font-size:9;
+}
+.smallLightText {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:9;
+}
+
+Form {
+	font-family:LucidaSans;
+}
+FormHeading {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:15;
+	font-weight:normal;
+}
+FormItem {
+	labelStyleName:defaultFormItemLabel;
+	indicatorSkin:Embed(source="../assets/required_icon.png");
+	indicatorGap:24;
+}
+TextInput {
+	color:#202020;
+	font-family:LucidaSans;
+	font-size:12;
+	border-color:#1d66ba;
+	border-thickness:1;
+	border-style:solid;
+	corner-radius:3;
+	padding-left:3;
+	padding-right:3;
+	padding-top:3;
+	border-skin:ClassReference("com.origo.skins.TextInputSkin");	
+}
+TextInput.error {
+	border-skin:ClassReference("com.origo.skins.ErrorTextInputSkin");
+}
+TextInput.disabled {
+	border-skin:ClassReference("com.origo.skins.DisabledTextInputSkin");
+}
+List {
+	color:#202020;
+	font-family:LucidaSans;
+	font-size:12;
+	border-skin:ClassReference("com.origo.skins.ListSkin");	
+}
+Canvas.relationshipTypesItem {
+	border-skin:ClassReference(null);	
+}
+Checkbox.relationshipTypesItem {
+	color:#202020;
+	disabled-color:#202020;
+	font-family:LucidaSans;
+	font-size:12;
+}
+Button,
+Button.normalButton {
+	color:#202020;
+	textRollOverColor:#202020;
+	textSelectedColor:#202020;
+	font-family:LucidaSansDemibold;
+	padding-top:4;
+	font-size:12;
+	skin:ClassReference("com.origo.skins.ButtonSkin");	
+	disabledColor:#202020;
+	disabledSkin:ClassReference("com.origo.skins.DisabledButtonSkin");
+}
+Button.lightButton {
+	color:#ebebeb;
+	textRollOverColor:#ebebeb;
+	textSelectedColor:#ebebeb;
+	font-family:LucidaSans;
+	font-weight:normal;
+	padding-top:4;
+	font-size:12;
+	skin:ClassReference("com.origo.skins.LightButtonSkin");	
+}
+LinkButton {
+	color:#1d66ba;
+	textRollOverColor:#ebebeb;
+	textSelectedColor:#ebebeb;
+	font-family:LucidaSansDemibold;
+	font-size:12;
+	skin:ClassReference("com.origo.skins.LinkButtonSkin");	
+}
+ProgressBar {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-weight:normal;
+	font-size:12;
+	bar-color:#1d66ba;
+	border-color:#202020;
+	track-height:6;
+}
+HRule {
+	stroke-width:1;
+	stroke-color:#373737;
+}
+DataGrid {
+	background-color:#000000;
+	alternatingItemColors:#3b3b3b, #484848;
+	background-alpha:0.2;
+	border-thickness:1;
+	border-color:#3b3b3b;
+	
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:12;
+	
+	horizontalGridLines:false;
+	verticalGridLines:false;
+	
+	dropShadowEnabled:true;
+	shadowDistance:3;
+	shadowDirection:right;
+	dropShadowColor:#000000;
+	
+	selectionColor:#1d66ba;
+	rollOverColor:#2a4f79;
+	textRollOverColor:#ebebeb;
+	textSelectedColor:#ebebeb;
+	
+	headerStyleName:"dataGridHeaderStyle";
+	headerColors:#cdcdcd, #7e7e7e;
+}
+.dataGridHeaderStyle {
+	color:#202020;
+	font-family:LucidaSans;
+	font-weight:normal;
+	font-size:12;
+}
+Alert {
+	messageStyleName:"normalText";
+	titleStyleName:"headingText";
+	buttonStyleName:"normalButton";
+	border-skin:ClassReference("com.origo.skins.BoxSkin");
+	header-height:30;
+	padding-top:40;
+	padding-bottom:10;
+}
+TileList {
+	background-color:#000000;
+	background-alpha:0.2;
+	border-thickness:1;
+	border-color:#3b3b3b;
+	
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:12;
+	
+	dropShadowEnabled:true;
+	shadowDistance:3;
+	shadowDirection:right;
+	dropShadowColor:#000000;
+	
+	selectionColor:#1d66ba;
+	rollOverColor:#2a4f79;
+	textRollOverColor:#ebebeb;
+	textSelectedColor:#ebebeb;
+}
+HScrollBar,
+VScrollBar {
+	cornerRadius:0;
+	highlightAlphas:0, 0;
+	fillAlphas:1, 1, 1, 1;
+	fillColors:#cdcdcd, #7e7e7e, #7e7e7e, #cdcdcd;
+	trackColors:#505050, #3f3f3f;
+	themeColor:#1d66ba;
+	borderColor:#3b3b3b;
+}
+HDividedBox {
+   dividerAlpha:0.5;
+}
+Accordion {
+	background-alpha:0;
+	border-thickness:0;
+	border-color:#3b3b3b;
+	
+	themeColor:#1d66ba;
+	textRollOverColor:#ebebeb;
+	textSelectedColor:#ebebeb;
+	
+	headerStyleName:"accordionHeaderStyle";
+	headerColors:#cdcdcd, #7e7e7e;
+}
+.accordionHeaderStyle {
+	color:#202020;
+	font-family:LucidaSans;
+	font-weight:normal;
+	font-size:12;
+}
+
+/**
+ * Header
+ */
+ 
+.lightHeaderBox {
+	topLeftRadius:0;
+	topRightRadius:0;
+	border-skin:ClassReference("com.origo.skins.LightBoxSkin");
+}
+
+/**
+ * Dashboard
+ */
+ 
+Text.dashboardTextBig {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:28;
+}
+Text.dashboardHeadline {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:16;
+}
+GridRow.dashboardHeadline {
+	border-color:#b0b0b0;
+	border-sides:bottom;
+	border-style:solid;
+	border-width:1;
+}
+Image.userimage {
+	brokenImageSkin:Embed("../assets/avatar.png");	
+	brokenImageBorderSkin:ClassReference(null);
+}
+
+/**
+ * Browser
+ */
+LinkButton.normalGraphButton {
+	color:#ebebeb;
+	disabledColor:#ebebeb;
+	disabledSkin:ClassReference(null);
+}
+LinkButton.historyGraphButton {
+	color:#1d66ba;
+	disabledColor:#1d66ba;
+	disabledSkin:ClassReference(null);
+}
+Image.userimagesmall {
+	brokenImageSkin:Embed("../assets/avatar_small.png");	
+	brokenImageBorderSkin:ClassReference(null);
+}
+Label.profile {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:12;
+	text-decoration:underline;
+}
+Checkbox.browserRelationshipType {
+	color:#ebebeb;
+	font-family:LucidaSans;
+	font-size:12;
+	textSelectedColor:#1d66ba;
+	textRollOverColor:#1d66ba;
+	themeColor:#1d66ba;
+}

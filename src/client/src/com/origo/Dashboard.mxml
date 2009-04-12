@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalCenter="0" 
+	verticalCenter="0" 
+	verticalGap="10" 
+	horizontalAlign="center"
+	creationComplete="init()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.ChangeWatcher;
+			import mx.binding.utils.BindingUtils;
+			
+			private var store:ProfileStore;
+			
+			[Embed(source="../assets/avatar.png")]
+            public var avatarCls:Class;
+			
+			private function init():void
+			{
+				store = ProfileStore.getInstance();
+				
+				// listen to updates in profile store
+				BindingUtils.bindSetter(update, store, "properties");
+				BindingUtils.bindSetter(update, store, "relationships");
+				BindingUtils.bindSetter(update, store, "profiles");
+				
+				// call update at first manually
+				update();
+			}
+			
+			private function update(value:Object=null):void
+			{
+				// set name
+				if(store.properties.property.(@name == "name").length() > 0)
+					dashboardName.text = store.properties.property.(@name == "name")[0];
+				else if(store.properties.property.(@name == "givenname").length() > 0)
+					dashboardName.text = store.properties.property.(@name == "givenname")[0];
+				else if(store.properties.property.(@name == "nick").length() > 0)
+					dashboardName.text = store.properties.property.(@name == "nick")[0];
+				else
+					dashboardName.text = store.id;
+					
+				// set userimage
+				if(store.properties.property.(@name == "img").length() > 0)
+					dashboardImage.source = store.properties.property.(@name == "img")[0];
+				else if(store.properties.property.(@name == "depiction").length() > 0)
+					dashboardImage.source = store.properties.property.(@name == "depiction")[0];
+				else
+					dashboardImage.source = avatarCls;
+					
+				// set statistics
+				var numPersonalProperties:int = store.properties.property.length();
+				dashboardTextPersonalProperties.text = numPersonalProperties.toString();
+				if(numPersonalProperties == 1)
+					dashboardLabelPersonalProperties.text = "personal property";
+				else
+					dashboardLabelPersonalProperties.text = "personal properties";
+					
+				var numRelationships:int = store.relationships.relationship.length();
+				dashboardTextRelationships.text = numRelationships.toString();
+				if(numRelationships == 1)
+					dashboardLabelRelationships.text = "relationship";
+				else
+					dashboardLabelRelationships.text = "relationships";
+			
+				var numExternalProfiles:int = store.profiles.profile.length();
+				dashboardTextExternalProfiles.text = numExternalProfiles.toString();
+				if(numExternalProfiles == 1)
+					dashboardLabelExternalProfiles.text = "external profile";
+				else
+					dashboardLabelExternalProfiles.text = "external profiles";
+					
+				// set personal information
+				var showPersonalInformation:Boolean = false;
+				if(store.properties.property.(@name == "title").length() > 0) {
+					titleGridRow.visible = true;
+					titleGridRow.includeInLayout = true;
+					showPersonalInformation = true;
+					dashboardTitle.text = store.properties.property.(@name == "title")[0];
+				}
+				else {
+					titleGridRow.visible = false;
+					titleGridRow.includeInLayout = false;
+				}
+					
+				if(store.properties.property.(@name == "nick").length() > 0) {
+					nickGridRow.visible = true;
+					nickGridRow.includeInLayout = true;
+					showPersonalInformation = true;
+					dashboardNick.text = store.properties.property.(@name == "nick")[0];
+				}
+				else {
+					nickGridRow.visible = false;
+					nickGridRow.includeInLayout = false;
+				}
+					
+				if(store.properties.property.(@name == "mbox").length() > 0) {
+					mboxGridRow.visible = true;
+					mboxGridRow.includeInLayout = true;
+					showPersonalInformation = true;
+					dashboardMbox.text = store.properties.property.(@name == "mbox")[0];
+				}
+				else {
+					mboxGridRow.visible = false;
+					mboxGridRow.includeInLayout = false;
+				}
+					
+				if(store.properties.property.(@name == "gender").length() > 0) {
+					genderGridRow.visible = true;
+					genderGridRow.includeInLayout = true;
+					showPersonalInformation = true;
+					dashboardGender.text = store.properties.property.(@name == "gender")[0];
+				}
+				else {
+					genderGridRow.visible = false;
+					genderGridRow.includeInLayout = false;
+				}
+					
+				if(showPersonalInformation) {
+					personalInformationGrid.visible = true;
+					personalInformationGrid.includeInLayout = true;
+				}
+				else {
+					personalInformationGrid.visible = false;
+					personalInformationGrid.includeInLayout = false;
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Image id="dashboardImage" 
+		maxWidth="100" maxHeight="100" 
+		scaleContent="true" 
+		maintainAspectRatio="true" 
+		styleName="userimage"
+		horizontalAlign="center" verticalAlign="middle">
+		<mx:filters>
+			<mx:DropShadowFilter alpha="0.3" angle="45" distance="3" blurX="5" blurY="5"/>
+		</mx:filters>
+	</mx:Image>
+		
+	<mx:Text id="dashboardName" styleName="dashboardTextBig"/>
+	<mx:HBox verticalGap="20" horizontalGap="20" horizontalAlign="center" width="100%">
+		<mx:Grid id="personalInformationGrid" minWidth="300">
+			<mx:GridRow width="100%" styleName="dashboardHeadline">
+				<mx:GridItem colSpan="2">
+					<mx:Text text="Personal Information" styleName="dashboardHeadline"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow id="titleGridRow">
+				<mx:GridItem>
+					<mx:Label text="Title:" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text id="dashboardTitle" styleName="normalText"/>	
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow id="nickGridRow">
+				<mx:GridItem>
+					<mx:Label text="Nickname:" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text id="dashboardNick" styleName="normalText"/>	
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow id="mboxGridRow">
+				<mx:GridItem>
+					<mx:Label text="Email-Address:" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text id="dashboardMbox" styleName="normalText"/>	
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow id="genderGridRow">
+				<mx:GridItem>
+					<mx:Label text="Gender:" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text id="dashboardGender" styleName="normalText"/>	
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+		<mx:Grid minWidth="300">
+			<mx:GridRow width="100%" styleName="dashboardHeadline">
+				<mx:GridItem colSpan="2">
+					<mx:Text text="Statistics" styleName="dashboardHeadline"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem>
+					<mx:Text id="dashboardTextPersonalProperties" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text id="dashboardLabelPersonalProperties" styleName="normalText"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem>
+					<mx:Text id="dashboardTextRelationships" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text id="dashboardLabelRelationships" styleName="normalText"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem>
+					<mx:Text id="dashboardTextExternalProfiles" styleName="normalText"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Text id="dashboardLabelExternalProfiles" styleName="normalText"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+	</mx:HBox>
+</mx:VBox>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Origo - social client</title><link rel="stylesheet" href="style.css" type="text/css" /><meta name="generator" content="DocBook XSL-NS Stylesheets V1.74.0" /></head><body><div class="book" lang="de" xml:lang="de"><div class="titlepage"><div><div><h1 class="title"><a id="id789543"></a>Origo - social client</h1></div><div><h2 class="subtitle">Dokumentation</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Mario</span> <span class="surname">Volke</span></h3></div></div><div><p class="copyright">Copyright © 2008-2009 Mario Volke</p></div></div><hr /></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="preface"><a href="#id872157">Vorwort</a></span></dt><dt><span class="chapter"><a href="#id872070">1. Motivation &amp; Vision</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id872200">Motivation</a></span></dt><dt><span class="sect1"><a href="#id872163">Vision</a></span></dt></dl></dd><dt><span class="chapter"><a href="#id872276">2. Konzept</a></span></dt><dt><span class="chapter"><a href="#id872490">3. Das verteilte soziale Netzwerk</a></span></dt><dt><span class="chapter"><a href="#id872277">4. Der persönliche URI</a></span></dt><dt><span class="chapter"><a href="#id872843">5. Technische Umsetzung</a></span></dt><dt><span class="chapter"><a href="#id872179">6. Installation &amp; Konfiguration</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id872709">Vorraussetzungen</a></span></dt><dt><span class="sect1"><a href="#id873090">Installation</a></span></dt><dt><span class="sect1"><a href="#id873154">Konfiguration</a></span></dt></dl></dd><dt><span class="bibliography"><a href="#id873081">Literaturverzeichnis</a></span></dt><dt><span class="appendix"><a href="#id872673">A. REST API Dokumentation</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id872704">Authentifizierung</a></span></dt><dt><span class="sect1"><a href="#id891297">Fehlermeldungen</a></span></dt><dt><span class="sect1"><a href="#id891318">Allgemeine Methoden</a></span></dt><dt><span class="sect1"><a href="#id891371">Editor Methoden</a></span></dt><dt><span class="sect1"><a href="#id891822">Browser Methoden</a></span></dt></dl></dd></dl></div><div class="preface" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872157"></a>Vorwort</h2></div></div></div><div class="mediaobject"><a id="logo"></a><img src="../images/logo.png" alt="Origo Logo" /></div><p>
+		Diese Dokumentation entstand parallel zur Konzeptions- und 
+		Entwicklungsphase. Ziel dieses Dokuments ist es, dem Leser 
+		zum einen aufzuzeigen, welche Problemstellungen mit <span class="emphasis"><em>Origo</em></span> 
+		gelöst werden können und zum anderen werden die Konzepte und 
+		Module von <span class="emphasis"><em>Origo</em></span> vorgestellt, um die angesprochenen Probleme 
+		zu lösen.
+	</p></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872070"></a>Kapitel 1. Motivation &amp; Vision</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id872200">Motivation</a></span></dt><dt><span class="sect1"><a href="#id872163">Vision</a></span></dt></dl></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872200"></a>Motivation</h2></div></div></div><p>
+			Seit den Anfängen des World Wide Web, über den Boom von Web 2.0, 
+			bis heute sind unzählige soziale Netzwerke mit unterschiedlich starken Nutzerzahlen
+			entstanden und auch wieder verschwunden. Diese Netzwerke sind bis heute kaum
+			untereinander verbunden. Ein User in Netzwerk A kann in der Regel keinen Kontakt 
+			zu einem User in Netzwerk B aufnehmen ohne sich mit einem neuen Account dort
+			zu registrieren. Dadurch besteht die eigene Identität im Web meistens aus einer ganzen 
+			Fülle an unterschiedlichen Netzwerken, Benutzernamen, Passwörtern, etc.
+		</p></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872163"></a>Vision</h2></div></div></div><p>
+			Das sog. <span class="emphasis"><em>Semantic Web</em></span>, welches durch mehrere Sprachen und 
+			Standards vom <acronym class="acronym"><a class="link" href="http://www.w3c.org" target="_top">W3C</a></acronym>
+			definiert wird, stellt den nötigen Rahmen bereit, um offene Schnittstellen über 
+			Ontologien zu erstellen und damit die Datensilos heutiger sozialer Netzwerke 
+			aufzubrechen. Durch die <span class="emphasis"><em>Friend of a Friend</em></span> (<acronym class="acronym">FOAF</acronym>) 
+			Ontologie ist eine solche Schnittstelle um Personen im Semantic Web zu beschreiben bereits 
+			vorhanden. Mit dieser Ontologie ist es nicht nur möglich sich selbst über verschiedenste
+			Metadaten zu beschreiben, zusätzlich lassen sich Verbindungen und Beziehungen zwischen 
+			Personen darstellen.
+		</p><p>
+			Die Daten werden in der Regel in <acronym class="acronym">RDF/XML</acronym> serialisiert. Solche RDF-Dokumente,
+			die FOAF-Daten enthalten, können von den verschiedenen sozialen Netzwerken veröffentlich werden.
+			Personen werden über <acronym class="acronym">URIs</acronym> identifizierbar. Damit wird es möglich
+			Personen über die bisherigen Grenzen sozialer Netzwerke hinweg miteinander zu verbinden.
+			Es entsteht ein <span class="strong"><strong>semantisches, verteiltes, soziales Netzwerk</strong></span>.
+		</p><div class="mediaobject" align="right"><img src="../images/socialnetwork.png" align="right" alt="Ein verteiltes soziales Netzwerk" /><div class="caption"><p>Ein verteiltes soziales Netzwerk</p></div></div><p>
+			Damit ein User die vollständige Kontrolle über seinen persönlichen URI und seine veröffentlichten Daten behält,
+			sollte er die RDF-Daten auf seinen eigenen Webspace oder Webserver laden.
+			Die Verwaltung dieser Daten wird aber schnell unübersichtlich und die XML-Dokumente selbst zu schreiben 
+			kostet Zeit. <span class="emphasis"><em>Orgio</em></span> kann auf dem eigenen Webserver selbst installiert und eingerichtet werden.
+			Der Origo Webclient schafft dann eine einfach und intuitiv zu bedienende Schnittstelle zum User.
+			Dieser kann seine Daten dadurch auch ohne direkte Kenntnisse über die Technologien des Semantic Web 
+			selbst verwalten. Er macht sich nicht mehr wie bisher von einem Dienst abhängig.
+			Auf bereits bestehende Profile in anderen sozialen Netzwerken kann mit Hilfe von Origo verlinkt werden,
+			sofern die Nutzerdaten auch semantisch verfügbar sind.
+		</p></div></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872276"></a>Kapitel 2. Konzept</h2></div></div></div><p>
+		<span class="emphasis"><em>Origo</em></span> soll dem Nutzer auf komfortable und 
+		flexible Weise erlauben seine Identität und sein soziales Netzwerk 
+		im semantischen Web zu überschauen und zu verwalten. Das Wort Origo 
+		kommt aus dem Lateinischen und Bedeuted „<span class="emphasis"><em>Ursprung</em></span>“. 
+		Der URI des Nutzers wird damit quasi zum Ursprung seines persönlichen 
+	   	Netzwerks im <span class="emphasis"><em>Semantic Web</em></span>.
+	</p><div class="mediaobject" align="center"><img src="../images/concept.png" align="middle" alt="Das Origo Konzept" /><div class="caption"><p>Das Origo Konzept</p></div></div><p>
+		Origo erfüllt im wesentlichen drei Aufgaben. Das Profil des Nutzers zu veröffentlichen, 
+		dem Nutzer zu erlauben sein Profil zu bearbeiten und zuletzt sein soziales Netzwerk über
+		den Browser zu betrachten.
+	</p><p>
+		Die Bereitstellung der semantischen Daten geschieht nach dem Ansatz <span class="emphasis"><em>Linked Data</em></span>,
+		wie vom W3C vorgeschlagen wird hierbei <span class="emphasis"><em>Content Negotiation</em></span> eingesetzt,
+		um je nach Anfrage auf verschiedene Datenformate weiterzuleiten [<a class="citation" href="#bib.W3C08"><span class="citation">W3C08</span></a>].
+		Origo unterstützt hierbei folgende Mime-Types:
+	</p><div class="itemizedlist"><ul type="disc"><li><span class="emphasis"><em>text/html</em></span> Kann von Origo direkt generiert werden oder auf eine andere Website weiterleiten.</li><li><span class="emphasis"><em>application/rdf+xml</em></span> Die Standard-Serialisierung von RDF-Daten.</li><li><span class="emphasis"><em>application/turtle</em></span></li><li><span class="emphasis"><em>application/json</em></span></li></ul></div><p>
+		Die ausgelieferten Daten werden gecached, dadurch können schnelle Zugriffszeiten realisiert werden.
+	</p><p>
+		Der Triple Store speichert sämtliche Profile, sowohl das des Nutzers selbst, als auch Profile, die vom Origo Browser geladen werden.
+		Der Zugriff auf den Triple Store erfolgt mit Hilfe von SPARQL. Für die vom Browser geladenen Daten werden zusätzlich einfache
+		Schlussfolgerungsmechanismen eingesetzt (<span class="emphasis"><em>owl:inverseOf-Inferencing</em></span>, <span class="emphasis"><em>rdfs:subProbertyOf-Inferencing</em></span>).
+		Dadurch können implizit gegebene Informationen über den Browser explizit dargestellt werden.
+	</p><p>
+		Der Origo Webclient ist die Verbindung des Systems zum Nutzer. Er besteht aus einem Editor und einem Browser.
+		Mit dem Editor kann der Nutzer seine persönlichen Daten verwalten, seinen persönlichen URI mit weiteren Profilen verknüpfen und
+		Beziehungen zu anderen Personen erstellen.
+		Der Browser erlaubt es dem Nutzer sein soziales Netzwerk auf intuitive Art und Weise zu durchstöbern. 	
+	</p></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872490"></a>Kapitel 3. Das verteilte soziale Netzwerk</h2></div></div></div><p>
+		Das Origo Packet wird auf dem eigenen Webserver oder Webspace installiert und verwaltet
+		von da an die eigene Identität im Semantic Web. Über den Origo Client lassen sich Personen,
+		die ebenfalls eine semantische Identität haben, als Freunde hinzufügen. Intern wird über
+		<span class="emphasis"><em>foaf:knows</em></span>, einer Eigenschaft aus der FOAF-Ontologie auf den URI dieser 
+		Person verlinkt. Eine solche Verlinkung lässt sich unabhängig davon erstellen, ob diese 
+		Person ebenfalls Origo einsetzt oder nicht.
+	</p><p>
+		Mit Hilfe der RELATIONSHIP-Ontologie ist es zudem möglich die Beziehungen zwischen zwei Personen
+		genauer zu spezifizieren. In dieser Ontologie sind beispielsweise beziehungen wie <span class="emphasis"><em>rel:childOf</em></span> oder
+		<span class="emphasis"><em>rel:friendOf</em></span> definiert.
+	</p><p>
+		Häufig existieren bereits Profile in anderen in sich geschlossenen sozialen Netzwerken.
+		Der Zugriff auf diese Netzwerke ist möglich, wenn ein RDF-Export der dort vorliegenden Daten
+		möglich ist. Ein solcher Export kann sowohl von dem Betreiber dieses Netzwerkes selbst, 
+		als auch von einem externen Dienst, der über eine API mit dem Netzwerk kommuniziert,
+		bereitgestellt werden. Wenn ein solcher Export vorhanden ist, dann kann Origo über
+		die Eigenschaft <span class="emphasis"><em>owl:sameAs</em></span> auf das externe Profil verlinken.
+	</p><div class="mediaobject" align="center"><img src="../images/origonetwork.png" align="middle" alt="Origo im Zentrum des sozialen Netzwerks" /><div class="caption"><p>Origo im Zentrum des sozialen Netzwerks</p></div></div></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872277"></a>Kapitel 4. Der persönliche URI</h2></div></div></div><p>
+		Der persönliche URI identifiziert den Nutzer von Origo und
+		wird dadurch zum zentralen Element im Semantic Web.
+		Origo bietet zwei verschiedene Möglichkeiten diesen URI 
+		zu konfigurieren.
+	</p><p>
+		Der sog. <span class="emphasis"><em>Hash URI</em></span> wird vom Installer unterstützt und
+		steht damit schnell und einfach zur Verfügung. Der vordere Teil der URI
+		ergibt sich direkt aus dem Ort an dem Origo installiert wurde. Zusätzlich
+		wird ein Hash-Wert angehängt, um den Nutzer zu identifizieren. 
+		Der Hash-Wert kann frei gewählt werden. Es empfiehlt sich aber die eigenen
+		Initialen oder den Vornamen zu verwenden.
+	</p><p>
+		Beim Aufruf der URI im Browser wird der Hash-Wert automatisch abgeschnitten.
+		Der Browser ruft also den Ort der Origo Installation auf. Dort greift der
+		Content Negotiatior ein und leitet die Anfrage entsprechend des angeforderten
+		Inhalts entweder auf die RDF-Daten oder auf ein vorher konfiguriertes HTML-Dokument
+		weiter.
+	</p><div class="mediaobject" align="center"><img src="../images/urihash.png" align="middle" alt="Hash URI" /><div class="caption"><p>Hash URI</p></div></div><p>
+		Fortgeschrittenen Nutzern steht eine weitere Möglichkeit der Konfiguration
+		des eigenen URI zur Verfügung. An einem beliebigen Ort, der sich auch unter einer
+		anderen Domain befinden kann, wird eine 303-HTTP-Weiterleitung eingerichtet,
+		die eine Anfrage auf den Ort der Origo Installation leitet. Dadurch kann der
+		persönliche URI relativ beliebig gewählt werden. Nach der 303-Weiterleitung finden 
+		dann die selben Prozesse statt, wie beim Hash-URI.
+	</p><div class="mediaobject" align="center"><img src="../images/uri303.png" align="middle" alt="303 URI" /><div class="caption"><p>303 URI</p></div></div></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872843"></a>Kapitel 5. Technische Umsetzung</h2></div></div></div><p>
+		Origo verwendet bevorzugt weit verbreitete Webtechnologien, um auch auf einfachen Webhosting-Packeten
+		eingesetzt werden zu können. Origo ist vollständig web- und browserbasiert, d.h. es muss keine 
+		Software auf dem eigenen Computer installiert werden. Origo ist damit auf jedem Rechner sofort nutzbar.
+		Das gesamte Packet besteht aus serverseitigen und clientseitigen Teilen.
+	</p><p>
+		Als serverseitiges Fundament dient ein typischer <acronym class="acronym">LAMP</acronym> 
+		(Linux, Apache, MySQL, PHP) oder <acronym class="acronym">MAMP</acronym> (Mac OS, Apache MySQL, PHP) Stack.
+		<a class="link" href="http://arc.semsol.org/" target="_top">ARC2</a> ist eine Library für PHP5 und stellt die
+		wesentlichen Features für die Arbeit mit semantischen Daten bereit. Dazu gehören unter anderem
+		ein Triple Store und eine SPARQL-Schnittstelle. Eine <span class="emphasis"><em>Content Negotiation</em></span>-Implementierung 
+		in PHP ist zentraler Bestandteil für die korrekte Weiterleitung des persönlichen 
+		URI anhand des HTTP-Headers. Zudem wird Zend Framework als Basis für die serverseitigen Aufgaben eingesetzt.
+	</p><p>
+		Auf Clientseite kommt neben den Standard-Sprachen <span class="emphasis"><em>(X)HTML</em></span>, 
+		<span class="emphasis"><em>JS</em></span>, <span class="emphasis"><em>RDF/XML</em></span> eine 
+		<span class="emphasis"><em>Flash/Flex</em></span>-Anwendung zum Einsatz.
+		Dies schafft eine intuitive Bedienung des Origo Clients, wie es der Nutzer
+		von Desktopanwendungen gewohnt ist. Da das Flash-Plugin bei über 95% aller Browser
+		bereits installiert ist, sollte Origo in der Regel sofort einsetzbar sein.
+	</p><p>
+		Server und Webclient sind über eine REST-API miteinander verbunden,
+		die es ermöglicht schreibend und lesend auf den Triple Store zuzugreifen. 
+		Die einzelnen Methoden der API sind
+		im Anhang A beschrieben. Durch diese strikte Trennung von Server und Webclient ist es denkbar,
+		dass auch andere Webclients (z.B. auf Basis von HTML/JS) für Origo entwickelt werden.
+	</p><div class="mediaobject" align="center"><img src="../images/technologies.png" align="middle" alt="Technologien, Sprachen und Libraries in Origo" /><div class="caption"><p>Technologien, Sprachen und Libraries in Origo</p></div></div></div><div class="chapter" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872179"></a>Kapitel 6. Installation &amp; Konfiguration</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id872709">Vorraussetzungen</a></span></dt><dt><span class="sect1"><a href="#id873090">Installation</a></span></dt><dt><span class="sect1"><a href="#id873154">Konfiguration</a></span></dt></dl></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872709"></a>Vorraussetzungen</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li>Apache + mod_rewrite</li><li>PHP &gt;= 5.2.4</li><li>MySQL</li></ul></div></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id873090"></a>Installation</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li>Den Ordner <span class="emphasis"><em>src</em></span> löschen. Dieser wird für den Produktiveinsatz von Origo nicht benötigt.</li><li>Die neueste Version des Zend Framework unter <a class="link" href="http://framework.zend.com" target="_top">framework.zend.com</a> herunterladen.</li><li>Den Ordner <span class="emphasis"><em>library/Zend</em></span> aus dem Zend Framework nach <span class="emphasis"><em>library/Zend</em></span> im Origo Verzeichnis kopieren.</li><li>Dem <span class="emphasis"><em>cache</em></span>-Ordner Schreibrechte geben.</li><li>Eine MySQL-Datenbank erstellen.</li><li>Die Datei <span class="emphasis"><em>config/config.default.ini</em></span> nach <span class="emphasis"><em>config/config.ini</em></span> kopieren.</li></ul></div></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id873154"></a>Konfiguration</h2></div></div></div><p>
+			Zuletzt muss die Konfigurationsdatei unter <span class="emphasis"><em>config/config.ini</em></span> angepasst werden. Die zuvor erstellte MySQL-Datenbank muss hier eingetragen werden. In der Regel genügt es <span class="emphasis"><em>username</em></span>, <span class="emphasis"><em>password</em></span> und <span class="emphasis"><em>dbname</em></span> anzugeben.
+			Als nächstes muss der URI des Origo-Profils angegeben werden. Unter <span class="emphasis"><em>profile.location</em></span> sollte deshalb der URL zu Origo + "/profile" angegeben werden (z.B. <span class="emphasis"><em>http://www.example.com/origo/profile</em></span>).
+		</p><p>
+			Wie im Kapitel zum persönlichen URI beschrieben, gibt es nun zwei Möglichkeiten diesen URI zu konstruieren. 
+			Den Hash-URI kann man verwenden, indem man unter <span class="emphasis"><em>profile.identifier</em></span> einen Hash einträgt (z.B. <span class="emphasis"><em>#me</em></span>). 
+			Der persönliche URI ist dann <span class="emphasis"><em>profile.location</em></span> + <span class="emphasis"><em>profile.identifier</em></span>.
+			Die zweite Möglichkeit besteht darin unter einer beliebigen anderen Adresse eine 303-Weiterleitung zu <span class="emphasis"><em>profile.location</em></span> einzurichten. Diese Adresse wird dann unter <span class="emphasis"><em>profile.identifier</em></span> eingetragen und wird damit zum persönlichen URI.
+		</p><p>
+			Unter <span class="emphasis"><em>api.auth.username</em></span> und <span class="emphasis"><em>api.auth.password</em></span> sollte für die Authentifizierung im Origo Webclient ein beliebiger Benutzername mit Passwort eingetragen werden.
+		</p><p>
+			Unter <span class="emphasis"><em>negotiation.html</em></span> ist es möglich ein HTML-Profil (z.B. die eigene Website) anzugeben, auf die bei einer HTML-Anfrage des persönlichen URI automatisch weitergeleitet wird.
+		</p><p>
+			Die restlichen Konfigurationsmöglichkeiten sollten im Allgemeinen nicht verändert werden.
+		</p></div></div><div class="bibliography"><div class="titlepage"><div><div><h2 class="title"><a id="id873081"></a>Literaturverzeichnis</h2></div></div></div><div class="biblioentry"><a id="bib.AP08"></a><p>[<abbr class="abbrev"><a id="bib.AP08.abbrev"></a>AP08</abbr>] <span class="title"><i><a class="ulink" href="http://apassant.net/blog/2008/01/12/one-foaf-fits-all/" target="_top">One FOAF fits all</a></i>. </span><span class="author"><span class="firstname">Alexandre</span> <span class="surname">Passant</span>. </span><span class="pubdate">12.01.2008. </span></p></div><div class="biblioentry"><a id="bib.W3C08"></a><p>[<abbr class="abbrev"><a id="bib.W3C08.abbrev"></a>W3C08</abbr>] <span class="title"><i><a class="ulink" href="http://www.w3.org/TR/2008/NOTE-cooluris-20080331/" target="_top">Cool URIs for the Semantic Web</a></i>. </span><span class="publishername">W3C Interest Group. </span><span class="authorgroup"><span class="firstname">Leo</span> <span class="surname">Sauermann</span> und <span class="firstname">Richard</span> <span class="surname">Cyganiak</span>. </span><span class="pubdate">31.03.2008. </span></p></div></div><div class="appendix" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title"><a id="id872673"></a>Anhang A. REST API Dokumentation</h2></div></div></div><div class="toc"><p><b>Inhaltsverzeichnis</b></p><dl><dt><span class="sect1"><a href="#id872704">Authentifizierung</a></span></dt><dt><span class="sect1"><a href="#id891297">Fehlermeldungen</a></span></dt><dt><span class="sect1"><a href="#id891318">Allgemeine Methoden</a></span></dt><dt><span class="sect1"><a href="#id891371">Editor Methoden</a></span></dt><dt><span class="sect1"><a href="#id891822">Browser Methoden</a></span></dt></dl></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id872704"></a>Authentifizierung</h2></div></div></div><p>
+			Alle Methoden, die Authentifizierung benötigen erwarten einen POST Parameter key mit dem Wert md5([username]:[password]).
+		</p></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id891297"></a>Fehlermeldungen</h2></div></div></div><p>
+			Falls in einer Methode ein Fehler auftritt, so wird eine Fehlermeldung mit folgender Formatierung ausgegeben:
+		</p><p>
+			<span class="emphasis"><em>&lt;error&gt;&lt;error_code&gt;[maschinenlesbarer Fehlercode]&lt;/error_code&gt;&lt;error_message&gt;[Fehlernachricht]&lt;/error_message&gt;&lt;/error&gt;</em></span>
+		</p></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id891318"></a>Allgemeine Methoden</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li><p><span class="strong"><strong>/api/test</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>-</em></span></p><p>Beschreibung: Hilfsmethode zum Testen der Login-Daten.</p><p>Return: <span class="emphasis"><em>&lt;request&gt;&lt;code&gt;200&lt;/code&gt;&lt;message&gt;Api status: OK&lt;/message&gt;&lt;/request&gt;</em></span> im Erfolgsfall.</p></li></ul></div></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id891371"></a>Editor Methoden</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li><p><span class="strong"><strong>/api/editor/get</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>-</em></span></p><p>Beschreibung: Liefert das Profil mit allen einfach vorkommenden Eigenschaften (title, nick, homepage, mbox, mbox_sha1sum, img, depiction, family_name, givenname, name, weblog, workinfohomepage, workplacehomepage, schoolhomepage, plan, geekcode, gender, myersbriggs, openid, icq, msn, aim, yahoo, jabber)</p><p>Return: Das aktuell gespeicherte Profil mit allen einfach vorkommenden Eigenschaften.</p></li><li><p><span class="strong"><strong>/api/editor/update</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>title, nick, homepage, mbox, mbox_sha1sum, img, depiction, family_name, givenname, name, weblog, workinfohomepage, workplacehomepage, schoolhomepage, plan, geekcode, gender, myersbriggs, openid, icq, msn, aim, yahoo, jabber</em></span> (Alle optional)</p><p>Beschreibung: Aktualisiere oder erzeuge einfach vorkommende Eigenschaften.</p><p>Return: Das aktualisierte Profil mit allen einfach vorkommenden Eigenschaften.</p></li><li><p><span class="strong"><strong>/api/editor/delete</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>title, nick, homepage, mbox, mbox_sha1sum, img, depiction, family_name, givenname, name, weblog, workinfohomepage, workplacehomepage, schoolhomepage, plan, geekcode, gender, myersbriggs, openid, icq, msn, aim, yahoo, jabber</em></span> (Alle optional)</p><p>Beschreibung: Lösche die über POST Parameter gegebenen Eigenschaften.</p><p>Return: Das aktualisierte Profil mit allen einfach vorkommenden Eigenschaften.</p></li><li><p><span class="strong"><strong>/api/editor/clean</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>-</em></span></p><p>Beschreibung: Löscht das gesamte Profil mit allen Eigenschaften und Beziehungen.</p><p>Return: <span class="emphasis"><em>&lt;result&gt;1&lt;/result&gt;</em></span> im Erfolgsfall.</p></li><li><p><span class="strong"><strong>/api/editor/profiles/get</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>-</em></span></p><p>Beschreibung: Liefert die Verknüpfungen zu externen Profilen.</p><p>Return: Alle vorhandenen Verknüpfungen zu externen Profilen.</p></li><li><p><span class="strong"><strong>/api/editor/profiles/update</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>sameas, seealso</em></span> (Benötigt) <span class="emphasis"><em>label</em></span> (Optional)</p><p>Beschreibung: Verknüpft das Profil mit einem externen Profil. Bei gleichbleibendem sameas kann die Verknüpfung auch aktualisiert werden.</p><p>Return: <span class="emphasis"><em>Alle vorhandenen Verknüpfungen zu externen Profilen.</em></span></p></li><li><p><span class="strong"><strong>/api/editor/profiles/delete</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>sameas</em></span> (Benötigt)</p><p>Beschreibung: Löscht die Verknüpfung zu einem externen Profil.</p><p>Return: Alle vorhandenen Verknüpfungen zu externen Profilen.</p></li><li><p><span class="strong"><strong>/api/editor/relationships/get</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>-</em></span></p><p>Beschreibung: Liefert die Beziehungen zu anderen Personen.</p><p>Return: Alle vorhandenen Beziehungen zu anderen Personen.</p></li><li><p><span class="strong"><strong>/api/editor/relationships/update</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>to</em></span> (Benötigt) <span class="emphasis"><em>acquaintanceof, ambivalentof, ancestorof, antagonistof, apprenticeto, childof, closefriendof, collaborateswith, colleagueof, descendantof, employedby, employerof, enemyof, engagedto, friendof, grandchildof, grandparentof, hasmet, knowsbyreputation, knowsinpassing, knowsof, lifepartnerof, liveswith, lostcontactwith, mentorof, neighborof, parentof, participant, participantin, siblingof, spouseof, workswith, wouldliketoknow</em></span> (Optional)</p><p>Beschreibung: Fügt eine neue Beziehung zu to hinzu. Mit den zusätzlichen Parametern kann die Beziehung näher spezifiziert werden. to kann entweder die dereferenzierbare URI der Person sein oder die URI des foaf:PersonalProfileDocument mit vorhandenem foaf:primaryTopic. Die Methode lädt zudem grundlegende Eigenschaften wie name, nick, image, etc. in das eigene Profile, um beim Browsen schneller Informationen anzeigen zu können. Eine Aktualisierung bei gleichbleibendem to ist möglich.</p><p>Return: Alle vorhandenen Beziehungen zu anderen Personen.</p></li><li><p><span class="strong"><strong>/api/editor/relationships/delete</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>to</em></span> (Benötigt)</p><p>Beschreibung: Löscht die Beziehung zu einer Person.</p><p>Return: <span class="emphasis"><em>Alle vorhandenen Beziehungen zu anderen Personen.</em></span></p></li></ul></div></div><div class="sect1" lang="de" xml:lang="de"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id891822"></a>Browser Methoden</h2></div></div></div><div class="itemizedlist"><ul type="disc"><li><p><span class="strong"><strong>/api/browser/profile</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>uri</em></span> (Benötigt)</p><p>Beschreibung: Liefert die Eigenschaften einer Person. uri kann entweder die dereferenzierbare URI der Person sein oder die URI des foaf:PersonalProfileDocument mit vorhandenem foaf:primaryTopic.</p><p>Return: Die einfach vorkommenden Eigenschaften dieser Person.</p></li><li><p><span class="strong"><strong>/api/browser/relationships</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>uri</em></span> (Benötigt) <span class="emphasis"><em>acquaintanceof, ambivalentof, ancestorof, antagonistof, apprenticeto, childof, closefriendof, collaborateswith, colleagueof, descendantof, employedby, employerof, enemyof, engagedto, friendof, grandchildof, grandparentof, hasmet, knowsbyreputation, knowsinpassing, knowsof, lifepartnerof, liveswith, lostcontactwith, mentorof, neighborof, parentof, participant, participantin, siblingof, spouseof, workswith, wouldliketoknow</em></span> (Optional)</p><p>Beschreibung: Liefert die Beziehungen einer Person. Mit dem zusätzlichen Parametern können die Beziehungen speziell gefiltert werden, ansonsten werden alle zurückgeliefert. uri kann entweder die dereferenzierbare URI der Person sein oder die URI des foaf:PersonalProfileDocument mit vorhandenem foaf:primaryTopic.</p><p>Return: Die Beziehungen dieser Person.</p></li><li><p><span class="strong"><strong>/api/browser/clean</strong></span></p><p>Methode: <span class="emphasis"><em>POST</em></span></p><p>Authentifizierung: <span class="emphasis"><em>Ja</em></span></p><p>Parameter: <span class="emphasis"><em>uri</em></span> (Optional)</p><p>Beschreibung: Löscht alle für den Browser gespeicherten Daten oder falls uri vorhanden nur die mit uri in Verbindung stehenden Daten.</p><p>Return: <span class="emphasis"><em>&lt;result&gt;1&lt;/result&gt;</em></span> im Erfolgsfall.</p></li></ul></div></div></div></div></body></html>
