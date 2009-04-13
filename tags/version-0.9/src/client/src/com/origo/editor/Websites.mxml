@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Origo - social client
+
+@copyright Copyright (c) 2008-2009 Mario Volke
+@author    Mario Volke <mario.volke@webholics.de>
+-->
+
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalCenter="0" verticalCenter="0"
+	defaultButton="{submitButton}"
+	creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.core.Application;
+			import com.origo.*;
+			
+			private var api:ApiConnector;
+			private var store:ProfileStore;
+			
+			private function init():void
+			{
+				api = ApiConnector.getInstance();
+				store = ProfileStore.getInstance();
+				
+				updateInputs();
+			}
+			
+			private function updateInputs():void
+			{
+				if(store.properties.property.(@name == "homepage").length() > 0)
+					homepage.text = store.properties.property.(@name == "homepage")[0];
+					
+				if(store.properties.property.(@name == "weblog").length() > 0)
+					weblog.text = store.properties.property.(@name == "weblog")[0];
+					
+				if(store.properties.property.(@name == "workinfohomepage").length() > 0)
+					workinfohomepage.text = store.properties.property.(@name == "workinfohomepage")[0];
+					
+				if(store.properties.property.(@name == "workplacehomepage").length() > 0)
+					workplacehomepage.text = store.properties.property.(@name == "workplacehomepage")[0];
+					
+				if(store.properties.property.(@name == "schoolhomepage").length() > 0)
+					schoolhomepage.text = store.properties.property.(@name == "schoolhomepage")[0];
+					
+				if(store.properties.property.(@name == "openid").length() > 0)
+					openid.text = store.properties.property.(@name == "openid")[0];
+					
+				if(store.properties.property.(@name == "icq").length() > 0)
+					icq.text = store.properties.property.(@name == "icq")[0];
+					
+				if(store.properties.property.(@name == "msn").length() > 0)
+					msn.text = store.properties.property.(@name == "msn")[0];
+					
+				if(store.properties.property.(@name == "aim").length() > 0)
+					aim.text = store.properties.property.(@name == "aim")[0];
+					
+				if(store.properties.property.(@name == "yahoo").length() > 0)
+					yahoo.text = store.properties.property.(@name == "yahoo")[0];
+					
+				if(store.properties.property.(@name == "jabber").length() > 0)
+					jabber.text = store.properties.property.(@name == "jabber")[0];
+			}
+			
+			private function save():void
+			{
+				currentState = "save";
+				
+				// trim all inputs
+				homepage.text = InputHelper.trim(homepage.text);
+				weblog.text = InputHelper.trim(weblog.text);
+				workinfohomepage.text = InputHelper.trim(workinfohomepage.text);
+				workplacehomepage.text = InputHelper.trim(workplacehomepage.text);
+				schoolhomepage.text = InputHelper.trim(schoolhomepage.text);
+				openid.text = InputHelper.trim(openid.text);
+				icq.text = InputHelper.trim(icq.text); 
+				msn.text = InputHelper.trim(msn.text); 
+				aim.text = InputHelper.trim(aim.text); 
+				yahoo.text = InputHelper.trim(yahoo.text); 
+				jabber.text = InputHelper.trim(jabber.text);
+				
+				var updateProperties:Array = new Array();
+				
+				if(homepage.text.length > 0) 
+					updateProperties["homepage"] = homepage.text;
+					
+				if(weblog.text.length > 0) 
+					updateProperties["weblog"] = weblog.text;
+					
+				if(workinfohomepage.text.length > 0) 
+					updateProperties["workinfohomepage"] = workinfohomepage.text;
+					
+				if(workplacehomepage.text.length > 0) 
+					updateProperties["workplacehomepage"] = workplacehomepage.text;
+					
+				if(schoolhomepage.text.length > 0) 
+					updateProperties["schoolhomepage"] = schoolhomepage.text;
+					
+				if(openid.text.length > 0) 
+					updateProperties["openid"] = openid.text;
+					
+				if(icq.text.length > 0) 
+					updateProperties["icq"] = icq.text;
+					
+				if(msn.text.length > 0) 
+					updateProperties["msn"] = msn.text;
+					
+				if(aim.text.length > 0) 
+					updateProperties["aim"] = aim.text;
+					
+				if(yahoo.text.length > 0) 
+					updateProperties["yahoo"] = yahoo.text;
+					
+				if(jabber.text.length > 0) 
+					updateProperties["jabber"] = jabber.text;
+					
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				api.editorUpdate(updateProperties);
+			}
+			
+			private function updateSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+				
+				var deleteProperties:Array = new Array();
+				
+				if(homepage.text.length == 0)
+					deleteProperties.push("homepage");
+					
+				if(weblog.text.length == 0)
+					deleteProperties.push("weblog");
+					
+				if(workinfohomepage.text.length == 0)
+					deleteProperties.push("workinfohomepage");
+					
+				if(workplacehomepage.text.length == 0)
+					deleteProperties.push("workplacehomepage");
+					
+				if(schoolhomepage.text.length == 0)
+					deleteProperties.push("schoolhomepage");
+					
+				if(openid.text.length == 0)
+					deleteProperties.push("openid");
+					
+				if(icq.text.length == 0)
+					deleteProperties.push("icq");
+					
+				if(msn.text.length == 0)
+					deleteProperties.push("msn");
+					
+				if(aim.text.length == 0)
+					deleteProperties.push("aim");
+					
+				if(yahoo.text.length == 0)
+					deleteProperties.push("yahoo");
+					
+				if(jabber.text.length == 0)
+					deleteProperties.push("jabber");
+
+				api.editorDelete(deleteProperties);
+			}
+			
+			private function deleteSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiError);
+				
+				// save properties into profile store
+				var result:XML = event.data as XML;
+				store.properties = result.profile[0];
+				
+				updateInputs();
+				
+				statusText.styleName = "normalText";
+				statusText.text = "Websites and Accounts saved."
+				statusText.visible = true;
+				currentState = "";
+			}
+			
+			private function apiError(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiError);
+				
+				statusText.styleName = "errorText";
+				statusText.text = event.message;
+				statusText.visible = true;
+				currentState = "";
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:states>
+		<mx:State name="save">
+			<mx:RemoveChild target="{websitesForm}"/>
+			<mx:AddChild>
+				<mx:Box id="progressBar"
+					paddingBottom="10" paddingTop="10" 
+					paddingLeft="10" paddingRight="10"
+					horizontalCenter="0" verticalCenter="0"
+					styleName="box">
+					<mx:ProgressBar 
+						label="Saving websites and accounts..." 
+						width="300"
+						indeterminate="true"/>
+				</mx:Box>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="" toState="save">
+			<mx:Fade target="{progressBar}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="save" toState="">
+			<mx:Fade target="{websitesForm}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+	</mx:transitions>
+
+	<mx:VBox id="websitesForm" horizontalAlign="right">
+		<mx:HBox>
+			
+			<mx:Form defaultButton="{submitButton}">
+				<mx:FormHeading label="Websites"/>
+				<mx:FormItem label="Homepage">
+					<mx:TextInput id="homepage" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Weblog">
+					<mx:TextInput id="weblog" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Work Info Homepage">
+					<mx:TextInput id="workinfohomepage" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Workplace Homepage">
+					<mx:TextInput id="workplacehomepage" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="School Homepage">
+					<mx:TextInput id="schoolhomepage" width="200"/>
+				</mx:FormItem>
+			</mx:Form>	
+			
+			<mx:Form defaultButton="{submitButton}">
+				<mx:FormHeading label="Accounts"/>
+				<mx:FormItem label="OpenID">
+					<mx:TextInput id="openid" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="ICQ">
+					<mx:TextInput id="icq" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="MSN">
+					<mx:TextInput id="msn" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="AIM">
+					<mx:TextInput id="aim" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Yahoo">
+					<mx:TextInput id="yahoo" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Jabber/XMPP">
+					<mx:TextInput id="jabber" width="200"/>
+				</mx:FormItem>
+			</mx:Form>	
+					
+		</mx:HBox>
+		
+		<mx:HRule width="100%"/>
+		
+		<mx:HBox horizontalGap="20">
+			<mx:Text id="statusText" visible="false" paddingTop="4"/>
+			<mx:Button label="Save" id="submitButton" width="100" click="save()"/>	
+		</mx:HBox>
+			
+	</mx:VBox>
+	
+</mx:Canvas>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Origo - social client
+
+@copyright Copyright (c) 2008-2009 Mario Volke
+@author    Mario Volke <mario.volke@webholics.de>
+-->
+
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalCenter="0" verticalCenter="0"
+	defaultButton="{submitButton}"
+	creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.core.Application;
+			import com.origo.*;
+			
+			private var api:ApiConnector;
+			private var store:ProfileStore;
+			
+			private function init():void
+			{
+				api = ApiConnector.getInstance();
+				store = ProfileStore.getInstance();
+				
+				updateInputs();
+			}
+			
+			private function updateInputs():void
+			{
+				if(store.properties.property.(@name == "title").length() > 0)
+					title.text = store.properties.property.(@name == "title")[0];
+					
+				if(store.properties.property.(@name == "givenname").length() > 0)
+					givenname.text = store.properties.property.(@name == "givenname")[0];
+					
+				if(store.properties.property.(@name == "family_name").length() > 0)
+					family_name.text = store.properties.property.(@name == "family_name")[0];
+					
+				if(store.properties.property.(@name == "nick").length() > 0)
+					nick.text = store.properties.property.(@name == "nick")[0];
+					
+				if(store.properties.property.(@name == "gender").length() > 0)
+					gender.text = store.properties.property.(@name == "gender")[0];
+					
+				if(store.properties.property.(@name == "img").length() > 0)
+					img.text = store.properties.property.(@name == "img")[0];
+					
+				if(store.properties.property.(@name == "mbox").length() > 0)
+					mbox.text = store.properties.property.(@name == "mbox")[0];
+					
+				if(store.properties.property.(@name == "mbox_sha1sum").length() > 0)
+					mbox_sha1sum.text = "[encrypted email exists]";
+					
+				if(store.properties.property.(@name == "phone").length() > 0)
+					phone.text = store.properties.property.(@name == "phone")[0];
+					
+				if(store.properties.property.(@name == "plan").length() > 0)
+					plan.text = store.properties.property.(@name == "plan")[0];
+					
+				if(store.properties.property.(@name == "geekcode").length() > 0)
+					geekcode.text = store.properties.property.(@name == "geekcode")[0];
+					
+				if(store.properties.property.(@name == "myersbriggs").length() > 0)
+					myersbriggs.text = store.properties.property.(@name == "myersbriggs")[0];
+			}
+			
+			private function save():void
+			{
+				currentState = "save";
+				
+				// trim all inputs
+				title.text = InputHelper.trim(title.text);
+				givenname.text = InputHelper.trim(givenname.text);
+				family_name.text = InputHelper.trim(family_name.text);
+				nick.text = InputHelper.trim(nick.text);
+				gender.text = InputHelper.trim(gender.text);
+				img.text = InputHelper.trim(img.text);
+				mbox.text = InputHelper.trim(mbox.text);
+				mbox_sha1sum.text = InputHelper.trim(mbox_sha1sum.text); 
+				phone.text = InputHelper.trim(phone.text); 
+				plan.text = InputHelper.trim(plan.text); 
+				geekcode.text = InputHelper.trim(geekcode.text); 
+				myersbriggs.text = InputHelper.trim(myersbriggs.text);
+				
+				var updateProperties:Array = new Array();
+				
+				if(title.text.length > 0) 
+					updateProperties["title"] = title.text;
+					
+				if(givenname.text.length > 0) 
+					updateProperties["givenname"] = givenname.text;
+					
+				if(family_name.text.length > 0) 
+					updateProperties["family_name"] = family_name.text;
+					
+				if(givenname.text.length > 0 && family_name.text.length > 0) 
+					updateProperties["name"] = givenname.text + " " + family_name.text;
+					
+				if(nick.text.length > 0) 
+					updateProperties["nick"] = nick.text;
+					
+				if(gender.text.length > 0) 
+					updateProperties["gender"] = gender.text;
+					
+				if(img.text.length > 0) 
+					updateProperties["img"] = img.text;
+					
+				if(mbox.text.length > 0) 
+					updateProperties["mbox"] = mbox.text;
+					
+				if(mbox_sha1sum.text.length > 0 && mbox_sha1sum.text != "[encrypted email exists]")
+					updateProperties["mbox_sha1sum"] = mbox_sha1sum.text;
+					
+				if(phone.text.length > 0) 
+					updateProperties["phone"] = phone.text;
+					
+				if(plan.text.length > 0) 
+					updateProperties["plan"] = plan.text;
+					
+				if(geekcode.text.length > 0) 
+					updateProperties["geekcode"] = geekcode.text;
+					
+				if(myersbriggs.text.length > 0) 
+					updateProperties["myersbriggs"] = myersbriggs.text;
+					
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				api.editorUpdate(updateProperties);
+			}
+			
+			private function updateSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+				
+				var deleteProperties:Array = new Array();
+				
+				if(title.text.length == 0)
+					deleteProperties.push("title");
+					
+				if(givenname.text.length == 0)
+					deleteProperties.push("givenname");
+					
+				if(family_name.text.length == 0)
+					deleteProperties.push("family_name");
+					
+				if(givenname.text.length == 0 || family_name.text.length == 0)
+					deleteProperties.push("name");
+					
+				if(nick.text.length == 0)
+					deleteProperties.push("nick");
+					
+				if(gender.text.length == 0)
+					deleteProperties.push("gender");
+					
+				if(img.text.length == 0)
+					deleteProperties.push("img");
+					
+				if(mbox.text.length == 0)
+					deleteProperties.push("mbox");
+					
+				if(mbox_sha1sum.text.length == 0)
+					deleteProperties.push("mbox_sha1sum");
+					
+				if(phone.text.length == 0)
+					deleteProperties.push("phone");
+					
+				if(plan.text.length == 0)
+					deleteProperties.push("plan");
+					
+				if(geekcode.text.length == 0)
+					deleteProperties.push("geekcode");
+					
+				if(myersbriggs.text.length == 0)
+					deleteProperties.push("myersbriggs");
+
+				api.editorDelete(deleteProperties);
+			}
+			
+			private function deleteSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiError);
+				
+				// save properties into profile store
+				var result:XML = event.data as XML;
+				store.properties = result.profile[0];
+				
+				updateInputs();
+				
+				statusText.styleName = "normalText";
+				statusText.text = "Personal Information saved."
+				statusText.visible = true;
+				currentState = "";
+			}
+			
+			private function apiError(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, updateSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, deleteSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, apiError);
+				
+				statusText.styleName = "errorText";
+				statusText.text = event.message;
+				statusText.visible = true;
+				currentState = "";
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:states>
+		<mx:State name="save">
+			<mx:RemoveChild target="{personalInformationForm}"/>
+			<mx:AddChild>
+				<mx:Box 
+					paddingBottom="10" paddingTop="10" 
+					paddingLeft="10" paddingRight="10"
+					horizontalCenter="0" verticalCenter="0"
+					styleName="box">
+					<mx:ProgressBar id="progressBar" 
+						label="Saving personal information..." 
+						width="300"
+						indeterminate="true"/>
+				</mx:Box>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="" toState="save">
+			<mx:Fade target="{progressBar}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+		<mx:Transition fromState="save" toState="">
+			<mx:Fade target="{personalInformationForm}" duration="500" alphaFrom="0" alphaTo="1"/>
+		</mx:Transition>
+	</mx:transitions>
+
+	<mx:VBox id="personalInformationForm" horizontalAlign="right">
+		<mx:HBox>
+		
+			<mx:Form defaultButton="{submitButton}">
+				<mx:FormHeading label="Basic Properties"/>
+				<mx:FormItem label="Title (Mr, Mrs, Ms, Dr, etc.)">
+					<mx:TextInput id="title" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Firstname">
+					<mx:TextInput id="givenname" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Lastname">
+					<mx:TextInput id="family_name" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Nickname">
+					<mx:TextInput id="nick" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Gender (female, male)">
+					<mx:TextInput id="gender" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Url to Userimage">
+					<mx:TextInput id="img" width="200"/>
+				</mx:FormItem>
+			</mx:Form>	
+			
+			<mx:Form defaultButton="{submitButton}">
+				<mx:FormItem label="Email-Address">
+					<mx:TextInput id="mbox" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Email-Address (encrypted)">
+					<mx:TextInput id="mbox_sha1sum" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Phone">
+					<mx:TextInput id="phone" width="200"/>
+				</mx:FormItem>
+				<mx:FormHeading label="Misc"/>
+				<mx:FormItem label="Url to plan file">
+					<mx:TextInput id="plan" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Geek Code">
+					<mx:TextInput id="geekcode" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Myers Briggs classification">
+					<mx:TextInput id="myersbriggs" width="200"/>
+				</mx:FormItem>
+			</mx:Form>	
+					
+		</mx:HBox>
+		
+		<mx:HRule width="100%"/>
+		
+		<mx:HBox horizontalGap="20">
+			<mx:Text id="statusText" visible="false" paddingTop="4"/>
+			<mx:Button label="Save" id="submitButton" width="100" click="save()"/>	
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+</mx:Canvas>
