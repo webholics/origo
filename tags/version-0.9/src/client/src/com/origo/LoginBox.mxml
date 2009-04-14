@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Origo - social client
+
+@copyright Copyright (c) 2008-2009 Mario Volke
+@author    Mario Volke <mario.volke@webholics.de>
+-->
+
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="400" height="400" 
+	styleName="box" 
+	horizontalCenter="0" verticalCenter="0"
+	creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.core.Application;
+			
+			private var api:ApiConnector;
+			private var store:ProfileStore;
+			
+			private function init():void
+			{
+				api = ApiConnector.getInstance();
+				store = ProfileStore.getInstance();
+				
+				usernameValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
+					username.styleName = "error";
+				});
+				usernameValidator.addEventListener(ValidationResultEvent.VALID, function():void {
+					username.styleName = "";
+				});
+				passwordValidator.addEventListener(ValidationResultEvent.INVALID, function():void {
+					password.styleName = "error";
+				});
+				passwordValidator.addEventListener(ValidationResultEvent.VALID, function():void {
+					password.styleName = "";
+				});
+			}
+			
+			private function validateForm():Boolean
+			{               
+				var valid:Boolean = true;
+				var vEvent:ValidationResultEvent;
+                
+				vEvent = usernameValidator.validate();
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
+					valid = false;
+				
+				vEvent = passwordValidator.validate();
+				if(vEvent != null && vEvent.type == ValidationResultEvent.INVALID)
+					valid = false;
+
+				return valid;
+			}
+ 
+			private function authenticate():void
+			{ 
+				currentState = "authenticate";
+				progressBar.label = "Verifying credentials...";
+				
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
+				api.addEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				api.authenticate(username.text, password.text);
+			}
+			
+			private function authenticateSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, cleanBrowserSuccess);
+
+				progressBar.label = "Cleaning old browser session...";
+				api.browserClean();
+			}
+
+			private function cleanBrowserSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, cleanBrowserSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, getPropertiesSuccess);
+
+				progressBar.label = "Loading properties...";
+				api.editorGet();
+			}
+			
+			private function getPropertiesSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getPropertiesSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, getRelationshipsSuccess);
+				
+				// save properties and identifier into profile store
+				var result:XML = event.data as XML;
+				store.id = result.profile[0].@id;
+				store.properties = result.profile[0];		
+
+				progressBar.label = "Loading relationships...";
+				api.editorRelationshipsGet();
+			}
+			
+			private function getRelationshipsSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getRelationshipsSuccess);
+				api.addEventListener(ApiConnectorEvent.SUCCESS_EVENT, getProfilesSuccess);
+
+				// save relationships into profile store
+				var result:XML = event.data as XML;
+				store.relationships = result;
+
+				progressBar.label = "Loading profiles...";
+				api.editorProfilesGet();
+			}
+			
+			private function getProfilesSuccess(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getProfilesSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+
+				// save external profiles into profile store
+				var result:XML = event.data as XML;
+				store.profiles = result;
+
+				Application.application.currentState = "dashboard";
+			}
+						
+			private function apiError(event:ApiConnectorEvent):void
+			{
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, authenticateSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getPropertiesSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getRelationshipsSuccess);
+				api.removeEventListener(ApiConnectorEvent.SUCCESS_EVENT, getProfilesSuccess);
+				api.removeEventListener(ApiConnectorEvent.ERROR_EVENT, apiError);
+				
+				currentState = "error";
+				loginFormErrorText.text = event.message;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:states>	
+		<mx:State name="error">
+			<mx:SetProperty target="{this}" name="height" value="430"/>
+			<mx:AddChild relativeTo="{loginFormHeading}" position="after">
+				<mx:Text id="loginFormErrorText" styleName="errorText" width="300"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="authenticate">
+			<mx:AddChild>
+				<mx:ProgressBar id="progressBar" width="300" horizontalCenter="0" top="200" indeterminate="true"/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{loginForm}"/>
+			<mx:SetProperty target="{this}" name="height" value="300"/>
+		</mx:State>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="*" toState="*">
+			<mx:Resize target="{this}"/>
+		</mx:Transition>
+	</mx:transitions>
+	
+	<mx:Image source="@Embed('../assets/logo.png')" horizontalCenter="0" top="30" />
+	
+	<mx:StringValidator id="usernameValidator" source="{username}" property="text" required="true"/>
+	<mx:StringValidator id="passwordValidator" source="{password}" property="text" required="true"/>
+					
+	<mx:Form id="loginForm" defaultButton="{submitButton}" horizontalCenter="0" top="200">
+		<mx:FormHeading id="loginFormHeading" label="Authentication required"/>
+		<mx:FormItem label="Username" required="true">
+			<mx:TextInput id="username"/>
+		</mx:FormItem>
+		<mx:FormItem label="Password" required="true">
+			<mx:TextInput id="password"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:Button label="Login" id="submitButton" click="if(validateForm()) authenticate()"/>
+		</mx:FormItem>
+	</mx:Form>
+					
+	<mx:Text text="Origo version 0.9, www.orgio-client.com" styleName="smallText" horizontalCenter="0" bottom="10" selectable="false" />
+
+</mx:Canvas>

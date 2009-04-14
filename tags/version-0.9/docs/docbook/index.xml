@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<book 
+	xmlns="http://docbook.org/ns/docbook" 
+	xmlns:xi="http://www.w3.org/2001/XInclude"
+	xml:lang="de"
+	version="5.0">
+	<info>
+		<title>Origo - social client</title>
+		<subtitle>Dokumentation</subtitle>
+		<author>
+			<firstname>Mario</firstname> 
+			<surname>Volke</surname>
+		</author>
+		<copyright>
+			<year>2008-2009</year>
+			<holder>Mario Volke</holder>
+		</copyright>
+	</info>
+	<xi:include href="preface.xml"/>
+	<xi:include href="chapter1.xml"/>
+	<xi:include href="chapter2.xml"/>
+	<xi:include href="chapter3.xml"/>
+	<xi:include href="chapter4.xml"/>
+	<xi:include href="chapter5.xml"/>
+	<xi:include href="chapter6.xml"/>
+	<xi:include href="chapter7.xml"/>
+	<xi:include href="chapter8.xml"/>
+</book>

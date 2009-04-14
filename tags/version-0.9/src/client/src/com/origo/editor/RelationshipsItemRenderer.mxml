@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Origo - social client
+
+@copyright Copyright (c) 2008-2009 Mario Volke
+@author    Mario Volke <mario.volke@webholics.de>
+-->
+
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle"
+	horizontalAlign="center"
+	creationComplete="init()"
+	width="200" height="150">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.ChangeWatcher;
+			import mx.binding.utils.BindingUtils;
+			
+			[Embed(source="../assets/avatar.png")]
+            public var avatarCls:Class;
+			
+			private function init():void
+			{
+				BindingUtils.bindSetter(update, this, "data");
+			}
+			
+			private function update(value:Object):void
+			{		
+				if(data.profile) {
+					// set name
+					if(data.profile.property.(@name == "name").length() > 0)
+						username.text = data.profile.property.(@name == "name")[0];
+					else if(data.profile.property.(@name == "givenname").length() > 0)
+						username.text = data.profile.property.(@name == "givenname")[0];
+					else if(data.profile.property.(@name == "nick").length() > 0)
+						username.text = data.profile.property.(@name == "nick")[0];
+					else
+						username.text = data.profile.@id;
+						
+					// set userimage
+					if(data.profile.property.(@name == "img").length() > 0)
+						userimage.source = data.profile.property.(@name == "img")[0];
+					else if(data.profile.property.(@name == "depiction").length() > 0)
+						userimage.source = data.profile.property.(@name == "depiction")[0];
+					else
+						userimage.source = avatarCls;	
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Image id="userimage"
+		maxWidth="100" maxHeight="100" 
+		scaleContent="true" 
+		maintainAspectRatio="true" 
+		styleName="userimage"
+		horizontalAlign="center" verticalAlign="middle">
+		<mx:filters>
+			<mx:DropShadowFilter alpha="0.3" angle="45" distance="3" blurX="5" blurY="5"/>
+		</mx:filters>
+	</mx:Image>
+	
+	<mx:Label id="username" styleName="normalText" width="180" textAlign="center"/>
+	
+</mx:VBox>
