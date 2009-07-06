@@ -10,6 +10,7 @@ Readme
 - Apache + mod_rewrite
 - PHP >= 5.2.4
 - MySQL
+- Zend Framework >= 1.8
 
 2) Installation
 ------------------------------------------------------------
