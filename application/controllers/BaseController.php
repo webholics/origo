@@ -240,4 +240,19 @@ class BaseController extends Zend_Controller_Action
 
 		return self::$_browserStore;
 	}
+
+	/**
+	 * Print a log message to the firebug console.
+	 * Only if environment is in development mode.
+	 *
+	 * @param $var Any PHP variable.
+	 */
+	protected function log($var) {
+		$config = $this->getConfig();
+		if($config->misc->environment == 'development') {
+			$writer = new Zend_Log_Writer_Firebug();
+			$logger = new Zend_Log($writer);
+			$logger->log($var, Zend_Log::INFO);
+		}
+	}
 }
