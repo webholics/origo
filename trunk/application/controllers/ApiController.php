@@ -331,14 +331,15 @@ class ApiController extends BaseController
 		// check if profile is already in triple store
 		$ask = $this->_queryPrefix .
 			'ASK WHERE {' .
-				'{ <' . $uri . '> rdf:type foaf:PersonalProfileDocument }' .
-				' UNION ' .
-				'{ <' . $uri . '> rdf:type foaf:Person }' .
+				'GRAPH <' . $uri . '> {' .
+					'{ <' . $uri . '> rdf:type foaf:PersonalProfileDocument }' .
+					' UNION ' .
+					'{ <' . $uri . '> rdf:type foaf:Person }' .
+				'}' .
 			'}';
 		if(!$store->query($ask, 'raw')) {
 			$query = 'LOAD <' . $uri . '> INTO <' . $uri . '>';
 			$result = $store->query($query);
-
 			if($store->getErrors() || $result['result']['t_count'] == 0) {
 				if($forwardError)
 					$this->_forward('error', 'api', null, array(
